@@ -12,20 +12,25 @@ through PaperEngine.on_quote in receive-time order:
      decides, and a traded pair sends one IOC order per venue, each arriving after that
      venue's own latency. A one-sided fill is closed one latency later.
 Policies run side by side on the same triggers: "naive" trades everything, "prior" trades
-when the decay prior's expected value is positive.
+when the decay prior's expected value is positive, and "slow" (optional) trades when a compiled
+slow model's expected value is positive.
 
 Gaps are measured against the venues' usual offset (offset_window_s, 300 s by default; 0 turns
 it off), as in `arbtrade.evaluate --offset-aware`: the trailing median of venue a's mid minus
 venue b's mid, sampled at price changes while both books are fresh, using only earlier samples.
 A persistent offset is not a gap. Until the first sample exists, nothing triggers. The prior
 must have been trained the same way (--train-prior); a prior trained on raw gaps is not used.
-There is no slow model here yet: its features are only computed offline.
+
+The slow model (slow=..., see PaperEngine) is a CompiledTrees model (arbtrade/compiled.py). Its
+features come from arbtrade/slowpath.py, which updates them on every quote and matches the offline
+features value for value. It is only usable from Python for now: the command line has no way yet to
+train one on recorded days or load one from disk.
 
 Every trigger gets a recorded decision per policy, with its reason, checked in this order:
   SKIP_STALE      a venue's book has not updated for stale_ms (a dead feed, not a quiet book:
                   Bybit stays silent for up to ~3 s when nothing changes)
   SKIP_THIN       the size both books show is worth less than min_notional
-  SKIP_EV         the prior's expected value is not positive (prior policy only)
+  SKIP_EV         the model's expected value is not positive (prior and slow policies)
   SKIP_INVENTORY  the trade would push the policy's net position past cap_usd; trades that
                   shrink the position always pass (see inventory.py for why positions matter)
   ENTER           orders sent
@@ -46,6 +51,11 @@ import numpy as np
 from sortedcontainers import SortedList
 
 from .policies import FAST_FEATURES
+from .slowpath import SlowFeatures
+
+# Feature settings a slow model bundle uses unless it carries its own (as in config/sources.yaml).
+SLOW_FEATURE_DEFAULTS = {"vol_windows_s": [1, 10, 60], "rate_windows_s": [1, 10], "kalman_q_bps_per_sqrt_s": 0.2,
+                         "kalman_r_bps": 0.5, "ou_window_s": 300}
 
 
 @dataclass
@@ -85,10 +95,19 @@ class Trade:
 
 
 class PaperEngine:
+    """slow (optional): a slow model bundle, a dict with
+         model               a CompiledTrees (arbtrade/compiled.py)
+         features            the model's input columns, in order
+         loss_bps            average outcome of a trade that does not fully fill (default: loss_bps)
+         cal_x, cal_y        an isotonic calibration (optional), as for the prior
+         cfg_features        feature settings it was trained with (default SLOW_FEATURE_DEFAULTS)
+         basis_ref_window_s  default 300
+    A model that needs a feature the engine cannot compute live is refused."""
+
     def __init__(self, venues: tuple[str, str], trigger_bps: float, fee_bps: float, latency_ms: dict[str, float],
                  notional: float = 10_000.0, prior: dict | None = None, loss_bps: float = -1.0,
                  stale_ms: float = 5_000.0, cap_usd: float = math.inf, min_notional: float = 100.0,
-                 offset_window_s: float | None = None):
+                 offset_window_s: float | None = None, slow: dict | None = None):
         self.va, self.vb = venues
         self.books = {v: Book() for v in venues}
         self.trigger, self.fee = trigger_bps, fee_bps / 1e4
@@ -109,6 +128,14 @@ class PaperEngine:
         self.off_win_us = int(offset_window_s * 1e6) if offset_window_s else 0
         self.off_samples: deque = deque()
         self.off_sorted = SortedList()
+        # The slow model and its features, updated on every quote (a book counts as down after stale_ms).
+        self.slow, self.sf, self.slow_us = slow, None, []
+        if slow is not None:
+            self.sf = SlowFeatures(slow.get("cfg_features", SLOW_FEATURE_DEFAULTS),
+                                   slow.get("basis_ref_window_s", 300.0), max_gap_ms=stale_ms)
+            missing = [f for f in slow["features"] if f not in self.sf.names() and f not in FAST_FEATURES]
+            if missing:
+                raise ValueError(f"the slow model needs features the live engine cannot compute: {missing}")
 
     # ---- the venues' usual offset -------------------------------------------------------
     def offset_ref(self, t: int) -> float:
@@ -146,6 +173,14 @@ class PaperEngine:
         if p.get("cal_x") is not None:  # isotonic calibration fitted on calibration days
             q = float(np.interp(q, p["cal_x"], p["cal_y"]))
         return q * (x["edge_birth_bps"] - self.trigger) + (1 - q) * self.loss_bps
+
+    def _slow_ev(self, x: dict[str, float]) -> float:
+        """The slow model's expected value (bps) on the fast features plus the incremental slow ones."""
+        s = self.slow
+        q = s["model"].predict_one(np.array([x[f] for f in s["features"]], dtype=np.float64))
+        if s.get("cal_x") is not None:
+            q = float(np.interp(q, s["cal_x"], s["cal_y"]))
+        return q * (x["edge_birth_bps"] - self.trigger) + (1 - q) * s.get("loss_bps", self.loss_bps)
 
     # ---- order handling ---------------------------------------------------------------
     def _fill(self, o: Order) -> None:
@@ -197,6 +232,8 @@ class PaperEngine:
         if price_change:
             bk.t_change = t
         bk.bid, bk.ask, bk.bsz, bk.asz, bk.t = bid, ask, bsz, asz, t
+        if self.sf is not None:
+            self.sf.update(0 if venue == self.va else 1, t, bid, ask, bsz, asz)
         a, b = self.books[self.va], self.books[self.vb]
         if math.isnan(a.bid) or math.isnan(b.bid):
             return
@@ -216,14 +253,19 @@ class PaperEngine:
             if is_open and not self.open_dir[d]:
                 self.triggers += 1
                 x = self._features(t, rel)
-                for policy in ("naive", "prior") if self.prior is not None else ("naive",):
-                    action, reason, qty = self._decide(policy, t, d, mid, sell, buy, x)
+                policies = ["naive"] + ["prior"] * (self.prior is not None) + ["slow"] * (self.slow is not None)
+                for policy in policies:
+                    t0 = time.perf_counter_ns()
+                    xp = {**x, **self.sf.features()} if policy == "slow" else x  # the slow features at this update
+                    action, reason, qty = self._decide(policy, t, d, mid, sell, buy, xp)
+                    if policy == "slow":
+                        self.slow_us.append((time.perf_counter_ns() - t0) / 1000)
                     self.decisions.append({"t": t, "direction": f"sell {self.va if d > 0 else self.vb} / buy "
                                            f"{self.vb if d > 0 else self.va}", "edge_bps": round(edge, 3),
                                            "edge_rel_bps": round(rel, 3), "policy": policy, "action": action,
                                            "reason": reason})
                     if action == "ENTER":
-                        self._send(policy, t, d, edge, sell, buy, x, qty)
+                        self._send(policy, t, d, edge, sell, buy, xp, qty)
             self.open_dir[d] = is_open
         # 4. only now add this update to the offset reference, so decisions never see their own sample
         if self.off_win_us and price_change:
@@ -241,6 +283,10 @@ class PaperEngine:
             ev = self._prior_ev(x)
             if ev <= 0:
                 return "SKIP_EV", f"prior expected value {ev:+.2f} bps", 0.0
+        if policy == "slow":
+            ev = self._slow_ev(x)
+            if ev <= 0:
+                return "SKIP_EV", f"slow model expected value {ev:+.2f} bps", 0.0
         pos = self.pos.get(policy, 0.0)
         new = pos + (-qty if d > 0 else qty)  # d > 0 sells on venue a
         if abs(new) * mid > self.cap_usd and abs(new) >= abs(pos):
@@ -273,6 +319,8 @@ class PaperEngine:
             out[policy] = {"trades": len(done), "full_fills": len(full),
                            "pnl_usd": round(sum(tr.pnl for tr in done), 2),
                            f"position_on_{self.va}": round(self.pos.get(policy, 0.0), 6), "decisions": acts}
+            if policy == "slow" and self.slow_us:  # wall time of the slow features and model per trigger
+                out[policy]["decision_us_median"] = round(float(np.median(self.slow_us)), 1)
         return out
 
 
