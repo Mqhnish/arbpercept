@@ -8,10 +8,10 @@ An arbitrage opportunity is worth acting on only if it will still be there when 
 |---|---|---|
 | Data pipeline | `arbdata/` | Downloads free archives (Bybit, Binance, Tardis) and perpetual funding rates (`funding.py`), and records Bybit and Binance live. Rebuilds order books, validates them against independent trade records, and labels every opportunity with its lifetime and causal features. Leakage-safe, frozen date splits. See [DATA_CARD.md](DATA_CARD.md). |
 | Slow-path statistics | `arbdata/kalman.py` | A Kalman filter on the pair's log-spread (and a two-state hedge-ratio version), plus an OU mean-reversion half-life. Numba-compiled and causal. |
-| Trading system | `arbtrade/` | Replay execution with injected latency, IOC legs, fees and leg risk (`replay.py`). Fast prior, slow model, isotonic calibration and cascade policies (`policies.py`), with the slow model compiled to a Numba tree walker (`compiled.py`). Walk-forward P&L-vs-latency evaluation (`evaluate.py`). Maker-taker execution (`makertaker.py`), a live paper trader (`live.py`), and inventory accounting: positions per venue, funding, end-of-day closing and a position cap (`inventory.py`). |
+| Trading system | `arbtrade/` | Replay execution with injected latency, IOC legs, fees and leg risk (`replay.py`). Fast prior, slow model, isotonic calibration and cascade policies (`policies.py`), with the slow model compiled to a Numba tree walker (`compiled.py`). Walk-forward P&L-vs-latency evaluation (`evaluate.py`). Maker-taker execution (`makertaker.py`), a live paper trader (`live.py`) with the slow model's features computed one quote at a time (`slowpath.py`), and inventory accounting: positions per venue, funding, end-of-day closing and a position cap (`inventory.py`). |
 | Analysis | `analysis/` | Decay models and figures (`decay_pilot.py`, `decay_figures.py`), the P&L chart and intervals (`pnl_figure.py`, `pnl_stats.py`), the 100 ms vs 10 ms resolution check (`resolution_check.py`), models retrained on our 10 ms recordings (`live_prior.py`, `live_decay.py`), and the maker-taker sweeps (`maker_taker.py`, `maker_taker_live.py`). |
 | Live recorder | `arbdata/recorder.py`, `deploy/` | Records Bybit's 10 ms book and trades, and Binance USD-M top-of-book, on one receive clock. A systemd unit is provided for an always-on VM. |
-| Tests | `tests/` | Run with `.venv/bin/python -m pytest`. They cover book rebuild, outage detection, censoring, splits, trade validation with planted faults, Kalman/OU against known answers, replay mechanics, and a lookahead test that cuts the raw feeds at each decision and checks nothing changes. They use synthetic data only, so they run without the data folders. GitHub Actions runs them on every pull request (`.github/workflows/tests.yml`). |
+| Tests | `tests/` | Run with `.venv/bin/python -m pytest`. They cover book rebuild, outage detection, censoring, splits, trade validation with planted faults, Kalman/OU against known answers, replay mechanics, the live slow-path features against the offline code, and a lookahead test that cuts the raw feeds at each decision and checks nothing changes. They use synthetic data only, so they run without the data folders. GitHub Actions runs them on every pull request (`.github/workflows/tests.yml`). |
 
 ## How the decision works
 
@@ -30,7 +30,22 @@ Before any order goes out, each trigger passes four checks, and every decision i
 - **Expected value:** the decay prior's expected value must be positive.
 - **Inventory:** the trade must not push the net position past the cap ($50k by default). Trades that shrink the position always pass.
 
-With the slow model at microseconds, model compute no longer costs edge; network latency does (about 8 ms to Bybit and 50 ms to Binance from our machine, stored once as `order_latency_ms` in `config/sources.yaml`). The 6.4 µs is model inference only. The slow model's features are computed offline, so their live cost is not yet measured. The cascade's job is now the decay-aware decision itself, and it keeps room for heavier models later.
+With the slow model at microseconds, model compute no longer costs edge; network latency does (about 8 ms to Bybit and 50 ms to Binance from our machine, stored once as `order_latency_ms` in `config/sources.yaml`). The cascade's job is now the decay-aware decision itself, and it keeps room for heavier models later.
+
+**The true cost of the slow path.** The 6.4 µs above is model inference only. Live, the features have to be computed too. `arbtrade/slowpath.py` keeps them up to date one quote at a time. It gives the same values as the offline code: on the synthetic quotes in `tests/test_slowpath.py` they agree to the last bit. Measured with `python -m arbtrade.slowpath` (30 minutes of synthetic quotes, on our Windows machine; details in `data/reports/live/slowpath_timing.json`):
+
+| Step | When | Cost |
+|---|---|---|
+| Update the features | every price change | 12 µs |
+| Update the features | every size-only update | 0.3 µs |
+| Build the feature vector | every trigger | 9 µs |
+| Model inference | every trigger | 6.5 µs |
+
+- A slow decision costs about 30 µs from the quote that triggers it, almost five times the inference alone. That is still under 0.5% of the 8 ms order latency to Bybit.
+- Every quote pays the update, traded or not. In the paper trader, the slow model raises the average cost per quote from 1.8 µs to 5.6 µs.
+- The features are plain Python. Compiling them would make them faster, but at these costs it is not needed yet.
+- The live engine computes 23 of the slow model's features, plus the gap itself. The rest need inputs it does not have yet: book depth, feed lag (needs exchange timestamps), trade flow (needs the trade feeds), and the gap's 1 s change and recent births (need more state in the engine). So a slow model trained on every feature cannot run live yet; the engine refuses it. One trained on these 24 inputs can (`PaperEngine(slow=...)`).
+- `arbtrade.evaluate` still waits only for inference (rounded up to 0.01 ms) before its slow path re-reads the book. Running it with `--slow-wait-ms 0.03` would include the feature cost. That run has not been done yet.
 
 ## Running it
 
@@ -64,6 +79,12 @@ Useful `arbtrade.evaluate` options:
 
 ```bash
 .venv/bin/python -m arbdata record
+```
+
+Time the live slow path (synthetic quotes by default; `--replay DATE` uses our recordings):
+
+```bash
+.venv/bin/python -m arbtrade.slowpath --out data/reports/live/slowpath_timing.json
 ```
 
 Analysis (all on development days; none of these opens the holdout):
@@ -193,4 +214,5 @@ We compared our system with three public arbitrage projects and adopted what was
 2. **Maker-taker, version 2:** estimate queue cancellations from book size changes, requote when the price moves, add inventory limits, and gate quotes with the decay model so we quote only when the Binance side is likely to hold until the hedge.
 3. **Run the resolution check on more days** as Bybit publishes them, to firm up how many archive episodes are stale-quote artifacts.
 4. **Web dashboard for the live demo**, on top of `arbtrade/live.py`.
-5. **Open the holdout once, at the end** (`ARBDATA_UNLOCK_HOLDOUT=1`), and report it as it comes out.
+5. **A slow model for the live trader.** Train it on recorded days, on the 24 inputs the live engine computes (`SlowFeatures.names()` plus the gap). Then add a `--slow` flag to `arbtrade.live` that loads it. `PaperEngine` can already run one.
+6. **Open the holdout once, at the end** (`ARBDATA_UNLOCK_HOLDOUT=1`), and report it as it comes out.
