@@ -208,7 +208,8 @@ def fold_days(fold: dict, have_train: set, have_val: set) -> tuple[list, list, l
 def measure_latencies(fast: FastPrior, slow: SlowModel, X: pd.DataFrame, repeats: int = 300) -> tuple[float, float]:
     """Median single-trigger inference time in ms, on plain arrays as a live system would use.
     The slow model is timed in its compiled form (arbtrade/compiled.py). Feature computation is
-    not included: the slow features are computed offline here, not incrementally."""
+    not included: here the slow features are computed offline. Live, arbtrade/slowpath.py computes
+    them one update at a time, and `python -m arbtrade.slowpath` times that."""
     Xf = X[fast.features].to_numpy()
     Xs = X[slow.cols].to_numpy()
     tf, ts = [], []

@@ -145,6 +145,21 @@ def label_runs(t: np.ndarray, edge: np.ndarray, valid: np.ndarray, hurdle: float
     })
 
 
+def kalman_context(al: pd.DataFrame, valid: np.ndarray, cfg_features: dict) -> dict[str, np.ndarray]:
+    """Slow-path statistics at every event: the log-spread's deviation from its Kalman-filtered fair
+    level, standardised (z), and the deviation's mean-reversion half-life. Invalid events do not
+    update the filter. arbtrade/slowpath.py computes the same values one update at a time."""
+    from .kalman import local_level, ou_halflife_s
+    t = al.t.to_numpy()
+    spread = np.log(al.b_mid.to_numpy()) - np.log(al.a_mid.to_numpy())
+    q = (cfg_features.get("kalman_q_bps_per_sqrt_s", 0.2) * 1e-4) ** 2
+    r = (cfg_features.get("kalman_r_bps", 0.5) * 1e-4) ** 2
+    m_pred, p_pred = local_level(t, np.where(valid, spread, np.nan), q, r)
+    k_dev = spread - m_pred
+    return {"f_kalman_dev_bps": k_dev * 1e4, "f_kalman_z": k_dev / np.sqrt(p_pred + r),
+            "f_ou_halflife_s": ou_halflife_s(t, k_dev, int(cfg_features.get("ou_window_s", 300)))}
+
+
 def recent_births(birth_ts: np.ndarray, window_us: int) -> np.ndarray:
     """For each birth, how many earlier births fall in [t - window, t)."""
     order = np.argsort(birth_ts, kind="stable")
@@ -189,16 +204,7 @@ def label_pair_day(al: pd.DataFrame, pair: PairSpec, date: str, hurdles: dict[st
     warmup_end = day_start + int(cfg_episodes["warmup_s"] * 1e6)
 
     ctx = rolling_context(al, cfg_features["vol_windows_s"], cfg_features["rate_windows_s"])
-    # Slow-path statistics: Kalman-filtered fair log-spread and its mean-reversion half-life.
-    from .kalman import local_level, ou_halflife_s
-    spread = np.log(al.b_mid.to_numpy()) - np.log(al.a_mid.to_numpy())
-    q = (cfg_features.get("kalman_q_bps_per_sqrt_s", 0.2) * 1e-4) ** 2
-    r = (cfg_features.get("kalman_r_bps", 0.5) * 1e-4) ** 2
-    m_pred, p_pred = local_level(t, np.where(valid, spread, np.nan), q, r)
-    k_dev = spread - m_pred
-    ctx["f_kalman_dev_bps"] = k_dev * 1e4
-    ctx["f_kalman_z"] = k_dev / np.sqrt(p_pred + r)
-    ctx["f_ou_halflife_s"] = ou_halflife_s(t, k_dev, int(cfg_features.get("ou_window_s", 300)))
+    ctx.update(kalman_context(al, valid, cfg_features))
     max_lag = cfg_episodes["max_feed_lag_ms"]
     window_us = int(cfg_features["recent_births_window_s"] * 1e6)
     trade_windows = cfg_features.get("trade_windows_s", [1, 10])
