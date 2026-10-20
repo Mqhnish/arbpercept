@@ -9,7 +9,7 @@ The recorder (`arbdata record`) needs to run continuously for weeks so the model
   - A Singapore VM keeps Bybit fast.
   - For the latency study, two VMs (one each) are best. For recording alone, one is enough.
   - Check that the exchanges' public market data is reachable from the region you pick. Binance restricts some regions.
-- **Size:** 2 vCPU, 2–4 GB RAM, 100 GB disk, Ubuntu 24.04. Recording uses about 1 GB a day. A 1 GB-RAM free-tier machine may struggle with Binance's ~650 messages per second. Check current pricing; a machine like this is usually tens of dollars a month or less.
+- **Size:** 2 vCPU, 2–4 GB RAM, 200 GB disk, Ubuntu 24.04. With BTC and ETH plus the eight mid-cap perpetuals (SOL, XRP, DOGE, WLD, ZEC, TIA, AAVE, ARB), recording uses about 3 GB a day and Binance sends about 1,400 messages per second. A 1 GB-RAM free-tier machine may not keep up. Check current pricing; a machine like this is usually tens of dollars a month or less.
 
 ## Setup
 

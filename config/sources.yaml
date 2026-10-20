@@ -45,6 +45,24 @@ streams:
   - {source: bybit_live, venue: bybit,   pair: ETH-USDT, kind: perp, symbol: ETHUSDT, market: linear}
   - {source: binance_live, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT}
   - {source: binance_live, venue: binance, pair: ETH-USDT, kind: perp, symbol: ETHUSDT}
+  # Mid-cap basket, perpetuals on both venues (live from 20 Oct 2026): more cross-venue gaps than BTC/ETH,
+  # though with far less size at the best price.
+  - {source: bybit_live, venue: bybit,   pair: SOL-USDT, kind: perp, symbol: SOLUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: XRP-USDT, kind: perp, symbol: XRPUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: DOGE-USDT, kind: perp, symbol: DOGEUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: WLD-USDT, kind: perp, symbol: WLDUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: ZEC-USDT, kind: perp, symbol: ZECUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: TIA-USDT, kind: perp, symbol: TIAUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: AAVE-USDT, kind: perp, symbol: AAVEUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: ARB-USDT, kind: perp, symbol: ARBUSDT, market: linear}
+  - {source: binance_live, venue: binance, pair: SOL-USDT, kind: perp, symbol: SOLUSDT}
+  - {source: binance_live, venue: binance, pair: XRP-USDT, kind: perp, symbol: XRPUSDT}
+  - {source: binance_live, venue: binance, pair: DOGE-USDT, kind: perp, symbol: DOGEUSDT}
+  - {source: binance_live, venue: binance, pair: WLD-USDT, kind: perp, symbol: WLDUSDT}
+  - {source: binance_live, venue: binance, pair: ZEC-USDT, kind: perp, symbol: ZECUSDT}
+  - {source: binance_live, venue: binance, pair: TIA-USDT, kind: perp, symbol: TIAUSDT}
+  - {source: binance_live, venue: binance, pair: AAVE-USDT, kind: perp, symbol: AAVEUSDT}
+  - {source: binance_live, venue: binance, pair: ARB-USDT, kind: perp, symbol: ARBUSDT}
   - {source: binance_bt, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT}
   - {source: binance_bt, venue: binance, pair: ETH-USDT, kind: perp, symbol: ETHUSDT}
   - {source: tardis, venue: binance, pair: BTC-USDT, kind: spot, symbol: BTCUSDT,       exchange: binance}
@@ -66,6 +84,14 @@ pairs:
   - {name: bybit_eth_btc_ratio,    type: ratio, a: bybit_ob/bybit/BTC-USDT/perp,     b: bybit_ob/bybit/ETH-USDT/perp}
   - {name: live_btc_perp_binance_bybit, type: cross, a: binance_live/binance/BTC-USDT/perp, b: bybit_live/bybit/BTC-USDT/perp}
   - {name: live_eth_perp_binance_bybit, type: cross, a: binance_live/binance/ETH-USDT/perp, b: bybit_live/bybit/ETH-USDT/perp}
+  - {name: live_sol_perp_binance_bybit, type: cross, a: binance_live/binance/SOL-USDT/perp, b: bybit_live/bybit/SOL-USDT/perp}
+  - {name: live_xrp_perp_binance_bybit, type: cross, a: binance_live/binance/XRP-USDT/perp, b: bybit_live/bybit/XRP-USDT/perp}
+  - {name: live_doge_perp_binance_bybit, type: cross, a: binance_live/binance/DOGE-USDT/perp, b: bybit_live/bybit/DOGE-USDT/perp}
+  - {name: live_wld_perp_binance_bybit, type: cross, a: binance_live/binance/WLD-USDT/perp, b: bybit_live/bybit/WLD-USDT/perp}
+  - {name: live_zec_perp_binance_bybit, type: cross, a: binance_live/binance/ZEC-USDT/perp, b: bybit_live/bybit/ZEC-USDT/perp}
+  - {name: live_tia_perp_binance_bybit, type: cross, a: binance_live/binance/TIA-USDT/perp, b: bybit_live/bybit/TIA-USDT/perp}
+  - {name: live_aave_perp_binance_bybit, type: cross, a: binance_live/binance/AAVE-USDT/perp, b: bybit_live/bybit/AAVE-USDT/perp}
+  - {name: live_arb_perp_binance_bybit, type: cross, a: binance_live/binance/ARB-USDT/perp, b: bybit_live/bybit/ARB-USDT/perp}
   - {name: btc_perp_binance_bybit, type: cross, a: binance_bt/binance/BTC-USDT/perp, b: bybit_ob/bybit/BTC-USDT/perp}
   - {name: eth_perp_binance_bybit, type: cross, a: binance_bt/binance/ETH-USDT/perp, b: bybit_ob/bybit/ETH-USDT/perp}
   - {name: tick_btc_spot_binance_okx,   type: cross, a: tardis/binance/BTC-USDT/spot, b: tardis/okx/BTC-USDT/spot}
