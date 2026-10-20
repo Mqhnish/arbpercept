@@ -103,7 +103,15 @@ pairs:
   - {name: tick_btc_basis_okx,          type: basis, a: tardis/okx/BTC-USDT/spot,     b: tardis/okx/BTC-USDT/perp}
   - {name: tick_btc_basis_bybit,        type: basis, a: tardis/bybit/BTC-USDT/spot,   b: tardis/bybit/BTC-USDT/perp}
 
+# One-way order latency from our machine (ms), as measured for README and DEPLOY.md. Every
+# default latency (live paper trader, maker-taker sweeps) reads it from here.
+# DATA_CARD's 45 ms median for Bybit is a different measurement: recorded feed timestamps on a
+# home connection.
+order_latency_ms: {bybit: 8.0, binance: 50.0}
+
 # Published VIP0 taker fees in bps. Verify against each venue's current schedule.
+# Only these are stored. Higher tiers are tested by sweeping fees (arbtrade.evaluate --fees or
+# --venue-fees, and the tiers in analysis/maker_taker.py).
 # The dataset stores gross edges; fees only define the optional "retail_taker" hurdle.
 fees_taker_bps:
   binance: {spot: 10.0, perp: 5.0}

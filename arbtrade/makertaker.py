@@ -15,6 +15,8 @@ Bid side (the ask side is the mirror image):
           latency later, and fills can still happen until then.
   hedge   we learn of a fill one Bybit latency after it and sell on Binance with a taker order
           arriving one Binance latency after that, at Binance's bid then (tick-level, exact).
+          A partial fill is hedged on its own: each print that fills part of our order gets
+          its own hedge, timed from that print.
 P&L per fill = qty x (hedge price - our bid) - maker fee - taker fee. The gap between the
 Binance bid at decision time and at hedge time is adverse selection: resting orders tend to
 fill exactly when the market moves against them.
@@ -24,8 +26,10 @@ Reference level. Measured against zero, the margin above counts any persistent o
 between the venues as profit. In January 2024 Binance sat 0.5-3 bps below Bybit, so nearly
 every fill went the same way and built up a position that must be closed against that same
 offset (see inventory.py). Passing ref_bps (the trailing median of Binance mid minus Bybit
-mid, offset_reference below) measures the margin against the venues' usual offset instead:
-both directions then trade, and positions tend to unwind on their own.
+mid, offset_reference below) measures the margin against the venues' usual offset instead.
+That was expected to balance the two directions, but in January 2024 it did not: 74-94% of
+fills still went one way (data/reports/maker_taker/summary.md). Why is still open; until it
+is understood, judge this rule only by its inventory-accounted P&L.
 """
 
 from __future__ import annotations
@@ -112,6 +116,9 @@ def simulate(bybit: pd.DataFrame, trades: pd.DataFrame, binance: pd.DataFrame, s
     tr_t, tr_px, tr_sz = tt.ts.to_numpy(), tt.price.to_numpy(), tt["size"].to_numpy()
     filled = np.zeros(len(starts))
     t_fill = np.full(len(starts), -1, dtype=np.int64)
+    hedge_px = np.full(len(starts), np.nan)  # quantity-weighted over the partial hedges
+    gross = np.zeros(len(starts))
+    hedge_notional = np.zeros(len(starts))
     for k in range(len(starts)):
         lo, hi = np.searchsorted(tr_t, t_arr[k], "left"), np.searchsorted(tr_t, t_stop[k], "right")
         if lo >= hi:
@@ -119,24 +126,19 @@ def simulate(bybit: pd.DataFrame, trades: pd.DataFrame, binance: pd.DataFrame, s
         px, sz, ts = tr_px[lo:hi], tr_sz[lo:hi], tr_t[lo:hi]
         at = sgn * (px - price[k]) == 0        # prints at our price consume the queue ahead of us
         through = sgn * (price[k] - px) > 0     # prints through our price: the level was swept
-        consumed = np.cumsum(np.where(at, sz, 0.0))
-        avail = consumed - queue0[k]
-        first_through = np.flatnonzero(through)
-        got = 0.0
-        when = -1
-        if (avail > 0).any():
-            j = int(np.argmax(avail > 0))
-            got, when = min(qty[k], float(avail[-1])), int(ts[j])
-        if len(first_through):
-            j2 = int(first_through[0])
-            if when < 0 or ts[j2] < when:
-                when = int(ts[j2])
-            got = qty[k]
-        filled[k], t_fill[k] = got, when
-    hedge_t = np.where(t_fill >= 0, t_fill + lb + ln, 0)
-    hedge_px = _asof(bn_t, bn_hedge, hedge_t)
-    gross = np.where(filled > 0, sgn * (hedge_px - price) * filled, 0.0)
-    fees = filled * price * p.maker_fee_bps / 1e4 + filled * np.nan_to_num(hedge_px) * p.taker_fee_bps / 1e4
+        cum = np.clip(np.cumsum(np.where(at, sz, 0.0)) - queue0[k], 0.0, qty[k])  # our filled size after each print
+        cum = np.where(np.cumsum(through) > 0, qty[k], cum)                        # a sweep fills whatever is left
+        inc = np.diff(np.concatenate(([0.0], cum)))
+        j = np.flatnonzero(inc > 0)
+        if not len(j):
+            continue
+        h_px = _asof(bn_t, bn_hedge, ts[j] + lb + ln)   # each part hedged one Bybit + one Binance latency after its print
+        filled[k], t_fill[k] = float(cum[-1]), int(ts[j[0]])
+        gross[k] = float(np.sum(inc[j] * sgn * (h_px - price[k])))
+        hedge_notional[k] = float(np.sum(inc[j] * np.nan_to_num(h_px)))
+        hedge_px[k] = hedge_notional[k] / filled[k]
+    hedge_t = np.where(t_fill >= 0, t_fill + lb + ln, 0)  # the first hedge
+    fees = filled * price * p.maker_fee_bps / 1e4 + hedge_notional * p.taker_fee_bps / 1e4
     pnl = gross - fees
     adverse = np.where(filled > 0, sgn * (hedge_px - hedge_obs[starts]) / price * 1e4, np.nan)
     return pd.DataFrame({

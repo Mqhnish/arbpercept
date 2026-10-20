@@ -14,7 +14,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "pyflakes"]
+# Models, evaluation and analysis (arbtrade, analysis/)
+models = ["scikit-learn", "numba", "lifelines", "matplotlib"]
+# Live feeds: the recorder (python -m arbdata record) and the paper trader (python -m arbtrade.live)
+live = ["websockets", "certifi"]
+# Exact versions the tests last passed with: requirements-lock.txt
+# (pip install -r requirements-lock.txt, then pip install -e . --no-deps)
 
 [project.scripts]
 arbdata = "arbdata.cli:main"

@@ -58,7 +58,7 @@ download -> normalize + clean -> align pairs -> label episodes + causal features
 **Funding (one per venue and symbol, `data/funding/<venue>_<symbol>.parquet`):** `ts` (µs, the funding time), `rate` (fraction of notional per interval; a long pays it, a short receives it). Fetched with `python -m arbdata.funding <start> <end>`.
 
 **Edges, in bps of mid, after crossing both spreads:**
-- **Cross pairs:** sell at one venue's bid and buy at the other's ask.
+- **Cross pairs:** sell at one venue's bid and buy at the other's ask. The stored dataset measures this against zero. `label_pair_day(..., cross_offset_window_s=300)` measures it against the venues' trailing offset instead: the strictly-past median of mid a minus mid b, skipping moments when a leg is down. Then `edge_birth_bps` is the relative gap and `edge_offset_bps` is the offset that was subtracted. `arbtrade.evaluate --offset-aware` labels births this way.
 - **Basis pairs:** the perpetual-minus-spot dislocation from its trailing 5-minute median. Profit here depends on the basis reverting, so it is a statistical edge, not a locked-in one.
 - **Ratio pairs (cross-asset, e.g. ETH vs BTC perpetual on Bybit):** how far one asset's executable price sits from its fair value, given the other's executable price. Fair value is log(b) = α + β·log(a), with intercept and hedge ratio tracked by a two-state Kalman filter using only past data. Also a statistical edge.
   - **Caveat:** the filter's fair value adapts within about 4 s, so a "death" can be reversion or adaptation. Most lifetimes are far shorter (median 199 ms at 2 bps), but only a holding-period simulation can judge profitability.

@@ -14,6 +14,13 @@ through PaperEngine.on_quote in receive-time order:
 Policies run side by side on the same triggers: "naive" trades everything, "prior" trades
 when the decay prior's expected value is positive.
 
+Gaps are measured against the venues' usual offset (offset_window_s, 300 s by default; 0 turns
+it off), as in `arbtrade.evaluate --offset-aware`: the trailing median of venue a's mid minus
+venue b's mid, sampled at price changes while both books are fresh, using only earlier samples.
+A persistent offset is not a gap. Until the first sample exists, nothing triggers. The prior
+must have been trained the same way (--train-prior); a prior trained on raw gaps is not used.
+There is no slow model here yet: its features are only computed offline.
+
 Every trigger gets a recorded decision per policy, with its reason, checked in this order:
   SKIP_STALE      a venue's book has not updated for stale_ms (a dead feed, not a quiet book:
                   Bybit stays silent for up to ~3 s when nothing changes)
@@ -36,6 +43,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 import numpy as np
+from sortedcontainers import SortedList
 
 from .policies import FAST_FEATURES
 
@@ -79,7 +87,8 @@ class Trade:
 class PaperEngine:
     def __init__(self, venues: tuple[str, str], trigger_bps: float, fee_bps: float, latency_ms: dict[str, float],
                  notional: float = 10_000.0, prior: dict | None = None, loss_bps: float = -1.0,
-                 stale_ms: float = 5_000.0, cap_usd: float = math.inf, min_notional: float = 100.0):
+                 stale_ms: float = 5_000.0, cap_usd: float = math.inf, min_notional: float = 100.0,
+                 offset_window_s: float | None = None):
         self.va, self.vb = venues
         self.books = {v: Book() for v in venues}
         self.trigger, self.fee = trigger_bps, fee_bps / 1e4
@@ -96,6 +105,28 @@ class PaperEngine:
         self.stale_us, self.cap_usd, self.min_notional = int(stale_ms * 1000), cap_usd, min_notional
         self.pos: dict[str, float] = {}       # per policy: net position on venue a (base units), incl. orders in flight
         self.decisions: list[dict] = []
+        # The venues' usual offset: a-minus-b mid samples (bps) over the trailing window, kept sorted for the median.
+        self.off_win_us = int(offset_window_s * 1e6) if offset_window_s else 0
+        self.off_samples: deque = deque()
+        self.off_sorted = SortedList()
+
+    # ---- the venues' usual offset -------------------------------------------------------
+    def offset_ref(self, t: int) -> float:
+        """Median of the offset samples in [t - window, t): strictly earlier than the current update."""
+        while self.off_samples and self.off_samples[0][0] < t - self.off_win_us:
+            self.off_sorted.remove(self.off_samples.popleft()[1])
+        n = len(self.off_sorted)
+        if n == 0:
+            return math.nan
+        return self.off_sorted[n // 2] if n % 2 else (self.off_sorted[n // 2 - 1] + self.off_sorted[n // 2]) / 2
+
+    def _sample_offset(self, t: int, mid: float) -> None:
+        a, b = self.books[self.va], self.books[self.vb]
+        if t - a.t > self.stale_us or t - b.t > self.stale_us:
+            return  # a dead feed must not drag the reference
+        x = ((a.bid + a.ask) / 2 - (b.bid + b.ask) / 2) / mid * 1e4
+        self.off_samples.append((t, x))
+        self.off_sorted.add(x)
 
     # ---- decision features (the six the prior was trained on) -----------------------
     def _features(self, t: int, edge: float) -> dict[str, float]:
@@ -109,9 +140,11 @@ class PaperEngine:
 
     def _prior_ev(self, x: dict[str, float]) -> float:
         p = self.prior
-        z = np.array([x[f] for f in FAST_FEATURES])
+        z = np.array([x[f] for f in p.get("features", FAST_FEATURES)])
         z = np.where(np.isnan(z), p["median"], z)
         q = 1 / (1 + math.exp(-float(((z - p["mu"]) / p["sd"]) @ p["w"] + p["b"])))
+        if p.get("cal_x") is not None:  # isotonic calibration fitted on calibration days
+            q = float(np.interp(q, p["cal_x"], p["cal_y"]))
         return q * (x["edge_birth_bps"] - self.trigger) + (1 - q) * self.loss_bps
 
     # ---- order handling ---------------------------------------------------------------
@@ -160,7 +193,8 @@ class PaperEngine:
             self.unsettled = [tr for tr in self.unsettled if not tr.settled]
         # 2. apply the update
         bk = self.books[venue]
-        if bid != bk.bid or ask != bk.ask:
+        price_change = bid != bk.bid or ask != bk.ask
+        if price_change:
             bk.t_change = t
         bk.bid, bk.ask, bk.bsz, bk.asz, bk.t = bid, ask, bsz, asz, t
         a, b = self.books[self.va], self.books[self.vb]
@@ -172,21 +206,28 @@ class PaperEngine:
         self.last_mid = mid
         while self.mid_hist and self.mid_hist[0][0] <= t - 1_000_000:
             self.mid_hist.popleft()
-        # 3. fast path: a gap opening in either direction (+1: sell a, buy b)
+        # 3. fast path: a gap opening in either direction (+1: sell a, buy b), measured against the
+        #    usual offset when there is one (NaN before the first sample: nothing opens)
+        ref = self.offset_ref(t) if self.off_win_us else 0.0
         for d, (sell, buy) in ((+1, (a, b)), (-1, (b, a))):
             edge = (sell.bid - buy.ask) / mid * 1e4
-            is_open = edge > self.trigger
+            rel = edge - d * ref
+            is_open = rel > self.trigger
             if is_open and not self.open_dir[d]:
                 self.triggers += 1
-                x = self._features(t, edge)
+                x = self._features(t, rel)
                 for policy in ("naive", "prior") if self.prior is not None else ("naive",):
                     action, reason, qty = self._decide(policy, t, d, mid, sell, buy, x)
                     self.decisions.append({"t": t, "direction": f"sell {self.va if d > 0 else self.vb} / buy "
                                            f"{self.vb if d > 0 else self.va}", "edge_bps": round(edge, 3),
-                                           "policy": policy, "action": action, "reason": reason})
+                                           "edge_rel_bps": round(rel, 3), "policy": policy, "action": action,
+                                           "reason": reason})
                     if action == "ENTER":
                         self._send(policy, t, d, edge, sell, buy, x, qty)
             self.open_dir[d] = is_open
+        # 4. only now add this update to the offset reference, so decisions never see their own sample
+        if self.off_win_us and price_change:
+            self._sample_offset(t, mid)
 
     def _decide(self, policy: str, t: int, d: int, mid: float, sell: Book, buy: Book, x: dict) -> tuple[str, str, float]:
         for v in (self.va, self.vb):
@@ -235,31 +276,43 @@ class PaperEngine:
         return out
 
 
-def train_prior(cfg, out: Path, fee_bps: float = 1.0, latency_ms: float = 56.0, pair: str = "btc_perp_binance_bybit") -> dict:
+def train_prior(cfg, out: Path, fee_bps: float = 1.0, lat_a_ms: float = 50.0, lat_b_ms: float = 8.0,
+                pair: str = "btc_perp_binance_bybit", offset_window_s: float | None = 300.0) -> dict:
     """Fit the six-feature decay prior on development days of the archived cross-venue pair.
 
-    Labels: did both legs fully fill after latency_ms (optimistic bound)? The slower venue's
-    latency is used because both legs must arrive for the trade to be complete.
+    Births are labelled as the live engine sees them: against the venues' usual offset when
+    offset_window_s is set. Labels: did both legs fully fill, each after its own venue's latency
+    (optimistic bound)? The prior is fitted on the first 70% of days with births and calibrated
+    (isotonic) on the rest. The leg-risk term is net of the offset (pnl_rel_bps).
     """
     import pandas as pd
     from arbdata.splits import dates_for
     from .evaluate import load_day, replay_day
-    from .policies import FastPrior, miss_loss_bps
+    from .policies import Calibrator, FastPrior, miss_loss_bps
     splits = json.loads(cfg.splits_path.read_text())
     have = {p.stem for p in (cfg.data_root / "episodes" / pair).glob("*.parquet")}
-    X, outs = [], []
+    days = []
     for d in sorted(set(dates_for(splits, "development")) & have):
-        got = load_day(cfg, pair, d, 2 * fee_bps)
-        if got is None:
+        got = load_day(cfg, pair, d, 2 * fee_bps, offset_window_s)
+        if got is None or not len(got[0]):
             continue
         eps, legs = got
-        X.append(eps)
-        outs.append(replay_day(eps, legs, latency_ms, fee_bps, "optimistic"))
-    X, o = pd.concat(X, ignore_index=True), pd.concat(outs, ignore_index=True)
+        days.append((eps, replay_day(eps, legs, lat_a_ms, fee_bps, "optimistic", delay_b_ms=lat_b_ms)))
+    cut = max(1, int(len(days) * 0.7))
+    X = pd.concat([e for e, _ in days[:cut]], ignore_index=True)
+    o = pd.concat([r for _, r in days[:cut]], ignore_index=True)
     fp = FastPrior().fit(X, o.full_fill.to_numpy())
-    prior = {"median": fp.median.tolist(), "mu": fp.mu.tolist(), "sd": fp.sd.tolist(), "w": fp.w.tolist(),
-             "b": float(fp.b), "loss_bps": miss_loss_bps(o), "trained_on": f"{pair}, {len(X):,} triggers",
-             "latency_ms": latency_ms, "fee_bps": fee_bps, "full_fill_rate": float(o.full_fill.mean())}
+    cal = None
+    if days[cut:]:
+        Xc = pd.concat([e for e, _ in days[cut:]], ignore_index=True)
+        oc = pd.concat([r for _, r in days[cut:]], ignore_index=True)
+        cal = Calibrator().fit(fp.predict(Xc), oc.full_fill.to_numpy()).to_arrays()
+    prior = {"features": fp.features, "median": fp.median.tolist(), "mu": fp.mu.tolist(), "sd": fp.sd.tolist(),
+             "w": fp.w.tolist(), "b": float(fp.b), "cal_x": cal[0] if cal else None, "cal_y": cal[1] if cal else None,
+             "loss_bps": miss_loss_bps(o, "pnl_rel_bps"), "offset_window_s": offset_window_s,
+             "trained_on": f"{pair}, {len(X):,} triggers on {cut} days, calibrated on {len(days) - cut} days",
+             "latency_ms": {"a": lat_a_ms, "b": lat_b_ms}, "fee_bps": fee_bps,
+             "full_fill_rate": float(o.full_fill.mean())}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(prior, indent=1))
     return prior
@@ -267,7 +320,12 @@ def train_prior(cfg, out: Path, fee_bps: float = 1.0, latency_ms: float = 56.0, 
 
 def load_prior(path: Path) -> dict:
     p = json.loads(path.read_text())
-    return {k: np.asarray(v) if isinstance(v, list) else v for k, v in p.items()}
+    return {k: np.asarray(v) if isinstance(v, list) and k != "features" else v for k, v in p.items()}
+
+
+def prior_matches(prior: dict, offset_window_s: float | None) -> bool:
+    """A prior is only valid for the gaps it was trained on: raw gaps, or gaps against the same offset window."""
+    return (prior.get("offset_window_s") or None) == (offset_window_s or None)
 
 
 # ---- inputs ---------------------------------------------------------------------------
@@ -320,7 +378,17 @@ async def live_events(minutes: float, asset: str = "BTC"):
                     (bp, bs), (ap, az) = m["data"]["b"][0], m["data"]["a"][0]
                     await q.put((time.time_ns() // 1000, "bybit", float(bp), float(ap), float(bs), float(az)))
 
-    tasks = [asyncio.create_task(binance()), asyncio.create_task(bybit())]
+    async def forever(name, feed):
+        """Reconnect after a dropped connection. While a feed is down its book goes stale, and the
+        engine's stale check skips triggers until it is back."""
+        while time.time() < stop:
+            try:
+                await feed()
+            except Exception as e:  # noqa: BLE001 - any network error: log it and reconnect
+                print(f"{time.strftime('%H:%M:%S')} {name} disconnected ({type(e).__name__}: {e}); reconnecting", flush=True)
+                await asyncio.sleep(1)
+
+    tasks = [asyncio.create_task(forever("binance", binance)), asyncio.create_task(forever("bybit", bybit))]
     while time.time() < stop:
         try:
             yield await asyncio.wait_for(q.get(), 1)
@@ -339,8 +407,12 @@ def main() -> None:
     ap.add_argument("--fee", type=float, default=1.0, help="taker fee in bps per leg")
     ap.add_argument("--trigger", type=float, default=None,
                     help="gap (bps) that fires the fast path; default covers both legs' fees")
-    ap.add_argument("--lat-binance", type=float, default=56.0, help="one-way order latency to Binance (ms)")
-    ap.add_argument("--lat-bybit", type=float, default=7.0, help="one-way order latency to Bybit (ms)")
+    ap.add_argument("--lat-binance", type=float, default=None,
+                    help="one-way order latency to Binance (ms); default from config/sources.yaml")
+    ap.add_argument("--lat-bybit", type=float, default=None,
+                    help="one-way order latency to Bybit (ms); default from config/sources.yaml")
+    ap.add_argument("--offset-window-s", type=float, default=300.0,
+                    help="measure gaps against the venues' trailing offset over this window; 0 = against zero")
     ap.add_argument("--prior", default="data/reports/live/prior.json")
     ap.add_argument("--stale-ms", type=float, default=5_000.0, help="skip triggers when a book is older than this")
     ap.add_argument("--cap-usd", type=float, default=50_000.0, help="cap on each policy's net position")
@@ -348,17 +420,26 @@ def main() -> None:
     ap.add_argument("--train-prior", action="store_true", help="fit the prior on development days and save it")
     args = ap.parse_args()
     cfg = load_config()
+    lat_bn = args.lat_binance if args.lat_binance is not None else cfg.latency_ms.get("binance", 50.0)
+    lat_by = args.lat_bybit if args.lat_bybit is not None else cfg.latency_ms.get("bybit", 8.0)
+    window = args.offset_window_s or None
     if args.train_prior:
-        p = train_prior(cfg, Path(args.prior), args.fee, max(args.lat_binance, args.lat_bybit))
+        # btc_perp_binance_bybit: leg a is Binance, leg b is Bybit
+        p = train_prior(cfg, Path(args.prior), args.fee, lat_bn, lat_by, offset_window_s=window)
         print(f"saved {args.prior}: {p['trained_on']}, full-fill rate {p['full_fill_rate']:.1%}, loss if missed {p['loss_bps']:.2f} bps")
         return
     prior_path = Path(args.prior)
     prior = load_prior(prior_path) if prior_path.exists() else None
+    if prior is not None and not prior_matches(prior, window):
+        gaps = lambda w: f"gaps against a {w:g} s offset" if w else "raw gaps"
+        print(f"{prior_path} was trained on {gaps(prior.get('offset_window_s'))}, but this run measures {gaps(window)}. "
+              "Running the naive policy only; retrain with --train-prior.", flush=True)
+        prior = None
     trigger = args.trigger if args.trigger is not None else 2 * args.fee
     eng = PaperEngine(("binance", "bybit"), trigger, args.fee,
-                      {"binance": args.lat_binance, "bybit": args.lat_bybit},
+                      {"binance": lat_bn, "bybit": lat_by},
                       prior=prior, loss_bps=prior.get("loss_bps", -1.0) if prior else -1.0,
-                      stale_ms=args.stale_ms, cap_usd=args.cap_usd)
+                      stale_ms=args.stale_ms, cap_usd=args.cap_usd, offset_window_s=window)
     if args.replay:
         for t, v, bid, ask, bsz, asz in replay_events(cfg, args.replay, args.asset):
             eng.on_quote(v, int(t), bid, ask, bsz, asz)

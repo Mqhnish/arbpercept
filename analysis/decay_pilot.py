@@ -45,8 +45,9 @@ def labels_at(ep: pd.DataFrame, tau: float) -> pd.Series:
 
 
 def feature_columns(df: pd.DataFrame) -> list[str]:
-    cols = [c for c in df.columns if c.startswith("f_")] + ["edge_birth_bps"]
-    return [c for c in cols if df[c].notna().any()]
+    """Every causal feature with data: the same set the trading system's slow model uses."""
+    from arbtrade.policies import slow_features
+    return slow_features(df)
 
 
 def models(features: list[str]) -> dict:

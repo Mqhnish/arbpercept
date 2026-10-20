@@ -39,9 +39,28 @@ def ratio_fair(t: np.ndarray, al: pd.DataFrame, valid: np.ndarray, cfg_features:
     return alpha + y0 - beta * x0, beta  # fair log(b) = alpha_abs + beta * log(a)
 
 
+def cross_offset_bps(al: pd.DataFrame, window_s: float) -> np.ndarray:
+    """The venues' usual offset at every event: trailing (strictly past) median of mid a minus
+    mid b, in bps of the pair mid. Moments when either leg is down are left out, so a dead
+    feed cannot drag the reference."""
+    from .features import trailing_reference
+    mid = ((al.a_mid + al.b_mid) / 2).to_numpy()
+    x = (al.a_mid - al.b_mid).to_numpy() / mid * 1e4
+    if "valid" in al:
+        x = np.where(al.valid.to_numpy(), x, np.nan)
+    return trailing_reference(al.t.to_numpy(), x, window_s)
+
+
+CROSS_SIGN = {"sell_a_buy_b": 1.0, "sell_b_buy_a": -1.0}  # how the a-minus-b offset enters each direction's gap
+
+
 def edges(al: pd.DataFrame, pair_type: str, basis_ref: np.ndarray | None,
-          ratio: tuple[np.ndarray, np.ndarray] | None = None) -> dict[str, np.ndarray]:
-    """Executable gross edge in bps for each trade direction, crossing both spreads."""
+          ratio: tuple[np.ndarray, np.ndarray] | None = None,
+          cross_ref: np.ndarray | None = None) -> dict[str, np.ndarray]:
+    """Executable gross edge in bps for each trade direction, crossing both spreads.
+
+    cross_ref (cross pairs): the venues' usual offset (cross_offset_bps). When given, each gap
+    is measured against it instead of zero, so a persistent offset is not counted as edge."""
     a_bid, a_ask = al.a_bid_px.to_numpy(), al.a_ask_px.to_numpy()
     b_bid, b_ask = al.b_bid_px.to_numpy(), al.b_ask_px.to_numpy()
     a_mid = al.a_mid.to_numpy()
@@ -56,10 +75,13 @@ def edges(al: pd.DataFrame, pair_type: str, basis_ref: np.ndarray | None,
         }
     if pair_type == "cross":
         mid_ref = (a_mid + al.b_mid.to_numpy()) / 2
-        return {
+        raw = {
             "sell_a_buy_b": (a_bid - b_ask) / mid_ref * 1e4,
             "sell_b_buy_a": (b_bid - a_ask) / mid_ref * 1e4,
         }
+        if cross_ref is None:
+            return raw
+        return {d: e - CROSS_SIGN[d] * cross_ref for d, e in raw.items()}
     # basis: a = spot, b = perp. The edge is the dislocation from the trailing normal
     # basis that remains after paying both spreads; profit comes when the basis reverts.
     return {
@@ -144,12 +166,17 @@ def edge_change(t: np.ndarray, edge: np.ndarray, idx: np.ndarray, lookback_us: i
 def label_pair_day(al: pd.DataFrame, pair: PairSpec, date: str, hurdles: dict[str, float],
                    resolution_ms: float, cfg_episodes: dict, cfg_features: dict,
                    leg_resolution_ms: tuple[float, float] = (1.0, 1.0),
-                   trades: tuple[pd.DataFrame | None, pd.DataFrame | None] = (None, None)) -> pd.DataFrame:
+                   trades: tuple[pd.DataFrame | None, pd.DataFrame | None] = (None, None),
+                   cross_offset_window_s: float | None = None) -> pd.DataFrame:
+    """cross_offset_window_s (cross pairs only): label births on the gap measured against the
+    venues' trailing offset over this window, instead of against zero. edge_birth_bps is then the
+    relative gap, and edge_offset_bps is the offset that was subtracted (raw = relative + offset)."""
     from .features import features_at, rolling_context, trade_flow_at, trailing_reference
 
+    use_offset = pair.type == "cross" and cross_offset_window_s is not None
     windows = [*cfg_features["vol_windows_s"], *cfg_features["rate_windows_s"],
                *cfg_features.get("trade_windows_s", []), cfg_features.get("ou_window_s", 0),
-               cfg_episodes["basis_ref_window_s"]]
+               cfg_episodes["basis_ref_window_s"], cross_offset_window_s if use_offset else 0]
     if cfg_episodes["warmup_s"] < max(windows):
         raise ValueError("warmup_s must cover the longest trailing window, or early features are incomplete")
 
@@ -180,7 +207,8 @@ def label_pair_day(al: pd.DataFrame, pair: PairSpec, date: str, hurdles: dict[st
 
     frames = []
     ratio = ratio_fair(t, al, valid, cfg_features) if pair.type == "ratio" else None
-    for direction, edge in edges(al, pair.type, basis_ref, ratio).items():
+    cross_ref = cross_offset_bps(al, cross_offset_window_s) if use_offset else None
+    for direction, edge in edges(al, pair.type, basis_ref, ratio, cross_ref).items():
         for hurdle_name, hurdle in hurdles.items():
             ep = label_runs(t, edge, valid, hurdle, warmup_end, resolution_ms)
             if ep.empty:
@@ -197,6 +225,8 @@ def label_pair_day(al: pd.DataFrame, pair: PairSpec, date: str, hurdles: dict[st
                 if res > 1:
                     stale_partner |= al[f"{leg}_age_ms"].to_numpy()[idx] > partner_frac * res
             ep["stale_partner"] = stale_partner
+            if use_offset:
+                ep["edge_offset_bps"] = CROSS_SIGN[direction] * cross_ref[idx]
             ep["f_edge_change_1s_bps"] = edge_change(t, edge, idx, 1_000_000)
             ep["f_recent_births"] = recent_births(ep.birth_ts.to_numpy(), window_us)
             feats = features_at(al, ctx, basis_dev, idx)

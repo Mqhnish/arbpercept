@@ -59,6 +59,7 @@ class Config:
                     raise ValueError(f"basis pair {spec.name} must be a=spot, b=perp")
             self.pairs[spec.name] = spec
         self.fees: dict[str, dict[str, float]] = raw["fees_taker_bps"]
+        self.latency_ms: dict[str, float] = raw.get("order_latency_ms", {})
         self.quality: dict[str, Any] = raw["quality"]
         self.episodes: dict[str, Any] = raw["episodes"]
         self.features: dict[str, Any] = raw["features"]
