@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/BTC-USDT/spot",
+ "date": "2026-09-16",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 794415,
+ "raw_updates": 794415,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 2.816,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 4.0,
+ "feed_lag_ms_p99": 31.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.013184393634023746,
+ "daily_rv_bps": 239.10568975109925,
+ "first_raw_ts": 1789516802816000,
+ "last_raw_ts": 1789603202816000,
+ "mid_first": 75654.85,
+ "mid_last": 76212.35,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 771402,
+  "rpi_share": 0.0008815118446672423,
+  "anomalous_minute_share": 0.0,
+  "longest_anomaly_run_min": 0,
+  "in_band_share": 0.9781599097900855,
+  "sweep_share": 0.014807038760937238,
+  "wrong_side_share": 0.007033051448977288,
+  "far_share": 7.785665810675964e-06,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}

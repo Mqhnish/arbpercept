@@ -1,0 +1,1633 @@
+fee_bps_per_leg,mode,fold,tau_ms,strategy,date,pnl_usd,trades
+1.0,optimistic,0,1,naive fast path,2024-01-08,3708.639314600225,15207
+1.0,optimistic,0,1,naive fast path,2024-01-09,5187.336669542328,21288
+1.0,optimistic,0,1,naive fast path,2024-01-10,9186.114736243755,38537
+1.0,optimistic,0,1,naive fast path,2024-01-11,5223.727116327207,28726
+1.0,optimistic,0,1,naive fast path,2024-01-12,5526.279148617123,28518
+1.0,optimistic,0,1,naive fast path,2024-01-13,1617.2675746985767,8904
+1.0,optimistic,0,1,fast path + decay prior,2024-01-08,3767.908624280861,12358
+1.0,optimistic,0,1,fast path + decay prior,2024-01-09,5221.591654867555,17411
+1.0,optimistic,0,1,fast path + decay prior,2024-01-10,9290.36715838074,32215
+1.0,optimistic,0,1,fast path + decay prior,2024-01-11,5346.5553797351895,22717
+1.0,optimistic,0,1,fast path + decay prior,2024-01-12,5544.645650724008,22864
+1.0,optimistic,0,1,fast path + decay prior,2024-01-13,1604.1321513237433,7017
+1.0,optimistic,0,1,slow model always,2024-01-08,3678.524200259094,7775
+1.0,optimistic,0,1,slow model always,2024-01-09,5092.711211930448,9985
+1.0,optimistic,0,1,slow model always,2024-01-10,8380.46741508393,16672
+1.0,optimistic,0,1,slow model always,2024-01-11,4315.904763315581,10307
+1.0,optimistic,0,1,slow model always,2024-01-12,4878.815684358758,13434
+1.0,optimistic,0,1,slow model always,2024-01-13,1820.1921598521312,5514
+1.0,optimistic,0,1,latency-aware cascade,2024-01-08,3872.1574708104167,8790
+1.0,optimistic,0,1,latency-aware cascade,2024-01-09,5352.533473479599,12186
+1.0,optimistic,0,1,latency-aware cascade,2024-01-10,9295.558319362652,21167
+1.0,optimistic,0,1,latency-aware cascade,2024-01-11,5213.260482814675,13590
+1.0,optimistic,0,1,latency-aware cascade,2024-01-12,5603.498927970383,15852
+1.0,optimistic,0,1,latency-aware cascade,2024-01-13,1767.5986848408324,5687
+1.0,optimistic,0,2,naive fast path,2024-01-08,3205.6872912252575,15207
+1.0,optimistic,0,2,naive fast path,2024-01-09,4271.782196483702,21288
+1.0,optimistic,0,2,naive fast path,2024-01-10,7803.17228686514,38537
+1.0,optimistic,0,2,naive fast path,2024-01-11,4118.267398655449,28726
+1.0,optimistic,0,2,naive fast path,2024-01-12,4515.772286038268,28518
+1.0,optimistic,0,2,naive fast path,2024-01-13,1444.5374447078514,8904
+1.0,optimistic,0,2,fast path + decay prior,2024-01-08,3294.154969081052,10477
+1.0,optimistic,0,2,fast path + decay prior,2024-01-09,4349.0831518251725,14703
+1.0,optimistic,0,2,fast path + decay prior,2024-01-10,8012.013405328606,27708
+1.0,optimistic,0,2,fast path + decay prior,2024-01-11,4458.304455793581,18803
+1.0,optimistic,0,2,fast path + decay prior,2024-01-12,4654.563217556952,19468
+1.0,optimistic,0,2,fast path + decay prior,2024-01-13,1422.033145385765,5860
+1.0,optimistic,0,2,slow model always,2024-01-08,3369.5690916579756,7535
+1.0,optimistic,0,2,slow model always,2024-01-09,4627.855714632082,9618
+1.0,optimistic,0,2,slow model always,2024-01-10,7630.999855661351,15978
+1.0,optimistic,0,2,slow model always,2024-01-11,3799.54458661127,9796
+1.0,optimistic,0,2,slow model always,2024-01-12,4467.73316192508,13026
+1.0,optimistic,0,2,slow model always,2024-01-13,1705.730993534179,5371
+1.0,optimistic,0,2,latency-aware cascade,2024-01-08,3522.222695614211,8329
+1.0,optimistic,0,2,latency-aware cascade,2024-01-09,4727.45277437029,11422
+1.0,optimistic,0,2,latency-aware cascade,2024-01-10,8298.938534394805,19560
+1.0,optimistic,0,2,latency-aware cascade,2024-01-11,4435.912114507499,12514
+1.0,optimistic,0,2,latency-aware cascade,2024-01-12,4902.085164462456,14950
+1.0,optimistic,0,2,latency-aware cascade,2024-01-13,1625.4904420833518,5513
+1.0,optimistic,0,5,naive fast path,2024-01-08,2303.21439632562,15207
+1.0,optimistic,0,5,naive fast path,2024-01-09,2344.5203100003596,21288
+1.0,optimistic,0,5,naive fast path,2024-01-10,4443.596487981683,38537
+1.0,optimistic,0,5,naive fast path,2024-01-11,1472.9887611928505,28726
+1.0,optimistic,0,5,naive fast path,2024-01-12,2330.2443661307507,28518
+1.0,optimistic,0,5,naive fast path,2024-01-13,1054.4988154436235,8904
+1.0,optimistic,0,5,fast path + decay prior,2024-01-08,2457.3618681315397,7447
+1.0,optimistic,0,5,fast path + decay prior,2024-01-09,2906.460465860799,10366
+1.0,optimistic,0,5,fast path + decay prior,2024-01-10,5301.782668684109,19879
+1.0,optimistic,0,5,fast path + decay prior,2024-01-11,2624.2676565436986,12797
+1.0,optimistic,0,5,fast path + decay prior,2024-01-12,2893.0721638898863,13829
+1.0,optimistic,0,5,fast path + decay prior,2024-01-13,1028.88651267884,4229
+1.0,optimistic,0,5,slow model always,2024-01-08,2725.8064359919654,6736
+1.0,optimistic,0,5,slow model always,2024-01-09,3566.5438569596495,8524
+1.0,optimistic,0,5,slow model always,2024-01-10,5910.397990043118,13920
+1.0,optimistic,0,5,slow model always,2024-01-11,2775.8488359380212,8248
+1.0,optimistic,0,5,slow model always,2024-01-12,3483.9483807106417,11581
+1.0,optimistic,0,5,slow model always,2024-01-13,1454.3670923692257,4844
+1.0,optimistic,0,5,latency-aware cascade,2024-01-08,2893.0980066472152,6881
+1.0,optimistic,0,5,latency-aware cascade,2024-01-09,3678.802277949315,8877
+1.0,optimistic,0,5,latency-aware cascade,2024-01-10,6281.983485545903,14597
+1.0,optimistic,0,5,latency-aware cascade,2024-01-11,3144.959154816705,8700
+1.0,optimistic,0,5,latency-aware cascade,2024-01-12,3671.0764619925235,11904
+1.0,optimistic,0,5,latency-aware cascade,2024-01-13,1407.93103974181,4862
+1.0,optimistic,0,10,naive fast path,2024-01-08,1163.6967010857977,15207
+1.0,optimistic,0,10,naive fast path,2024-01-09,758.4676650079186,21288
+1.0,optimistic,0,10,naive fast path,2024-01-10,766.513188474199,38537
+1.0,optimistic,0,10,naive fast path,2024-01-11,-1586.6264842235223,28726
+1.0,optimistic,0,10,naive fast path,2024-01-12,-264.1140385739434,28518
+1.0,optimistic,0,10,naive fast path,2024-01-13,513.9350108990307,8904
+1.0,optimistic,0,10,fast path + decay prior,2024-01-08,1504.4332500766345,5094
+1.0,optimistic,0,10,fast path + decay prior,2024-01-09,1705.100214811548,7123
+1.0,optimistic,0,10,fast path + decay prior,2024-01-10,2725.5248862044336,13652
+1.0,optimistic,0,10,fast path + decay prior,2024-01-11,1195.7192831015268,8227
+1.0,optimistic,0,10,fast path + decay prior,2024-01-12,1455.011849192607,9299
+1.0,optimistic,0,10,fast path + decay prior,2024-01-13,601.5231389545893,2988
+1.0,optimistic,0,10,slow model always,2024-01-08,2065.4814893232424,5742
+1.0,optimistic,0,10,slow model always,2024-01-09,2785.030926069289,7257
+1.0,optimistic,0,10,slow model always,2024-01-10,4523.457116797977,11686
+1.0,optimistic,0,10,slow model always,2024-01-11,2011.7747530260976,6777
+1.0,optimistic,0,10,slow model always,2024-01-12,2617.7676613606804,9762
+1.0,optimistic,0,10,slow model always,2024-01-13,1245.6953955331107,4201
+1.0,optimistic,0,10,latency-aware cascade,2024-01-08,2065.4814893232424,5742
+1.0,optimistic,0,10,latency-aware cascade,2024-01-09,2785.030926069289,7257
+1.0,optimistic,0,10,latency-aware cascade,2024-01-10,4523.457116797977,11686
+1.0,optimistic,0,10,latency-aware cascade,2024-01-11,2011.4016606970918,6777
+1.0,optimistic,0,10,latency-aware cascade,2024-01-12,2617.7676613606804,9762
+1.0,optimistic,0,10,latency-aware cascade,2024-01-13,1245.6953955331107,4201
+1.0,optimistic,0,20,naive fast path,2024-01-08,-230.2474094050123,15207
+1.0,optimistic,0,20,naive fast path,2024-01-09,-1119.0035517207145,21288
+1.0,optimistic,0,20,naive fast path,2024-01-10,-2817.2949928742783,38537
+1.0,optimistic,0,20,naive fast path,2024-01-11,-4717.414919033011,28726
+1.0,optimistic,0,20,naive fast path,2024-01-12,-2919.6738838704387,28518
+1.0,optimistic,0,20,naive fast path,2024-01-13,-47.97709744881386,8904
+1.0,optimistic,0,20,fast path + decay prior,2024-01-08,628.137620833723,3193
+1.0,optimistic,0,20,fast path + decay prior,2024-01-09,684.8528342106687,4528
+1.0,optimistic,0,20,fast path + decay prior,2024-01-10,858.8195587720223,8571
+1.0,optimistic,0,20,fast path + decay prior,2024-01-11,177.3210949251157,4695
+1.0,optimistic,0,20,fast path + decay prior,2024-01-12,403.1904793463426,5737
+1.0,optimistic,0,20,fast path + decay prior,2024-01-13,241.9028674805167,1900
+1.0,optimistic,0,20,slow model always,2024-01-08,1355.9718318504695,4211
+1.0,optimistic,0,20,slow model always,2024-01-09,1864.6255082763369,5365
+1.0,optimistic,0,20,slow model always,2024-01-10,2961.009816435442,8133
+1.0,optimistic,0,20,slow model always,2024-01-11,1233.5660310148662,4509
+1.0,optimistic,0,20,slow model always,2024-01-12,1830.361685315757,7273
+1.0,optimistic,0,20,slow model always,2024-01-13,933.0017710720402,3288
+1.0,optimistic,0,20,latency-aware cascade,2024-01-08,1355.9718318504695,4211
+1.0,optimistic,0,20,latency-aware cascade,2024-01-09,1872.94724402545,5366
+1.0,optimistic,0,20,latency-aware cascade,2024-01-10,2961.009816435442,8133
+1.0,optimistic,0,20,latency-aware cascade,2024-01-11,1229.9412082142474,4510
+1.0,optimistic,0,20,latency-aware cascade,2024-01-12,1830.361685315757,7273
+1.0,optimistic,0,20,latency-aware cascade,2024-01-13,933.0017710720402,3288
+1.0,optimistic,0,50,naive fast path,2024-01-08,-3053.9874992586683,15207
+1.0,optimistic,0,50,naive fast path,2024-01-09,-4225.366877600366,21288
+1.0,optimistic,0,50,naive fast path,2024-01-10,-7943.622139799853,38537
+1.0,optimistic,0,50,naive fast path,2024-01-11,-8717.483234499896,28726
+1.0,optimistic,0,50,naive fast path,2024-01-12,-6667.041495365898,28518
+1.0,optimistic,0,50,naive fast path,2024-01-13,-1072.7268654992795,8904
+1.0,optimistic,0,50,fast path + decay prior,2024-01-08,64.08143619484748,924
+1.0,optimistic,0,50,fast path + decay prior,2024-01-09,128.51138013572796,1285
+1.0,optimistic,0,50,fast path + decay prior,2024-01-10,259.6099366309872,2289
+1.0,optimistic,0,50,fast path + decay prior,2024-01-11,-52.8887488172505,1020
+1.0,optimistic,0,50,fast path + decay prior,2024-01-12,43.76746559634868,1451
+1.0,optimistic,0,50,fast path + decay prior,2024-01-13,31.1797618981347,517
+1.0,optimistic,0,50,slow model always,2024-01-08,580.7362902115678,1769
+1.0,optimistic,0,50,slow model always,2024-01-09,958.4171812501291,2217
+1.0,optimistic,0,50,slow model always,2024-01-10,1229.8261821218066,3103
+1.0,optimistic,0,50,slow model always,2024-01-11,629.9087718529357,1668
+1.0,optimistic,0,50,slow model always,2024-01-12,823.3209385303184,2945
+1.0,optimistic,0,50,slow model always,2024-01-13,470.23989653253744,1479
+1.0,optimistic,0,50,latency-aware cascade,2024-01-08,580.7362902115678,1769
+1.0,optimistic,0,50,latency-aware cascade,2024-01-09,958.4171812501291,2217
+1.0,optimistic,0,50,latency-aware cascade,2024-01-10,1229.8261821218066,3103
+1.0,optimistic,0,50,latency-aware cascade,2024-01-11,626.9878606429352,1669
+1.0,optimistic,0,50,latency-aware cascade,2024-01-12,823.3209385303184,2945
+1.0,optimistic,0,50,latency-aware cascade,2024-01-13,470.23989653253744,1479
+1.0,optimistic,0,100,naive fast path,2024-01-08,-8224.340828508492,15207
+1.0,optimistic,0,100,naive fast path,2024-01-09,-9241.508801577625,21288
+1.0,optimistic,0,100,naive fast path,2024-01-10,-15829.094218262773,38537
+1.0,optimistic,0,100,naive fast path,2024-01-11,-15551.92585751853,28726
+1.0,optimistic,0,100,naive fast path,2024-01-12,-13923.716531719097,28518
+1.0,optimistic,0,100,naive fast path,2024-01-13,-3776.8492386892412,8904
+1.0,optimistic,0,100,fast path + decay prior,2024-01-08,-10.245072143965817,49
+1.0,optimistic,0,100,fast path + decay prior,2024-01-09,-26.979603519957955,134
+1.0,optimistic,0,100,fast path + decay prior,2024-01-10,-11.037782001836717,83
+1.0,optimistic,0,100,fast path + decay prior,2024-01-11,-27.457803879734122,80
+1.0,optimistic,0,100,fast path + decay prior,2024-01-12,-23.112212491452787,83
+1.0,optimistic,0,100,fast path + decay prior,2024-01-13,-10.564910159800437,116
+1.0,optimistic,0,100,slow model always,2024-01-08,48.849252447425776,404
+1.0,optimistic,0,100,slow model always,2024-01-09,81.07542531356914,431
+1.0,optimistic,0,100,slow model always,2024-01-10,132.42845284163093,553
+1.0,optimistic,0,100,slow model always,2024-01-11,63.68190319802905,274
+1.0,optimistic,0,100,slow model always,2024-01-12,108.28834846021647,462
+1.0,optimistic,0,100,slow model always,2024-01-13,49.297091000690116,286
+1.0,optimistic,0,100,latency-aware cascade,2024-01-08,50.81011529742578,402
+1.0,optimistic,0,100,latency-aware cascade,2024-01-09,79.24265008395132,422
+1.0,optimistic,0,100,latency-aware cascade,2024-01-10,135.66790331982938,540
+1.0,optimistic,0,100,latency-aware cascade,2024-01-11,61.68711457802882,274
+1.0,optimistic,0,100,latency-aware cascade,2024-01-12,108.28834846021647,461
+1.0,optimistic,0,100,latency-aware cascade,2024-01-13,49.297091000690116,286
+1.0,optimistic,0,200,naive fast path,2024-01-08,-11246.545614061164,15207
+1.0,optimistic,0,200,naive fast path,2024-01-09,-12599.68259610568,21288
+1.0,optimistic,0,200,naive fast path,2024-01-10,-20886.15929088234,38537
+1.0,optimistic,0,200,naive fast path,2024-01-11,-18879.672274903383,28726
+1.0,optimistic,0,200,naive fast path,2024-01-12,-18653.56268877249,28518
+1.0,optimistic,0,200,naive fast path,2024-01-13,-5651.683661527663,8904
+1.0,optimistic,0,200,fast path + decay prior,2024-01-08,-2.2473175262492564,16
+1.0,optimistic,0,200,fast path + decay prior,2024-01-09,-23.47774447483772,73
+1.0,optimistic,0,200,fast path + decay prior,2024-01-10,-6.470753203417653,34
+1.0,optimistic,0,200,fast path + decay prior,2024-01-11,-21.60666846013288,38
+1.0,optimistic,0,200,fast path + decay prior,2024-01-12,-9.899312323962954,28
+1.0,optimistic,0,200,fast path + decay prior,2024-01-13,-11.85592451664335,57
+1.0,optimistic,0,200,slow model always,2024-01-08,-16.0044052362862,153
+1.0,optimistic,0,200,slow model always,2024-01-09,21.892317698497415,108
+1.0,optimistic,0,200,slow model always,2024-01-10,44.049845949924595,125
+1.0,optimistic,0,200,slow model always,2024-01-11,19.95257668225158,74
+1.0,optimistic,0,200,slow model always,2024-01-12,5.25531314695433,86
+1.0,optimistic,0,200,slow model always,2024-01-13,6.991108036329909,80
+1.0,optimistic,0,200,latency-aware cascade,2024-01-08,-4.796558544352484,144
+1.0,optimistic,0,200,latency-aware cascade,2024-01-09,22.485391428033058,98
+1.0,optimistic,0,200,latency-aware cascade,2024-01-10,50.29592734992442,115
+1.0,optimistic,0,200,latency-aware cascade,2024-01-11,19.95257668225158,74
+1.0,optimistic,0,200,latency-aware cascade,2024-01-12,4.404959388410339,82
+1.0,optimistic,0,200,latency-aware cascade,2024-01-13,6.451295306741567,79
+1.0,optimistic,1,1,naive fast path,2024-01-14,1223.9343049193153,6770
+1.0,optimistic,1,1,naive fast path,2024-01-15,1375.8299822306262,7662
+1.0,optimistic,1,1,naive fast path,2024-01-16,1596.416833073995,8446
+1.0,optimistic,1,1,naive fast path,2024-01-17,972.1933810673806,5806
+1.0,optimistic,1,1,naive fast path,2024-01-18,2564.1585901404437,12877
+1.0,optimistic,1,1,naive fast path,2024-01-19,2078.429596745413,11203
+1.0,optimistic,1,1,fast path + decay prior,2024-01-14,1242.1998882369667,5258
+1.0,optimistic,1,1,fast path + decay prior,2024-01-15,1359.907446443465,5959
+1.0,optimistic,1,1,fast path + decay prior,2024-01-16,1626.792937480548,6305
+1.0,optimistic,1,1,fast path + decay prior,2024-01-17,972.418356336736,4271
+1.0,optimistic,1,1,fast path + decay prior,2024-01-18,2535.1802652429687,10122
+1.0,optimistic,1,1,fast path + decay prior,2024-01-19,2074.9008947555635,8501
+1.0,optimistic,1,1,slow model always,2024-01-14,1141.670659345538,3288
+1.0,optimistic,1,1,slow model always,2024-01-15,1333.5563739674299,4107
+1.0,optimistic,1,1,slow model always,2024-01-16,1554.5566253223167,3682
+1.0,optimistic,1,1,slow model always,2024-01-17,1103.0778769019737,2903
+1.0,optimistic,1,1,slow model always,2024-01-18,2450.7007364088363,6443
+1.0,optimistic,1,1,slow model always,2024-01-19,2051.0541358233263,5004
+1.0,optimistic,1,1,latency-aware cascade,2024-01-14,1254.5172333407793,4721
+1.0,optimistic,1,1,latency-aware cascade,2024-01-15,1407.5211647335207,5418
+1.0,optimistic,1,1,latency-aware cascade,2024-01-16,1658.695895027192,5559
+1.0,optimistic,1,1,latency-aware cascade,2024-01-17,1016.9048972539345,3819
+1.0,optimistic,1,1,latency-aware cascade,2024-01-18,2617.7524959177485,9254
+1.0,optimistic,1,1,latency-aware cascade,2024-01-19,2127.532040036848,7718
+1.0,optimistic,1,2,naive fast path,2024-01-14,1089.0568045397022,6770
+1.0,optimistic,1,2,naive fast path,2024-01-15,1180.223158082393,7662
+1.0,optimistic,1,2,naive fast path,2024-01-16,1378.0141522113338,8446
+1.0,optimistic,1,2,naive fast path,2024-01-17,858.2705384302127,5806
+1.0,optimistic,1,2,naive fast path,2024-01-18,2206.473313161796,12877
+1.0,optimistic,1,2,naive fast path,2024-01-19,1790.9690622829871,11203
+1.0,optimistic,1,2,fast path + decay prior,2024-01-14,1090.2087369370997,4370
+1.0,optimistic,1,2,fast path + decay prior,2024-01-15,1175.3269022675747,4950
+1.0,optimistic,1,2,fast path + decay prior,2024-01-16,1419.7963099723638,5227
+1.0,optimistic,1,2,fast path + decay prior,2024-01-17,855.3054219727474,3395
+1.0,optimistic,1,2,fast path + decay prior,2024-01-18,2198.1722442313626,8557
+1.0,optimistic,1,2,fast path + decay prior,2024-01-19,1778.0468300805458,7055
+1.0,optimistic,1,2,slow model always,2024-01-14,1079.1321350433186,3201
+1.0,optimistic,1,2,slow model always,2024-01-15,1232.8291516410295,3945
+1.0,optimistic,1,2,slow model always,2024-01-16,1383.394480354546,3481
+1.0,optimistic,1,2,slow model always,2024-01-17,1023.3098306971716,2757
+1.0,optimistic,1,2,slow model always,2024-01-18,2294.450636530537,6430
+1.0,optimistic,1,2,slow model always,2024-01-19,1962.3838083158928,5094
+1.0,optimistic,1,2,latency-aware cascade,2024-01-14,1119.4356424708783,3667
+1.0,optimistic,1,2,latency-aware cascade,2024-01-15,1262.408336734232,4338
+1.0,optimistic,1,2,latency-aware cascade,2024-01-16,1468.2789354884983,4233
+1.0,optimistic,1,2,latency-aware cascade,2024-01-17,977.2900312652799,3074
+1.0,optimistic,1,2,latency-aware cascade,2024-01-18,2382.23621262513,7456
+1.0,optimistic,1,2,latency-aware cascade,2024-01-19,1921.7565500743399,5975
+1.0,optimistic,1,5,naive fast path,2024-01-14,732.2034698601935,6770
+1.0,optimistic,1,5,naive fast path,2024-01-15,760.6071530335672,7662
+1.0,optimistic,1,5,naive fast path,2024-01-16,881.5459613217225,8446
+1.0,optimistic,1,5,naive fast path,2024-01-17,586.5895559329472,5806
+1.0,optimistic,1,5,naive fast path,2024-01-18,1543.8493822285864,12877
+1.0,optimistic,1,5,naive fast path,2024-01-19,1140.6877975236853,11203
+1.0,optimistic,1,5,fast path + decay prior,2024-01-14,764.3279604721503,3113
+1.0,optimistic,1,5,fast path + decay prior,2024-01-15,825.0164201417294,3536
+1.0,optimistic,1,5,fast path + decay prior,2024-01-16,968.2276790108667,3727
+1.0,optimistic,1,5,fast path + decay prior,2024-01-17,585.2960843558925,2328
+1.0,optimistic,1,5,fast path + decay prior,2024-01-18,1550.7523684373325,6286
+1.0,optimistic,1,5,fast path + decay prior,2024-01-19,1219.090352270579,4927
+1.0,optimistic,1,5,slow model always,2024-01-14,874.8111558523714,2874
+1.0,optimistic,1,5,slow model always,2024-01-15,1033.4783429535235,3604
+1.0,optimistic,1,5,slow model always,2024-01-16,1057.045210707538,3021
+1.0,optimistic,1,5,slow model always,2024-01-17,829.7507464470361,2416
+1.0,optimistic,1,5,slow model always,2024-01-18,1937.3572344811037,5808
+1.0,optimistic,1,5,slow model always,2024-01-19,1562.2272605474607,4468
+1.0,optimistic,1,5,latency-aware cascade,2024-01-14,881.0717048967329,2912
+1.0,optimistic,1,5,latency-aware cascade,2024-01-15,1034.6585200206202,3642
+1.0,optimistic,1,5,latency-aware cascade,2024-01-16,1124.3841559246928,3080
+1.0,optimistic,1,5,latency-aware cascade,2024-01-17,816.6378055333018,2446
+1.0,optimistic,1,5,latency-aware cascade,2024-01-18,1952.5469039677082,5891
+1.0,optimistic,1,5,latency-aware cascade,2024-01-19,1530.5123080052347,4546
+1.0,optimistic,1,10,naive fast path,2024-01-14,258.7572131586727,6770
+1.0,optimistic,1,10,naive fast path,2024-01-15,257.81949140413826,7662
+1.0,optimistic,1,10,naive fast path,2024-01-16,338.023582720703,8446
+1.0,optimistic,1,10,naive fast path,2024-01-17,248.99860674995875,5806
+1.0,optimistic,1,10,naive fast path,2024-01-18,817.714240522281,12877
+1.0,optimistic,1,10,naive fast path,2024-01-19,403.88890369540707,11203
+1.0,optimistic,1,10,fast path + decay prior,2024-01-14,454.109584519737,2149
+1.0,optimistic,1,10,fast path + decay prior,2024-01-15,524.198850705252,2528
+1.0,optimistic,1,10,fast path + decay prior,2024-01-16,601.7524248663575,2579
+1.0,optimistic,1,10,fast path + decay prior,2024-01-17,407.4465939191802,1567
+1.0,optimistic,1,10,fast path + decay prior,2024-01-18,992.4170610163652,4415
+1.0,optimistic,1,10,fast path + decay prior,2024-01-19,679.81616937669,3444
+1.0,optimistic,1,10,slow model always,2024-01-14,659.351617415932,2294
+1.0,optimistic,1,10,slow model always,2024-01-15,774.7631874262864,2985
+1.0,optimistic,1,10,slow model always,2024-01-16,756.8106570331701,2369
+1.0,optimistic,1,10,slow model always,2024-01-17,595.4239164454119,1983
+1.0,optimistic,1,10,slow model always,2024-01-18,1456.178785971485,4629
+1.0,optimistic,1,10,slow model always,2024-01-19,1212.4379829084296,3390
+1.0,optimistic,1,10,latency-aware cascade,2024-01-14,654.3203981688906,2320
+1.0,optimistic,1,10,latency-aware cascade,2024-01-15,790.8538155097078,3025
+1.0,optimistic,1,10,latency-aware cascade,2024-01-16,809.1156131071879,2409
+1.0,optimistic,1,10,latency-aware cascade,2024-01-17,643.9242410424506,2008
+1.0,optimistic,1,10,latency-aware cascade,2024-01-18,1543.299761722256,4687
+1.0,optimistic,1,10,latency-aware cascade,2024-01-19,1137.6439630525851,3458
+1.0,optimistic,1,20,naive fast path,2024-01-14,-287.7898286508423,6770
+1.0,optimistic,1,20,naive fast path,2024-01-15,-384.1123271111606,7662
+1.0,optimistic,1,20,naive fast path,2024-01-16,-286.63996166415814,8446
+1.0,optimistic,1,20,naive fast path,2024-01-17,-178.04646798679028,5806
+1.0,optimistic,1,20,naive fast path,2024-01-18,-282.50926651214996,12877
+1.0,optimistic,1,20,naive fast path,2024-01-19,-551.1569089077898,11203
+1.0,optimistic,1,20,fast path + decay prior,2024-01-14,174.3887658805723,1382
+1.0,optimistic,1,20,fast path + decay prior,2024-01-15,165.8873015345207,1677
+1.0,optimistic,1,20,fast path + decay prior,2024-01-16,308.65773133336313,1665
+1.0,optimistic,1,20,fast path + decay prior,2024-01-17,193.1096253926592,1009
+1.0,optimistic,1,20,fast path + decay prior,2024-01-18,396.9649597206016,2858
+1.0,optimistic,1,20,fast path + decay prior,2024-01-19,274.79643799464986,2167
+1.0,optimistic,1,20,slow model always,2024-01-14,511.2672323488064,1654
+1.0,optimistic,1,20,slow model always,2024-01-15,497.7909210760818,2157
+1.0,optimistic,1,20,slow model always,2024-01-16,463.32508907162503,1533
+1.0,optimistic,1,20,slow model always,2024-01-17,437.68509202046283,1380
+1.0,optimistic,1,20,slow model always,2024-01-18,1033.4825454093962,3402
+1.0,optimistic,1,20,slow model always,2024-01-19,805.2709376786729,2331
+1.0,optimistic,1,20,latency-aware cascade,2024-01-14,511.2672323488064,1654
+1.0,optimistic,1,20,latency-aware cascade,2024-01-15,497.7909210760818,2157
+1.0,optimistic,1,20,latency-aware cascade,2024-01-16,463.32508907162503,1533
+1.0,optimistic,1,20,latency-aware cascade,2024-01-17,437.68509202046283,1380
+1.0,optimistic,1,20,latency-aware cascade,2024-01-18,1033.4825454093962,3402
+1.0,optimistic,1,20,latency-aware cascade,2024-01-19,805.2709376786729,2331
+1.0,optimistic,1,50,naive fast path,2024-01-14,-1451.72427418327,6770
+1.0,optimistic,1,50,naive fast path,2024-01-15,-1444.0875456220172,7662
+1.0,optimistic,1,50,naive fast path,2024-01-16,-1917.922766514968,8446
+1.0,optimistic,1,50,naive fast path,2024-01-17,-1258.4943261535432,5806
+1.0,optimistic,1,50,naive fast path,2024-01-18,-2596.8826774615895,12877
+1.0,optimistic,1,50,naive fast path,2024-01-19,-2760.5164206728577,11203
+1.0,optimistic,1,50,fast path + decay prior,2024-01-14,18.793195654947294,462
+1.0,optimistic,1,50,fast path + decay prior,2024-01-15,-25.46607399010254,549
+1.0,optimistic,1,50,fast path + decay prior,2024-01-16,71.7728094344207,465
+1.0,optimistic,1,50,fast path + decay prior,2024-01-17,-8.569657357395831,300
+1.0,optimistic,1,50,fast path + decay prior,2024-01-18,27.882116074006856,798
+1.0,optimistic,1,50,fast path + decay prior,2024-01-19,23.01423103483933,617
+1.0,optimistic,1,50,slow model always,2024-01-14,201.81331056956785,748
+1.0,optimistic,1,50,slow model always,2024-01-15,239.70786225697228,924
+1.0,optimistic,1,50,slow model always,2024-01-16,185.58892031202677,575
+1.0,optimistic,1,50,slow model always,2024-01-17,188.67369961871893,544
+1.0,optimistic,1,50,slow model always,2024-01-18,336.6005110773186,898
+1.0,optimistic,1,50,slow model always,2024-01-19,332.94887648272635,507
+1.0,optimistic,1,50,latency-aware cascade,2024-01-14,201.81331056956785,748
+1.0,optimistic,1,50,latency-aware cascade,2024-01-15,239.70786225697228,924
+1.0,optimistic,1,50,latency-aware cascade,2024-01-16,185.58892031202677,575
+1.0,optimistic,1,50,latency-aware cascade,2024-01-17,188.67369961871893,544
+1.0,optimistic,1,50,latency-aware cascade,2024-01-18,336.6005110773186,898
+1.0,optimistic,1,50,latency-aware cascade,2024-01-19,334.0019817827263,507
+1.0,optimistic,1,100,naive fast path,2024-01-14,-3502.445422668507,6770
+1.0,optimistic,1,100,naive fast path,2024-01-15,-3703.7034267426848,7662
+1.0,optimistic,1,100,naive fast path,2024-01-16,-5023.319570456443,8446
+1.0,optimistic,1,100,naive fast path,2024-01-17,-3397.098210948893,5806
+1.0,optimistic,1,100,naive fast path,2024-01-18,-6832.887033694207,12877
+1.0,optimistic,1,100,naive fast path,2024-01-19,-6687.6792829902415,11203
+1.0,optimistic,1,100,fast path + decay prior,2024-01-14,-0.6879433435570546,123
+1.0,optimistic,1,100,fast path + decay prior,2024-01-15,-15.540998654566025,122
+1.0,optimistic,1,100,fast path + decay prior,2024-01-16,-12.039432361391762,87
+1.0,optimistic,1,100,fast path + decay prior,2024-01-17,-22.690943703903642,88
+1.0,optimistic,1,100,fast path + decay prior,2024-01-18,-22.078241601241892,84
+1.0,optimistic,1,100,fast path + decay prior,2024-01-19,-9.53588913476781,91
+1.0,optimistic,1,100,slow model always,2024-01-14,31.809858380277824,202
+1.0,optimistic,1,100,slow model always,2024-01-15,28.85201720530928,235
+1.0,optimistic,1,100,slow model always,2024-01-16,11.077480097685974,56
+1.0,optimistic,1,100,slow model always,2024-01-17,10.437715021980045,44
+1.0,optimistic,1,100,slow model always,2024-01-18,46.0301978156494,163
+1.0,optimistic,1,100,slow model always,2024-01-19,26.149140162227702,66
+1.0,optimistic,1,100,latency-aware cascade,2024-01-14,43.46869726677161,201
+1.0,optimistic,1,100,latency-aware cascade,2024-01-15,28.85201720530928,235
+1.0,optimistic,1,100,latency-aware cascade,2024-01-16,11.077480097685974,56
+1.0,optimistic,1,100,latency-aware cascade,2024-01-17,13.259063454253088,43
+1.0,optimistic,1,100,latency-aware cascade,2024-01-18,46.0301978156494,163
+1.0,optimistic,1,100,latency-aware cascade,2024-01-19,25.656400512227588,66
+1.0,optimistic,1,200,naive fast path,2024-01-14,-4729.239790062554,6770
+1.0,optimistic,1,200,naive fast path,2024-01-15,-5182.358193752932,7662
+1.0,optimistic,1,200,naive fast path,2024-01-16,-6962.040647793762,8446
+1.0,optimistic,1,200,naive fast path,2024-01-17,-4596.108822587421,5806
+1.0,optimistic,1,200,naive fast path,2024-01-18,-9626.55522556461,12877
+1.0,optimistic,1,200,naive fast path,2024-01-19,-9033.411104508872,11203
+1.0,optimistic,1,200,fast path + decay prior,2024-01-14,-11.665254359557151,66
+1.0,optimistic,1,200,fast path + decay prior,2024-01-15,-19.831230187889275,61
+1.0,optimistic,1,200,fast path + decay prior,2024-01-16,-2.9753107027035974,37
+1.0,optimistic,1,200,fast path + decay prior,2024-01-17,-3.941607432233691,46
+1.0,optimistic,1,200,fast path + decay prior,2024-01-18,-13.296450480105616,36
+1.0,optimistic,1,200,fast path + decay prior,2024-01-19,-7.728652274632517,46
+1.0,optimistic,1,200,slow model always,2024-01-14,10.58452655753648,95
+1.0,optimistic,1,200,slow model always,2024-01-15,18.857946652049637,115
+1.0,optimistic,1,200,slow model always,2024-01-16,0.923823336824884,20
+1.0,optimistic,1,200,slow model always,2024-01-17,-0.9489519418081008,11
+1.0,optimistic,1,200,slow model always,2024-01-18,6.779488876470049,28
+1.0,optimistic,1,200,slow model always,2024-01-19,2.5843049458780607,5
+1.0,optimistic,1,200,latency-aware cascade,2024-01-14,9.189073325642411,92
+1.0,optimistic,1,200,latency-aware cascade,2024-01-15,18.233176319454422,114
+1.0,optimistic,1,200,latency-aware cascade,2024-01-16,0.923823336824884,20
+1.0,optimistic,1,200,latency-aware cascade,2024-01-17,-1.656069794784955,10
+1.0,optimistic,1,200,latency-aware cascade,2024-01-18,6.30212060742557,28
+1.0,optimistic,1,200,latency-aware cascade,2024-01-19,2.1851418958782878,6
+1.0,optimistic,2,1,naive fast path,2024-01-20,339.5503399229178,1891
+1.0,optimistic,2,1,naive fast path,2024-01-21,138.27148169908884,899
+1.0,optimistic,2,1,naive fast path,2024-01-22,3794.198326073773,18010
+1.0,optimistic,2,1,naive fast path,2024-01-23,2972.5043377685784,15216
+1.0,optimistic,2,1,naive fast path,2024-01-24,1573.8934434017954,8390
+1.0,optimistic,2,1,naive fast path,2024-01-25,695.4950384323789,4203
+1.0,optimistic,2,1,fast path + decay prior,2024-01-20,337.9565699498259,1294
+1.0,optimistic,2,1,fast path + decay prior,2024-01-21,137.00706458345894,562
+1.0,optimistic,2,1,fast path + decay prior,2024-01-22,3765.7477173879442,13651
+1.0,optimistic,2,1,fast path + decay prior,2024-01-23,2954.9929239686517,11584
+1.0,optimistic,2,1,fast path + decay prior,2024-01-24,1556.2140304405073,6298
+1.0,optimistic,2,1,fast path + decay prior,2024-01-25,682.092378161256,2966
+1.0,optimistic,2,1,slow model always,2024-01-20,290.9560804683649,801
+1.0,optimistic,2,1,slow model always,2024-01-21,157.32777644190432,348
+1.0,optimistic,2,1,slow model always,2024-01-22,3316.1569223401,7964
+1.0,optimistic,2,1,slow model always,2024-01-23,2726.4047538249697,6740
+1.0,optimistic,2,1,slow model always,2024-01-24,1710.273189092492,4585
+1.0,optimistic,2,1,slow model always,2024-01-25,767.6279092656861,2063
+1.0,optimistic,2,1,latency-aware cascade,2024-01-20,327.4239270047184,900
+1.0,optimistic,2,1,latency-aware cascade,2024-01-21,130.1735031596824,389
+1.0,optimistic,2,1,latency-aware cascade,2024-01-22,3734.908743099611,9600
+1.0,optimistic,2,1,latency-aware cascade,2024-01-23,2814.0595886972665,7651
+1.0,optimistic,2,1,latency-aware cascade,2024-01-24,1680.9124563899063,4919
+1.0,optimistic,2,1,latency-aware cascade,2024-01-25,699.3698662965356,2256
+1.0,optimistic,2,2,naive fast path,2024-01-20,299.6923871682711,1891
+1.0,optimistic,2,2,naive fast path,2024-01-21,119.64451833168428,899
+1.0,optimistic,2,2,naive fast path,2024-01-22,3252.105806617445,18010
+1.0,optimistic,2,2,naive fast path,2024-01-23,2652.7546466549793,15216
+1.0,optimistic,2,2,naive fast path,2024-01-24,1397.058011401857,8390
+1.0,optimistic,2,2,naive fast path,2024-01-25,584.5686292918497,4203
+1.0,optimistic,2,2,fast path + decay prior,2024-01-20,282.3394142665223,1003
+1.0,optimistic,2,2,fast path + decay prior,2024-01-21,111.16643042564723,418
+1.0,optimistic,2,2,fast path + decay prior,2024-01-22,3158.579835269149,11392
+1.0,optimistic,2,2,fast path + decay prior,2024-01-23,2595.9311903740686,9848
+1.0,optimistic,2,2,fast path + decay prior,2024-01-24,1381.136950977715,5198
+1.0,optimistic,2,2,fast path + decay prior,2024-01-25,588.8319690635827,2381
+1.0,optimistic,2,2,slow model always,2024-01-20,287.5468800356245,817
+1.0,optimistic,2,2,slow model always,2024-01-21,139.33840430230276,351
+1.0,optimistic,2,2,slow model always,2024-01-22,3048.912169467617,7652
+1.0,optimistic,2,2,slow model always,2024-01-23,2545.9614101297398,6627
+1.0,optimistic,2,2,slow model always,2024-01-24,1613.6069263845793,4465
+1.0,optimistic,2,2,slow model always,2024-01-25,710.5538660931516,1950
+1.0,optimistic,2,2,latency-aware cascade,2024-01-20,305.61499593245213,891
+1.0,optimistic,2,2,latency-aware cascade,2024-01-21,128.19172095984717,383
+1.0,optimistic,2,2,latency-aware cascade,2024-01-22,3270.5543521909844,8948
+1.0,optimistic,2,2,latency-aware cascade,2024-01-23,2594.276831360236,7346
+1.0,optimistic,2,2,latency-aware cascade,2024-01-24,1560.6485157169031,4726
+1.0,optimistic,2,2,latency-aware cascade,2024-01-25,635.793490370262,2112
+1.0,optimistic,2,5,naive fast path,2024-01-20,224.10858254623608,1891
+1.0,optimistic,2,5,naive fast path,2024-01-21,86.6634972363142,899
+1.0,optimistic,2,5,naive fast path,2024-01-22,2262.532262389845,18010
+1.0,optimistic,2,5,naive fast path,2024-01-23,1997.51952166117,15216
+1.0,optimistic,2,5,naive fast path,2024-01-24,982.8320289884842,8390
+1.0,optimistic,2,5,naive fast path,2024-01-25,394.6265589134113,4203
+1.0,optimistic,2,5,fast path + decay prior,2024-01-20,208.83210648492664,643
+1.0,optimistic,2,5,fast path + decay prior,2024-01-21,86.01838469891963,262
+1.0,optimistic,2,5,fast path + decay prior,2024-01-22,2232.9927662229416,7930
+1.0,optimistic,2,5,fast path + decay prior,2024-01-23,1970.6792114351158,7075
+1.0,optimistic,2,5,fast path + decay prior,2024-01-24,974.0607925198942,3567
+1.0,optimistic,2,5,fast path + decay prior,2024-01-25,437.19313606241747,1657
+1.0,optimistic,2,5,slow model always,2024-01-20,242.72708507263735,648
+1.0,optimistic,2,5,slow model always,2024-01-21,118.3421428336195,282
+1.0,optimistic,2,5,slow model always,2024-01-22,2393.3288088086697,6628
+1.0,optimistic,2,5,slow model always,2024-01-23,2067.2115572888038,5759
+1.0,optimistic,2,5,slow model always,2024-01-24,1357.4034108933863,3969
+1.0,optimistic,2,5,slow model always,2024-01-25,571.8062118109501,1679
+1.0,optimistic,2,5,latency-aware cascade,2024-01-20,247.52700855153594,661
+1.0,optimistic,2,5,latency-aware cascade,2024-01-21,107.96973572183052,287
+1.0,optimistic,2,5,latency-aware cascade,2024-01-22,2479.9352134466217,6768
+1.0,optimistic,2,5,latency-aware cascade,2024-01-23,2076.900115968302,5827
+1.0,optimistic,2,5,latency-aware cascade,2024-01-24,1363.9414787292549,4003
+1.0,optimistic,2,5,latency-aware cascade,2024-01-25,547.8906577504166,1700
+1.0,optimistic,2,10,naive fast path,2024-01-20,145.8555172544,1891
+1.0,optimistic,2,10,naive fast path,2024-01-21,32.18529887689468,899
+1.0,optimistic,2,10,naive fast path,2024-01-22,935.5787971810776,18010
+1.0,optimistic,2,10,naive fast path,2024-01-23,1195.9891567376192,15216
+1.0,optimistic,2,10,naive fast path,2024-01-24,533.5120983082817,8390
+1.0,optimistic,2,10,naive fast path,2024-01-25,175.52780002965338,4203
+1.0,optimistic,2,10,fast path + decay prior,2024-01-20,148.08971636841628,425
+1.0,optimistic,2,10,fast path + decay prior,2024-01-21,56.561565349403715,175
+1.0,optimistic,2,10,fast path + decay prior,2024-01-22,1320.3807108632484,5538
+1.0,optimistic,2,10,fast path + decay prior,2024-01-23,1389.8303754656113,5076
+1.0,optimistic,2,10,fast path + decay prior,2024-01-24,568.3037716601384,2536
+1.0,optimistic,2,10,fast path + decay prior,2024-01-25,273.67157302600367,1178
+1.0,optimistic,2,10,slow model always,2024-01-20,160.99719002832975,437
+1.0,optimistic,2,10,slow model always,2024-01-21,82.73479052615689,183
+1.0,optimistic,2,10,slow model always,2024-01-22,1678.8771958621905,4855
+1.0,optimistic,2,10,slow model always,2024-01-23,1457.0822349944951,4142
+1.0,optimistic,2,10,slow model always,2024-01-24,1039.7832847863988,3075
+1.0,optimistic,2,10,slow model always,2024-01-25,446.68946461808673,1300
+1.0,optimistic,2,10,latency-aware cascade,2024-01-20,184.76403935110426,458
+1.0,optimistic,2,10,latency-aware cascade,2024-01-21,79.69534110242185,193
+1.0,optimistic,2,10,latency-aware cascade,2024-01-22,1766.4385870406363,5114
+1.0,optimistic,2,10,latency-aware cascade,2024-01-23,1554.1315594654595,4249
+1.0,optimistic,2,10,latency-aware cascade,2024-01-24,997.5562852814153,3127
+1.0,optimistic,2,10,latency-aware cascade,2024-01-25,439.3817145986733,1337
+1.0,optimistic,2,20,naive fast path,2024-01-20,-33.00345790880252,1891
+1.0,optimistic,2,20,naive fast path,2024-01-21,-31.63813423545478,899
+1.0,optimistic,2,20,naive fast path,2024-01-22,-863.6990452059799,18010
+1.0,optimistic,2,20,naive fast path,2024-01-23,6.854187299041465,15216
+1.0,optimistic,2,20,naive fast path,2024-01-24,-94.29456723466546,8390
+1.0,optimistic,2,20,naive fast path,2024-01-25,-235.79837541055886,4203
+1.0,optimistic,2,20,fast path + decay prior,2024-01-20,66.82396547045005,278
+1.0,optimistic,2,20,fast path + decay prior,2024-01-21,13.931228076063835,117
+1.0,optimistic,2,20,fast path + decay prior,2024-01-22,448.58383052540654,3479
+1.0,optimistic,2,20,fast path + decay prior,2024-01-23,689.3731815806972,3303
+1.0,optimistic,2,20,fast path + decay prior,2024-01-24,252.6703025029719,1632
+1.0,optimistic,2,20,fast path + decay prior,2024-01-25,151.0146217782025,772
+1.0,optimistic,2,20,slow model always,2024-01-20,94.5698991363876,285
+1.0,optimistic,2,20,slow model always,2024-01-21,53.775891747059184,98
+1.0,optimistic,2,20,slow model always,2024-01-22,990.3367362093576,2926
+1.0,optimistic,2,20,slow model always,2024-01-23,908.9889851860407,2405
+1.0,optimistic,2,20,slow model always,2024-01-24,678.3469135931896,2015
+1.0,optimistic,2,20,slow model always,2024-01-25,297.49546602319447,816
+1.0,optimistic,2,20,latency-aware cascade,2024-01-20,94.5698991363876,285
+1.0,optimistic,2,20,latency-aware cascade,2024-01-21,53.775891747059184,98
+1.0,optimistic,2,20,latency-aware cascade,2024-01-22,982.4904110617751,2921
+1.0,optimistic,2,20,latency-aware cascade,2024-01-23,908.9889851860407,2405
+1.0,optimistic,2,20,latency-aware cascade,2024-01-24,678.3469135931896,2015
+1.0,optimistic,2,20,latency-aware cascade,2024-01-25,297.49546602319447,816
+1.0,optimistic,2,50,naive fast path,2024-01-20,-430.63238227207717,1891
+1.0,optimistic,2,50,naive fast path,2024-01-21,-243.11809048245587,899
+1.0,optimistic,2,50,naive fast path,2024-01-22,-4289.94977243697,18010
+1.0,optimistic,2,50,naive fast path,2024-01-23,-2641.680606877922,15216
+1.0,optimistic,2,50,naive fast path,2024-01-24,-1451.7754560139122,8390
+1.0,optimistic,2,50,naive fast path,2024-01-25,-901.9931768351053,4203
+1.0,optimistic,2,50,fast path + decay prior,2024-01-20,-4.740217606361416,134
+1.0,optimistic,2,50,fast path + decay prior,2024-01-21,-8.11914301744573,49
+1.0,optimistic,2,50,fast path + decay prior,2024-01-22,-32.37025350003521,1123
+1.0,optimistic,2,50,fast path + decay prior,2024-01-23,62.28535202003067,1164
+1.0,optimistic,2,50,fast path + decay prior,2024-01-24,3.0824721344616948,638
+1.0,optimistic,2,50,fast path + decay prior,2024-01-25,-9.027859571725331,310
+1.0,optimistic,2,50,slow model always,2024-01-20,29.611289218046924,75
+1.0,optimistic,2,50,slow model always,2024-01-21,27.201357664272862,20
+1.0,optimistic,2,50,slow model always,2024-01-22,370.6325801285241,777
+1.0,optimistic,2,50,slow model always,2024-01-23,238.1254819584985,447
+1.0,optimistic,2,50,slow model always,2024-01-24,265.3351844275945,629
+1.0,optimistic,2,50,slow model always,2024-01-25,106.31524453099156,244
+1.0,optimistic,2,50,latency-aware cascade,2024-01-20,25.395867116227752,77
+1.0,optimistic,2,50,latency-aware cascade,2024-01-21,27.201357664272862,20
+1.0,optimistic,2,50,latency-aware cascade,2024-01-22,367.1691752924179,776
+1.0,optimistic,2,50,latency-aware cascade,2024-01-23,238.1254819584985,447
+1.0,optimistic,2,50,latency-aware cascade,2024-01-24,265.3351844275945,629
+1.0,optimistic,2,50,latency-aware cascade,2024-01-25,106.31524453099156,244
+1.0,optimistic,2,100,naive fast path,2024-01-20,-1127.5258922508426,1891
+1.0,optimistic,2,100,naive fast path,2024-01-21,-620.6608056176058,899
+1.0,optimistic,2,100,naive fast path,2024-01-22,-10729.073084597298,18010
+1.0,optimistic,2,100,naive fast path,2024-01-23,-8001.575422353346,15216
+1.0,optimistic,2,100,naive fast path,2024-01-24,-4450.863685295729,8390
+1.0,optimistic,2,100,naive fast path,2024-01-25,-2351.668764964936,4203
+1.0,optimistic,2,100,fast path + decay prior,2024-01-20,-13.463599773325651,73
+1.0,optimistic,2,100,fast path + decay prior,2024-01-21,-8.797418019203942,27
+1.0,optimistic,2,100,fast path + decay prior,2024-01-22,-49.833676133188234,180
+1.0,optimistic,2,100,fast path + decay prior,2024-01-23,-11.136916294451309,105
+1.0,optimistic,2,100,fast path + decay prior,2024-01-24,-14.41078921142175,176
+1.0,optimistic,2,100,fast path + decay prior,2024-01-25,-20.76242625401721,108
+1.0,optimistic,2,100,slow model always,2024-01-20,-2.0236912907921845,1
+1.0,optimistic,2,100,slow model always,2024-01-21,0.0,0
+1.0,optimistic,2,100,slow model always,2024-01-22,4.326946136781186,28
+1.0,optimistic,2,100,slow model always,2024-01-23,7.23209664275598,14
+1.0,optimistic,2,100,slow model always,2024-01-24,19.011465887055056,44
+1.0,optimistic,2,100,slow model always,2024-01-25,-0.047969710726373016,3
+1.0,optimistic,2,100,latency-aware cascade,2024-01-20,-6.407357621905,3
+1.0,optimistic,2,100,latency-aware cascade,2024-01-21,0.0,0
+1.0,optimistic,2,100,latency-aware cascade,2024-01-22,6.861903877494467,27
+1.0,optimistic,2,100,latency-aware cascade,2024-01-23,7.23209664275598,14
+1.0,optimistic,2,100,latency-aware cascade,2024-01-24,19.011465887055056,44
+1.0,optimistic,2,100,latency-aware cascade,2024-01-25,-0.047969710726373016,3
+1.0,optimistic,2,200,naive fast path,2024-01-20,-1572.1907603489835,1891
+1.0,optimistic,2,200,naive fast path,2024-01-21,-767.8945765352471,899
+1.0,optimistic,2,200,naive fast path,2024-01-22,-14485.844158041857,18010
+1.0,optimistic,2,200,naive fast path,2024-01-23,-11388.351826118533,15216
+1.0,optimistic,2,200,naive fast path,2024-01-24,-6414.872627775691,8390
+1.0,optimistic,2,200,naive fast path,2024-01-25,-3202.482173412342,4203
+1.0,optimistic,2,200,fast path + decay prior,2024-01-20,-19.90493338438027,44
+1.0,optimistic,2,200,fast path + decay prior,2024-01-21,-6.900954262055002,17
+1.0,optimistic,2,200,fast path + decay prior,2024-01-22,-21.7868591137878,65
+1.0,optimistic,2,200,fast path + decay prior,2024-01-23,-25.56816831917042,35
+1.0,optimistic,2,200,fast path + decay prior,2024-01-24,-13.653951232191057,69
+1.0,optimistic,2,200,fast path + decay prior,2024-01-25,-18.457469133318842,55
+1.0,optimistic,2,200,slow model always,2024-01-20,0.0,0
+1.0,optimistic,2,200,slow model always,2024-01-21,0.0,0
+1.0,optimistic,2,200,slow model always,2024-01-22,0.623436674824908,2
+1.0,optimistic,2,200,slow model always,2024-01-23,0.0,0
+1.0,optimistic,2,200,slow model always,2024-01-24,0.6844632360853111,2
+1.0,optimistic,2,200,slow model always,2024-01-25,0.0,0
+1.0,optimistic,2,200,latency-aware cascade,2024-01-20,-2.023448262597111,1
+1.0,optimistic,2,200,latency-aware cascade,2024-01-21,0.0,0
+1.0,optimistic,2,200,latency-aware cascade,2024-01-22,0.623436674824908,2
+1.0,optimistic,2,200,latency-aware cascade,2024-01-23,0.0,0
+1.0,optimistic,2,200,latency-aware cascade,2024-01-24,0.6844632360853111,2
+1.0,optimistic,2,200,latency-aware cascade,2024-01-25,0.0,0
+1.0,optimistic,3,1,naive fast path,2024-01-26,1860.1437954608086,9299
+1.0,optimistic,3,1,naive fast path,2024-01-27,361.47795105917123,2011
+1.0,optimistic,3,1,naive fast path,2024-01-28,693.6424766211849,3758
+1.0,optimistic,3,1,naive fast path,2024-01-29,1086.081084389958,5963
+1.0,optimistic,3,1,naive fast path,2024-01-30,1054.164052447181,5954
+1.0,optimistic,3,1,naive fast path,2024-01-31,2214.0771218836394,11040
+1.0,optimistic,3,1,fast path + decay prior,2024-01-26,1845.269572345761,6990
+1.0,optimistic,3,1,fast path + decay prior,2024-01-27,358.82116933973253,1494
+1.0,optimistic,3,1,fast path + decay prior,2024-01-28,704.8440097328523,2708
+1.0,optimistic,3,1,fast path + decay prior,2024-01-29,1092.1846340572715,4466
+1.0,optimistic,3,1,fast path + decay prior,2024-01-30,1051.857890564575,4241
+1.0,optimistic,3,1,fast path + decay prior,2024-01-31,2218.811861166075,8631
+1.0,optimistic,3,1,slow model always,2024-01-26,1961.6198706429716,4643
+1.0,optimistic,3,1,slow model always,2024-01-27,390.00992231823426,1140
+1.0,optimistic,3,1,slow model always,2024-01-28,790.9084412527691,1996
+1.0,optimistic,3,1,slow model always,2024-01-29,1096.648588448055,3190
+1.0,optimistic,3,1,slow model always,2024-01-30,1107.0155790327908,3213
+1.0,optimistic,3,1,slow model always,2024-01-31,2335.8021279502673,6666
+1.0,optimistic,3,1,latency-aware cascade,2024-01-26,1946.269224475107,5271
+1.0,optimistic,3,1,latency-aware cascade,2024-01-27,375.9777720002583,1226
+1.0,optimistic,3,1,latency-aware cascade,2024-01-28,761.9111391671711,2201
+1.0,optimistic,3,1,latency-aware cascade,2024-01-29,1185.2717333240016,3528
+1.0,optimistic,3,1,latency-aware cascade,2024-01-30,1140.3820556592232,3511
+1.0,optimistic,3,1,latency-aware cascade,2024-01-31,2333.718310320568,7057
+1.0,optimistic,3,2,naive fast path,2024-01-26,1596.694680616954,9299
+1.0,optimistic,3,2,naive fast path,2024-01-27,292.9098834915931,2011
+1.0,optimistic,3,2,naive fast path,2024-01-28,593.148434495566,3758
+1.0,optimistic,3,2,naive fast path,2024-01-29,877.7040827646102,5963
+1.0,optimistic,3,2,naive fast path,2024-01-30,876.7543747512655,5954
+1.0,optimistic,3,2,naive fast path,2024-01-31,1995.5957456955575,11040
+1.0,optimistic,3,2,fast path + decay prior,2024-01-26,1597.14154040738,5828
+1.0,optimistic,3,2,fast path + decay prior,2024-01-27,283.9768929493511,1254
+1.0,optimistic,3,2,fast path + decay prior,2024-01-28,616.8399676875222,2255
+1.0,optimistic,3,2,fast path + decay prior,2024-01-29,896.815871479262,3673
+1.0,optimistic,3,2,fast path + decay prior,2024-01-30,891.5008896905848,3484
+1.0,optimistic,3,2,fast path + decay prior,2024-01-31,1977.5560616922664,7429
+1.0,optimistic,3,2,slow model always,2024-01-26,1748.1869231367039,4404
+1.0,optimistic,3,2,slow model always,2024-01-27,366.3234269612423,1087
+1.0,optimistic,3,2,slow model always,2024-01-28,733.9712037303203,1907
+1.0,optimistic,3,2,slow model always,2024-01-29,1045.169371342163,3055
+1.0,optimistic,3,2,slow model always,2024-01-30,1007.1237887102716,3083
+1.0,optimistic,3,2,slow model always,2024-01-31,2178.2724286462458,6459
+1.0,optimistic,3,2,latency-aware cascade,2024-01-26,1741.0314846511856,4664
+1.0,optimistic,3,2,latency-aware cascade,2024-01-27,339.0351401574808,1119
+1.0,optimistic,3,2,latency-aware cascade,2024-01-28,717.4207768486774,2003
+1.0,optimistic,3,2,latency-aware cascade,2024-01-29,1071.1494600646843,3205
+1.0,optimistic,3,2,latency-aware cascade,2024-01-30,1033.221448497113,3228
+1.0,optimistic,3,2,latency-aware cascade,2024-01-31,2146.1789559631084,6621
+1.0,optimistic,3,5,naive fast path,2024-01-26,1148.2573353452633,9299
+1.0,optimistic,3,5,naive fast path,2024-01-27,247.12813509934028,2011
+1.0,optimistic,3,5,naive fast path,2024-01-28,443.4780573832242,3758
+1.0,optimistic,3,5,naive fast path,2024-01-29,603.3878270168818,5963
+1.0,optimistic,3,5,naive fast path,2024-01-30,604.0677074447833,5954
+1.0,optimistic,3,5,naive fast path,2024-01-31,1520.1434655381906,11040
+1.0,optimistic,3,5,fast path + decay prior,2024-01-26,1176.8806556308152,4055
+1.0,optimistic,3,5,fast path + decay prior,2024-01-27,230.46273503165907,891
+1.0,optimistic,3,5,fast path + decay prior,2024-01-28,461.92993356232785,1570
+1.0,optimistic,3,5,fast path + decay prior,2024-01-29,670.112984948732,2526
+1.0,optimistic,3,5,fast path + decay prior,2024-01-30,656.251108672932,2405
+1.0,optimistic,3,5,fast path + decay prior,2024-01-31,1519.8782010269642,5565
+1.0,optimistic,3,5,slow model always,2024-01-26,1385.2218205918282,3771
+1.0,optimistic,3,5,slow model always,2024-01-27,319.96852766156974,936
+1.0,optimistic,3,5,slow model always,2024-01-28,599.7354367871723,1646
+1.0,optimistic,3,5,slow model always,2024-01-29,823.9583736396507,2639
+1.0,optimistic,3,5,slow model always,2024-01-30,823.3957960305389,2656
+1.0,optimistic,3,5,slow model always,2024-01-31,1836.6235945327896,5751
+1.0,optimistic,3,5,latency-aware cascade,2024-01-26,1399.193052389629,3813
+1.0,optimistic,3,5,latency-aware cascade,2024-01-27,309.3598515156666,942
+1.0,optimistic,3,5,latency-aware cascade,2024-01-28,628.8382888023746,1664
+1.0,optimistic,3,5,latency-aware cascade,2024-01-29,868.1297409026544,2670
+1.0,optimistic,3,5,latency-aware cascade,2024-01-30,846.991119776514,2682
+1.0,optimistic,3,5,latency-aware cascade,2024-01-31,1834.985347018387,5768
+1.0,optimistic,3,10,naive fast path,2024-01-26,715.2293938467402,9299
+1.0,optimistic,3,10,naive fast path,2024-01-27,157.4384905438084,2011
+1.0,optimistic,3,10,naive fast path,2024-01-28,251.36382011337034,3758
+1.0,optimistic,3,10,naive fast path,2024-01-29,299.9367553428481,5963
+1.0,optimistic,3,10,naive fast path,2024-01-30,293.7951233313264,5954
+1.0,optimistic,3,10,naive fast path,2024-01-31,990.9673092305983,11040
+1.0,optimistic,3,10,fast path + decay prior,2024-01-26,823.3762836233308,2802
+1.0,optimistic,3,10,fast path + decay prior,2024-01-27,160.49566146749098,622
+1.0,optimistic,3,10,fast path + decay prior,2024-01-28,340.4608398895989,1096
+1.0,optimistic,3,10,fast path + decay prior,2024-01-29,402.7154775770768,1725
+1.0,optimistic,3,10,fast path + decay prior,2024-01-30,427.630767895138,1649
+1.0,optimistic,3,10,fast path + decay prior,2024-01-31,1094.042720764327,4249
+1.0,optimistic,3,10,slow model always,2024-01-26,1005.7168601487297,2836
+1.0,optimistic,3,10,slow model always,2024-01-27,253.12885004053743,775
+1.0,optimistic,3,10,slow model always,2024-01-28,492.51392798846933,1318
+1.0,optimistic,3,10,slow model always,2024-01-29,672.987664370877,2115
+1.0,optimistic,3,10,slow model always,2024-01-30,627.8244160104349,2116
+1.0,optimistic,3,10,slow model always,2024-01-31,1518.8984151098664,4832
+1.0,optimistic,3,10,latency-aware cascade,2024-01-26,1036.213057284895,2916
+1.0,optimistic,3,10,latency-aware cascade,2024-01-27,239.83914232480998,787
+1.0,optimistic,3,10,latency-aware cascade,2024-01-28,506.3265868995496,1357
+1.0,optimistic,3,10,latency-aware cascade,2024-01-29,690.8454905866193,2164
+1.0,optimistic,3,10,latency-aware cascade,2024-01-30,643.4448836065836,2161
+1.0,optimistic,3,10,latency-aware cascade,2024-01-31,1483.3757111317898,4878
+1.0,optimistic,3,20,naive fast path,2024-01-26,-4.822427275355843,9299
+1.0,optimistic,3,20,naive fast path,2024-01-27,9.644219407240659,2011
+1.0,optimistic,3,20,naive fast path,2024-01-28,-84.91200816580408,3758
+1.0,optimistic,3,20,naive fast path,2024-01-29,-249.76824165172007,5963
+1.0,optimistic,3,20,naive fast path,2024-01-30,-115.53768192299691,5954
+1.0,optimistic,3,20,naive fast path,2024-01-31,263.2311166544898,11040
+1.0,optimistic,3,20,fast path + decay prior,2024-01-26,417.2787184813389,1737
+1.0,optimistic,3,20,fast path + decay prior,2024-01-27,76.6827808776681,424
+1.0,optimistic,3,20,fast path + decay prior,2024-01-28,143.34783098307628,684
+1.0,optimistic,3,20,fast path + decay prior,2024-01-29,123.39386295084762,1083
+1.0,optimistic,3,20,fast path + decay prior,2024-01-30,192.7148552875445,1029
+1.0,optimistic,3,20,fast path + decay prior,2024-01-31,650.0734177715452,2948
+1.0,optimistic,3,20,slow model always,2024-01-26,684.3599039746516,1922
+1.0,optimistic,3,20,slow model always,2024-01-27,166.54674348233607,556
+1.0,optimistic,3,20,slow model always,2024-01-28,331.1050419509745,935
+1.0,optimistic,3,20,slow model always,2024-01-29,452.4376911917122,1504
+1.0,optimistic,3,20,slow model always,2024-01-30,415.2720452817116,1530
+1.0,optimistic,3,20,slow model always,2024-01-31,1102.1939756412698,3759
+1.0,optimistic,3,20,latency-aware cascade,2024-01-26,684.3599039746516,1922
+1.0,optimistic,3,20,latency-aware cascade,2024-01-27,166.54674348233607,556
+1.0,optimistic,3,20,latency-aware cascade,2024-01-28,331.1050419509745,935
+1.0,optimistic,3,20,latency-aware cascade,2024-01-29,452.4376911917122,1504
+1.0,optimistic,3,20,latency-aware cascade,2024-01-30,415.2720452817116,1530
+1.0,optimistic,3,20,latency-aware cascade,2024-01-31,1102.1939756412698,3759
+1.0,optimistic,3,50,naive fast path,2024-01-26,-1743.8628938608365,9299
+1.0,optimistic,3,50,naive fast path,2024-01-27,-342.04743217072905,2011
+1.0,optimistic,3,50,naive fast path,2024-01-28,-792.4745333067078,3758
+1.0,optimistic,3,50,naive fast path,2024-01-29,-1398.8789037086933,5963
+1.0,optimistic,3,50,naive fast path,2024-01-30,-1354.0239330300542,5954
+1.0,optimistic,3,50,naive fast path,2024-01-31,-1470.6607127939176,11040
+1.0,optimistic,3,50,fast path + decay prior,2024-01-26,8.167731730305677,546
+1.0,optimistic,3,50,fast path + decay prior,2024-01-27,4.805086808763192,187
+1.0,optimistic,3,50,fast path + decay prior,2024-01-28,9.166820874380992,271
+1.0,optimistic,3,50,fast path + decay prior,2024-01-29,-13.693313206436542,422
+1.0,optimistic,3,50,fast path + decay prior,2024-01-30,-27.999703478433243,407
+1.0,optimistic,3,50,fast path + decay prior,2024-01-31,147.84066524831056,1306
+1.0,optimistic,3,50,slow model always,2024-01-26,275.4684416829225,452
+1.0,optimistic,3,50,slow model always,2024-01-27,69.30052315832033,218
+1.0,optimistic,3,50,slow model always,2024-01-28,180.4129923252628,352
+1.0,optimistic,3,50,slow model always,2024-01-29,200.32594506113654,636
+1.0,optimistic,3,50,slow model always,2024-01-30,180.34591378050166,603
+1.0,optimistic,3,50,slow model always,2024-01-31,482.517610888421,1920
+1.0,optimistic,3,50,latency-aware cascade,2024-01-26,275.4684416829225,452
+1.0,optimistic,3,50,latency-aware cascade,2024-01-27,69.30052315832033,218
+1.0,optimistic,3,50,latency-aware cascade,2024-01-28,180.4129923252628,352
+1.0,optimistic,3,50,latency-aware cascade,2024-01-29,200.32594506113654,636
+1.0,optimistic,3,50,latency-aware cascade,2024-01-30,180.34591378050166,603
+1.0,optimistic,3,50,latency-aware cascade,2024-01-31,482.517610888421,1920
+1.0,optimistic,3,100,naive fast path,2024-01-26,-5369.234546874769,9299
+1.0,optimistic,3,100,naive fast path,2024-01-27,-940.906531932688,2011
+1.0,optimistic,3,100,naive fast path,2024-01-28,-2075.4399206493104,3758
+1.0,optimistic,3,100,naive fast path,2024-01-29,-3376.969460555867,5963
+1.0,optimistic,3,100,naive fast path,2024-01-30,-3444.823325985527,5954
+1.0,optimistic,3,100,naive fast path,2024-01-31,-4512.636748206967,11040
+1.0,optimistic,3,100,fast path + decay prior,2024-01-26,-12.961241708331007,68
+1.0,optimistic,3,100,fast path + decay prior,2024-01-27,-10.99921866470882,87
+1.0,optimistic,3,100,fast path + decay prior,2024-01-28,-20.548338236275715,90
+1.0,optimistic,3,100,fast path + decay prior,2024-01-29,-15.423103010503997,124
+1.0,optimistic,3,100,fast path + decay prior,2024-01-30,-28.77241558526058,108
+1.0,optimistic,3,100,fast path + decay prior,2024-01-31,-14.760836667685895,144
+1.0,optimistic,3,100,slow model always,2024-01-26,-0.15941982919795172,56
+1.0,optimistic,3,100,slow model always,2024-01-27,6.305277173407049,78
+1.0,optimistic,3,100,slow model always,2024-01-28,24.675110704760844,70
+1.0,optimistic,3,100,slow model always,2024-01-29,18.461268076209898,119
+1.0,optimistic,3,100,slow model always,2024-01-30,3.424742463580511,74
+1.0,optimistic,3,100,slow model always,2024-01-31,110.64830433953773,580
+1.0,optimistic,3,100,latency-aware cascade,2024-01-26,-0.15941982919795172,56
+1.0,optimistic,3,100,latency-aware cascade,2024-01-27,6.305277173407049,78
+1.0,optimistic,3,100,latency-aware cascade,2024-01-28,24.675110704760844,70
+1.0,optimistic,3,100,latency-aware cascade,2024-01-29,18.461268076209898,119
+1.0,optimistic,3,100,latency-aware cascade,2024-01-30,3.424742463580511,74
+1.0,optimistic,3,100,latency-aware cascade,2024-01-31,110.64830433953773,580
+1.0,optimistic,3,200,naive fast path,2024-01-26,-7733.067154386927,9299
+1.0,optimistic,3,200,naive fast path,2024-01-27,-1381.055911891832,2011
+1.0,optimistic,3,200,naive fast path,2024-01-28,-2936.352511797823,3758
+1.0,optimistic,3,200,naive fast path,2024-01-29,-4594.154452790521,5963
+1.0,optimistic,3,200,naive fast path,2024-01-30,-4797.564834024102,5954
+1.0,optimistic,3,200,naive fast path,2024-01-31,-6794.802110067053,11040
+1.0,optimistic,3,200,fast path + decay prior,2024-01-26,-8.081248072570164,24
+1.0,optimistic,3,200,fast path + decay prior,2024-01-27,-11.198772048688312,57
+1.0,optimistic,3,200,fast path + decay prior,2024-01-28,-21.104610921145685,42
+1.0,optimistic,3,200,fast path + decay prior,2024-01-29,-5.853431289104468,64
+1.0,optimistic,3,200,fast path + decay prior,2024-01-30,-14.762777364688294,49
+1.0,optimistic,3,200,fast path + decay prior,2024-01-31,-12.276781667252724,60
+1.0,optimistic,3,200,slow model always,2024-01-26,0.49828090279575843,3
+1.0,optimistic,3,200,slow model always,2024-01-27,-6.064185990705068,19
+1.0,optimistic,3,200,slow model always,2024-01-28,7.4960331565261145,18
+1.0,optimistic,3,200,slow model always,2024-01-29,-10.120107256107586,24
+1.0,optimistic,3,200,slow model always,2024-01-30,1.5495408008661526,8
+1.0,optimistic,3,200,slow model always,2024-01-31,15.211307200455728,94
+1.0,optimistic,3,200,latency-aware cascade,2024-01-26,0.49828090279575843,3
+1.0,optimistic,3,200,latency-aware cascade,2024-01-27,-6.064185990705068,19
+1.0,optimistic,3,200,latency-aware cascade,2024-01-28,7.4960331565261145,18
+1.0,optimistic,3,200,latency-aware cascade,2024-01-29,-10.120107256107586,24
+1.0,optimistic,3,200,latency-aware cascade,2024-01-30,1.5495408008661526,8
+1.0,optimistic,3,200,latency-aware cascade,2024-01-31,15.211307200455728,94
+1.0,conservative,0,0,naive fast path,2024-01-08,-5033.052942498673,15207
+1.0,conservative,0,0,naive fast path,2024-01-09,-5462.4021576824325,21288
+1.0,conservative,0,0,naive fast path,2024-01-10,-8337.283407806588,38537
+1.0,conservative,0,0,naive fast path,2024-01-11,-13467.831863138761,28726
+1.0,conservative,0,0,naive fast path,2024-01-12,-10318.305316103333,28518
+1.0,conservative,0,0,naive fast path,2024-01-13,-3574.507464658872,8904
+1.0,conservative,0,0,fast path + decay prior,2024-01-08,1501.9599992629946,4132
+1.0,conservative,0,0,fast path + decay prior,2024-01-09,2194.988377271371,6203
+1.0,conservative,0,0,fast path + decay prior,2024-01-10,3784.3249378964565,10735
+1.0,conservative,0,0,fast path + decay prior,2024-01-11,1165.0438115348002,5676
+1.0,conservative,0,0,fast path + decay prior,2024-01-12,1682.2780064311003,7423
+1.0,conservative,0,0,fast path + decay prior,2024-01-13,386.9093881700814,2514
+1.0,conservative,0,0,slow model always,2024-01-08,684.69098254536,2936
+1.0,conservative,0,0,slow model always,2024-01-09,521.1360466466026,3446
+1.0,conservative,0,0,slow model always,2024-01-10,802.944047796752,5958
+1.0,conservative,0,0,slow model always,2024-01-11,410.40298368416376,2191
+1.0,conservative,0,0,slow model always,2024-01-12,962.9973605455674,4597
+1.0,conservative,0,0,slow model always,2024-01-13,363.8619828843345,1951
+1.0,conservative,0,0,latency-aware cascade,2024-01-08,1624.0931977875166,5220
+1.0,conservative,0,0,latency-aware cascade,2024-01-09,2256.5796648434216,7383
+1.0,conservative,0,0,latency-aware cascade,2024-01-10,4001.21344164413,12941
+1.0,conservative,0,0,latency-aware cascade,2024-01-11,1153.1742677034028,6956
+1.0,conservative,0,0,latency-aware cascade,2024-01-12,1767.5483861913401,9249
+1.0,conservative,0,0,latency-aware cascade,2024-01-13,416.99282938341173,3134
+1.0,conservative,0,1,naive fast path,2024-01-08,-6796.410329222021,15207
+1.0,conservative,0,1,naive fast path,2024-01-09,-8394.947849633332,21288
+1.0,conservative,0,1,naive fast path,2024-01-10,-14195.857358488174,38537
+1.0,conservative,0,1,naive fast path,2024-01-11,-15832.720642972781,28726
+1.0,conservative,0,1,naive fast path,2024-01-12,-12252.525580034733,28518
+1.0,conservative,0,1,naive fast path,2024-01-13,-3840.679443785997,8904
+1.0,conservative,0,1,fast path + decay prior,2024-01-08,174.44335492187565,1513
+1.0,conservative,0,1,fast path + decay prior,2024-01-09,40.344287456992255,2500
+1.0,conservative,0,1,fast path + decay prior,2024-01-10,-160.03810325234033,4459
+1.0,conservative,0,1,fast path + decay prior,2024-01-11,-287.4081376653788,2037
+1.0,conservative,0,1,fast path + decay prior,2024-01-12,106.02794844517031,2499
+1.0,conservative,0,1,fast path + decay prior,2024-01-13,25.898992402853622,822
+1.0,conservative,0,1,slow model always,2024-01-08,606.5211981927175,2789
+1.0,conservative,0,1,slow model always,2024-01-09,412.5174994390374,3371
+1.0,conservative,0,1,slow model always,2024-01-10,706.6341666039191,5775
+1.0,conservative,0,1,slow model always,2024-01-11,368.1318199856399,2101
+1.0,conservative,0,1,slow model always,2024-01-12,888.222424824115,4414
+1.0,conservative,0,1,slow model always,2024-01-13,331.5161086413229,1875
+1.0,conservative,0,1,latency-aware cascade,2024-01-08,616.2656459310518,2781
+1.0,conservative,0,1,latency-aware cascade,2024-01-09,516.9910005859848,3338
+1.0,conservative,0,1,latency-aware cascade,2024-01-10,783.7838498088489,5729
+1.0,conservative,0,1,latency-aware cascade,2024-01-11,367.037732801569,2097
+1.0,conservative,0,1,latency-aware cascade,2024-01-12,908.2773563435161,4409
+1.0,conservative,0,1,latency-aware cascade,2024-01-13,331.5161086413229,1875
+1.0,conservative,0,2,naive fast path,2024-01-08,-6875.949490665637,15207
+1.0,conservative,0,2,naive fast path,2024-01-09,-8464.345270719827,21288
+1.0,conservative,0,2,naive fast path,2024-01-10,-14418.374971067906,38537
+1.0,conservative,0,2,naive fast path,2024-01-11,-15802.255082320276,28726
+1.0,conservative,0,2,naive fast path,2024-01-12,-12447.671074028993,28518
+1.0,conservative,0,2,naive fast path,2024-01-13,-3899.120719739081,8904
+1.0,conservative,0,2,fast path + decay prior,2024-01-08,128.4778159601026,1389
+1.0,conservative,0,2,fast path + decay prior,2024-01-09,-27.6457187228192,2254
+1.0,conservative,0,2,fast path + decay prior,2024-01-10,-133.7171366619805,3951
+1.0,conservative,0,2,fast path + decay prior,2024-01-11,-235.7332917710088,1827
+1.0,conservative,0,2,fast path + decay prior,2024-01-12,83.0634110058989,2254
+1.0,conservative,0,2,fast path + decay prior,2024-01-13,11.325935731531125,773
+1.0,conservative,0,2,slow model always,2024-01-08,587.7364105003136,2657
+1.0,conservative,0,2,slow model always,2024-01-09,431.71999202794836,3158
+1.0,conservative,0,2,slow model always,2024-01-10,775.8775569330788,5289
+1.0,conservative,0,2,slow model always,2024-01-11,341.9011047988179,1999
+1.0,conservative,0,2,slow model always,2024-01-12,857.7058006427229,4283
+1.0,conservative,0,2,slow model always,2024-01-13,305.47432167496976,1823
+1.0,conservative,0,2,latency-aware cascade,2024-01-08,605.5671325904345,2653
+1.0,conservative,0,2,latency-aware cascade,2024-01-09,507.89940326269857,3131
+1.0,conservative,0,2,latency-aware cascade,2024-01-10,815.1082149953974,5255
+1.0,conservative,0,2,latency-aware cascade,2024-01-11,341.227617158818,1998
+1.0,conservative,0,2,latency-aware cascade,2024-01-12,877.826376708966,4278
+1.0,conservative,0,2,latency-aware cascade,2024-01-13,305.47432167496976,1823
+1.0,conservative,0,5,naive fast path,2024-01-08,-7265.567421813705,15207
+1.0,conservative,0,5,naive fast path,2024-01-09,-9212.657134301415,21288
+1.0,conservative,0,5,naive fast path,2024-01-10,-15440.200677179315,38537
+1.0,conservative,0,5,naive fast path,2024-01-11,-15898.836818264299,28726
+1.0,conservative,0,5,naive fast path,2024-01-12,-12947.257574643218,28518
+1.0,conservative,0,5,naive fast path,2024-01-13,-4065.0777361347104,8904
+1.0,conservative,0,5,fast path + decay prior,2024-01-08,46.80541188327846,1083
+1.0,conservative,0,5,fast path + decay prior,2024-01-09,-80.05455240623446,1764
+1.0,conservative,0,5,fast path + decay prior,2024-01-10,-187.10042089203245,2917
+1.0,conservative,0,5,fast path + decay prior,2024-01-11,-107.33828296419182,1345
+1.0,conservative,0,5,fast path + decay prior,2024-01-12,101.34586240984484,1725
+1.0,conservative,0,5,fast path + decay prior,2024-01-13,3.138020077037804,647
+1.0,conservative,0,5,slow model always,2024-01-08,467.2441237367854,2411
+1.0,conservative,0,5,slow model always,2024-01-09,402.1344475855526,2799
+1.0,conservative,0,5,slow model always,2024-01-10,638.9163055196567,4567
+1.0,conservative,0,5,slow model always,2024-01-11,299.03278713747886,1810
+1.0,conservative,0,5,slow model always,2024-01-12,700.5418571413162,3903
+1.0,conservative,0,5,slow model always,2024-01-13,290.53561413710196,1689
+1.0,conservative,0,5,latency-aware cascade,2024-01-08,474.4788117052035,2408
+1.0,conservative,0,5,latency-aware cascade,2024-01-09,440.09408678048794,2772
+1.0,conservative,0,5,latency-aware cascade,2024-01-10,723.1856867306888,4523
+1.0,conservative,0,5,latency-aware cascade,2024-01-11,302.23577560643236,1811
+1.0,conservative,0,5,latency-aware cascade,2024-01-12,707.9514143854752,3898
+1.0,conservative,0,5,latency-aware cascade,2024-01-13,290.53561413710196,1689
+1.0,conservative,0,10,naive fast path,2024-01-08,-8041.8404839419245,15207
+1.0,conservative,0,10,naive fast path,2024-01-09,-9961.279090904567,21288
+1.0,conservative,0,10,naive fast path,2024-01-10,-17040.86514600701,38537
+1.0,conservative,0,10,naive fast path,2024-01-11,-16222.679973269049,28726
+1.0,conservative,0,10,naive fast path,2024-01-12,-13726.124206928047,28518
+1.0,conservative,0,10,naive fast path,2024-01-13,-4288.153937103362,8904
+1.0,conservative,0,10,fast path + decay prior,2024-01-08,-23.695129901103233,714
+1.0,conservative,0,10,fast path + decay prior,2024-01-09,-124.24221314359085,1119
+1.0,conservative,0,10,fast path + decay prior,2024-01-10,-115.65076092087051,1672
+1.0,conservative,0,10,fast path + decay prior,2024-01-11,-61.54737247116934,821
+1.0,conservative,0,10,fast path + decay prior,2024-01-12,49.19503099886082,1047
+1.0,conservative,0,10,fast path + decay prior,2024-01-13,7.206043156145199,475
+1.0,conservative,0,10,slow model always,2024-01-08,323.47314809030166,2058
+1.0,conservative,0,10,slow model always,2024-01-09,292.37048927244587,2329
+1.0,conservative,0,10,slow model always,2024-01-10,582.700389456979,3712
+1.0,conservative,0,10,slow model always,2024-01-11,237.24676007797567,1498
+1.0,conservative,0,10,slow model always,2024-01-12,516.0764370725857,3321
+1.0,conservative,0,10,slow model always,2024-01-13,237.29055357103388,1475
+1.0,conservative,0,10,latency-aware cascade,2024-01-08,328.43024793574136,2055
+1.0,conservative,0,10,latency-aware cascade,2024-01-09,330.41382337061566,2315
+1.0,conservative,0,10,latency-aware cascade,2024-01-10,626.384026659694,3690
+1.0,conservative,0,10,latency-aware cascade,2024-01-11,243.97846962267397,1500
+1.0,conservative,0,10,latency-aware cascade,2024-01-12,518.054736472585,3319
+1.0,conservative,0,10,latency-aware cascade,2024-01-13,237.29055357103388,1475
+1.0,conservative,0,20,naive fast path,2024-01-08,-8996.506644033412,15207
+1.0,conservative,0,20,naive fast path,2024-01-09,-11027.924048521896,21288
+1.0,conservative,0,20,naive fast path,2024-01-10,-18642.02957707769,38537
+1.0,conservative,0,20,naive fast path,2024-01-11,-17223.73514458414,28726
+1.0,conservative,0,20,naive fast path,2024-01-12,-14947.475932343945,28518
+1.0,conservative,0,20,naive fast path,2024-01-13,-4682.892825477432,8904
+1.0,conservative,0,20,fast path + decay prior,2024-01-08,-27.03072934469696,281
+1.0,conservative,0,20,fast path + decay prior,2024-01-09,-82.24085883715664,507
+1.0,conservative,0,20,fast path + decay prior,2024-01-10,-20.328871470612278,537
+1.0,conservative,0,20,fast path + decay prior,2024-01-11,-26.6907456146135,375
+1.0,conservative,0,20,fast path + decay prior,2024-01-12,8.892852933163182,449
+1.0,conservative,0,20,fast path + decay prior,2024-01-13,-6.49780166733787,294
+1.0,conservative,0,20,slow model always,2024-01-08,252.05582850610682,1566
+1.0,conservative,0,20,slow model always,2024-01-09,241.45947771208236,1659
+1.0,conservative,0,20,slow model always,2024-01-10,411.6097495076577,2679
+1.0,conservative,0,20,slow model always,2024-01-11,169.8529253304379,1045
+1.0,conservative,0,20,slow model always,2024-01-12,373.0855979645093,2348
+1.0,conservative,0,20,slow model always,2024-01-13,191.64420990407788,1128
+1.0,conservative,0,20,latency-aware cascade,2024-01-08,253.67185699610684,1562
+1.0,conservative,0,20,latency-aware cascade,2024-01-09,244.20584984224192,1649
+1.0,conservative,0,20,latency-aware cascade,2024-01-10,443.7900194573484,2658
+1.0,conservative,0,20,latency-aware cascade,2024-01-11,164.59217553882448,1046
+1.0,conservative,0,20,latency-aware cascade,2024-01-12,359.3135653904538,2345
+1.0,conservative,0,20,latency-aware cascade,2024-01-13,191.64420990407788,1128
+1.0,conservative,0,50,naive fast path,2024-01-08,-10775.693567703709,15207
+1.0,conservative,0,50,naive fast path,2024-01-09,-12741.670621068712,21288
+1.0,conservative,0,50,naive fast path,2024-01-10,-21694.666529319966,38537
+1.0,conservative,0,50,naive fast path,2024-01-11,-19004.483375847274,28726
+1.0,conservative,0,50,naive fast path,2024-01-12,-17501.277344092614,28518
+1.0,conservative,0,50,naive fast path,2024-01-13,-5406.013496127075,8904
+1.0,conservative,0,50,fast path + decay prior,2024-01-08,-9.777629416152337,61
+1.0,conservative,0,50,fast path + decay prior,2024-01-09,-24.066060972335986,153
+1.0,conservative,0,50,fast path + decay prior,2024-01-10,-14.6255887131493,90
+1.0,conservative,0,50,fast path + decay prior,2024-01-11,-30.661834233415448,91
+1.0,conservative,0,50,fast path + decay prior,2024-01-12,-22.568824990232716,99
+1.0,conservative,0,50,fast path + decay prior,2024-01-13,-6.878700989464704,125
+1.0,conservative,0,50,slow model always,2024-01-08,96.11889697838896,657
+1.0,conservative,0,50,slow model always,2024-01-09,135.01700234450664,736
+1.0,conservative,0,50,slow model always,2024-01-10,149.1788451217917,1011
+1.0,conservative,0,50,slow model always,2024-01-11,94.17569188946668,440
+1.0,conservative,0,50,slow model always,2024-01-12,140.68380632178855,913
+1.0,conservative,0,50,slow model always,2024-01-13,105.82462265568995,519
+1.0,conservative,0,50,latency-aware cascade,2024-01-08,96.11889697838896,657
+1.0,conservative,0,50,latency-aware cascade,2024-01-09,135.01700234450664,736
+1.0,conservative,0,50,latency-aware cascade,2024-01-10,149.1788451217917,1011
+1.0,conservative,0,50,latency-aware cascade,2024-01-11,90.83083828946667,441
+1.0,conservative,0,50,latency-aware cascade,2024-01-12,140.68380632178855,913
+1.0,conservative,0,50,latency-aware cascade,2024-01-13,105.82462265568995,519
+1.0,conservative,0,100,naive fast path,2024-01-08,-11881.358632558517,15207
+1.0,conservative,0,100,naive fast path,2024-01-09,-13148.577294153016,21288
+1.0,conservative,0,100,naive fast path,2024-01-10,-22680.38064078707,38537
+1.0,conservative,0,100,naive fast path,2024-01-11,-19748.596429163284,28726
+1.0,conservative,0,100,naive fast path,2024-01-12,-18947.437590937614,28518
+1.0,conservative,0,100,naive fast path,2024-01-13,-5624.32434941439,8904
+1.0,conservative,0,100,fast path + decay prior,2024-01-08,-11.248017508283388,32
+1.0,conservative,0,100,fast path + decay prior,2024-01-09,-23.55119258621532,100
+1.0,conservative,0,100,fast path + decay prior,2024-01-10,-5.49389029582488,56
+1.0,conservative,0,100,fast path + decay prior,2024-01-11,-21.57957649736339,50
+1.0,conservative,0,100,fast path + decay prior,2024-01-12,-26.888120224119685,51
+1.0,conservative,0,100,fast path + decay prior,2024-01-13,-2.2418094533019315,82
+1.0,conservative,0,100,slow model always,2024-01-08,40.08333466677631,300
+1.0,conservative,0,100,slow model always,2024-01-09,49.59015355491423,277
+1.0,conservative,0,100,slow model always,2024-01-10,77.21065511298299,324
+1.0,conservative,0,100,slow model always,2024-01-11,28.083470196140865,169
+1.0,conservative,0,100,slow model always,2024-01-12,56.32758693911726,286
+1.0,conservative,0,100,slow model always,2024-01-13,20.394822887806676,218
+1.0,conservative,0,100,latency-aware cascade,2024-01-08,39.379383518160395,299
+1.0,conservative,0,100,latency-aware cascade,2024-01-09,49.681317064914246,275
+1.0,conservative,0,100,latency-aware cascade,2024-01-10,77.21065511298299,324
+1.0,conservative,0,100,latency-aware cascade,2024-01-11,28.083470196140865,169
+1.0,conservative,0,100,latency-aware cascade,2024-01-12,56.32758693911726,286
+1.0,conservative,0,100,latency-aware cascade,2024-01-13,19.85501015821833,217
+1.0,conservative,0,200,naive fast path,2024-01-08,-12595.019366505167,15207
+1.0,conservative,0,200,naive fast path,2024-01-09,-14476.76630735265,21288
+1.0,conservative,0,200,naive fast path,2024-01-10,-24339.973354691134,38537
+1.0,conservative,0,200,naive fast path,2024-01-11,-20323.241727272252,28726
+1.0,conservative,0,200,naive fast path,2024-01-12,-20542.863690404247,28518
+1.0,conservative,0,200,naive fast path,2024-01-13,-5944.585377234957,8904
+1.0,conservative,0,200,fast path + decay prior,2024-01-08,-2.601744176249513,14
+1.0,conservative,0,200,fast path + decay prior,2024-01-09,-23.241015608710438,61
+1.0,conservative,0,200,fast path + decay prior,2024-01-10,-5.003668597893176,28
+1.0,conservative,0,200,fast path + decay prior,2024-01-11,-17.85575027262333,26
+1.0,conservative,0,200,fast path + decay prior,2024-01-12,-14.773456632963361,21
+1.0,conservative,0,200,fast path + decay prior,2024-01-13,-12.063230132652865,44
+1.0,conservative,0,200,slow model always,2024-01-08,2.794060231515868,99
+1.0,conservative,0,200,slow model always,2024-01-09,19.04417065458314,64
+1.0,conservative,0,200,slow model always,2024-01-10,13.03730410528083,64
+1.0,conservative,0,200,slow model always,2024-01-11,17.80182789548028,42
+1.0,conservative,0,200,slow model always,2024-01-12,-7.556915758971945,55
+1.0,conservative,0,200,slow model always,2024-01-13,5.924967848947314,48
+1.0,conservative,0,200,latency-aware cascade,2024-01-08,-0.8837755681159116,91
+1.0,conservative,0,200,latency-aware cascade,2024-01-09,17.140968450597395,57
+1.0,conservative,0,200,latency-aware cascade,2024-01-10,12.130688774862298,59
+1.0,conservative,0,200,latency-aware cascade,2024-01-11,17.80182789548028,42
+1.0,conservative,0,200,latency-aware cascade,2024-01-12,-8.96764724635269,53
+1.0,conservative,0,200,latency-aware cascade,2024-01-13,5.385155119358972,47
+1.0,conservative,1,0,naive fast path,2024-01-14,-2642.955717095652,6770
+1.0,conservative,1,0,naive fast path,2024-01-15,-3070.6218653276874,7662
+1.0,conservative,1,0,naive fast path,2024-01-16,-4273.588241686059,8446
+1.0,conservative,1,0,naive fast path,2024-01-17,-3245.7778881588233,5806
+1.0,conservative,1,0,naive fast path,2024-01-18,-4863.252609744442,12877
+1.0,conservative,1,0,naive fast path,2024-01-19,-5977.134873269837,11203
+1.0,conservative,1,0,fast path + decay prior,2024-01-14,490.2555043637799,2029
+1.0,conservative,1,0,fast path + decay prior,2024-01-15,516.1805875224925,2300
+1.0,conservative,1,0,fast path + decay prior,2024-01-16,435.8323719925636,2080
+1.0,conservative,1,0,fast path + decay prior,2024-01-17,262.9482381266258,1347
+1.0,conservative,1,0,fast path + decay prior,2024-01-18,935.3982591423496,3962
+1.0,conservative,1,0,fast path + decay prior,2024-01-19,654.7404995801288,2844
+1.0,conservative,1,0,slow model always,2024-01-14,264.76384882952647,948
+1.0,conservative,1,0,slow model always,2024-01-15,269.0142830557761,1227
+1.0,conservative,1,0,slow model always,2024-01-16,114.37036683785382,552
+1.0,conservative,1,0,slow model always,2024-01-17,113.9849148855039,551
+1.0,conservative,1,0,slow model always,2024-01-18,572.7243440915934,2510
+1.0,conservative,1,0,slow model always,2024-01-19,297.819994449867,1447
+1.0,conservative,1,0,latency-aware cascade,2024-01-14,509.2566295903706,2344
+1.0,conservative,1,0,latency-aware cascade,2024-01-15,547.2427403732064,2661
+1.0,conservative,1,0,latency-aware cascade,2024-01-16,437.17047289069797,2350
+1.0,conservative,1,0,latency-aware cascade,2024-01-17,273.99767993054655,1520
+1.0,conservative,1,0,latency-aware cascade,2024-01-18,986.3376564152182,4668
+1.0,conservative,1,0,latency-aware cascade,2024-01-19,675.625486202485,3245
+1.0,conservative,1,1,naive fast path,2024-01-14,-3153.2407449124894,6770
+1.0,conservative,1,1,naive fast path,2024-01-15,-3483.423276544878,7662
+1.0,conservative,1,1,naive fast path,2024-01-16,-4834.569946872517,8446
+1.0,conservative,1,1,naive fast path,2024-01-17,-3441.568819093635,5806
+1.0,conservative,1,1,naive fast path,2024-01-18,-5601.440737966189,12877
+1.0,conservative,1,1,naive fast path,2024-01-19,-6552.504133115209,11203
+1.0,conservative,1,1,fast path + decay prior,2024-01-14,29.62295898349526,708
+1.0,conservative,1,1,fast path + decay prior,2024-01-15,75.25702453753951,818
+1.0,conservative,1,1,fast path + decay prior,2024-01-16,-10.796694751879318,754
+1.0,conservative,1,1,fast path + decay prior,2024-01-17,-7.015433826902375,500
+1.0,conservative,1,1,fast path + decay prior,2024-01-18,130.0912337915222,1212
+1.0,conservative,1,1,fast path + decay prior,2024-01-19,50.86326553723007,1001
+1.0,conservative,1,1,slow model always,2024-01-14,247.54060035823528,953
+1.0,conservative,1,1,slow model always,2024-01-15,249.30481584315876,1203
+1.0,conservative,1,1,slow model always,2024-01-16,93.72930642355644,534
+1.0,conservative,1,1,slow model always,2024-01-17,110.43838243295872,527
+1.0,conservative,1,1,slow model always,2024-01-18,540.3398498618435,2421
+1.0,conservative,1,1,slow model always,2024-01-19,278.4407558687138,1406
+1.0,conservative,1,1,latency-aware cascade,2024-01-14,246.44619906344377,950
+1.0,conservative,1,1,latency-aware cascade,2024-01-15,248.80499478247071,1201
+1.0,conservative,1,1,latency-aware cascade,2024-01-16,93.18948777592797,533
+1.0,conservative,1,1,latency-aware cascade,2024-01-17,106.06976696996037,526
+1.0,conservative,1,1,latency-aware cascade,2024-01-18,538.5580173604503,2418
+1.0,conservative,1,1,latency-aware cascade,2024-01-19,277.6683120317962,1405
+1.0,conservative,1,2,naive fast path,2024-01-14,-3172.264583145898,6770
+1.0,conservative,1,2,naive fast path,2024-01-15,-3554.9786751312904,7662
+1.0,conservative,1,2,naive fast path,2024-01-16,-4879.900247596846,8446
+1.0,conservative,1,2,naive fast path,2024-01-17,-3473.6201896836283,5806
+1.0,conservative,1,2,naive fast path,2024-01-18,-5623.933213870912,12877
+1.0,conservative,1,2,naive fast path,2024-01-19,-6595.752702496687,11203
+1.0,conservative,1,2,fast path + decay prior,2024-01-14,22.68975360748587,667
+1.0,conservative,1,2,fast path + decay prior,2024-01-15,20.68925468641211,761
+1.0,conservative,1,2,fast path + decay prior,2024-01-16,3.513477267440831,685
+1.0,conservative,1,2,fast path + decay prior,2024-01-17,-10.272104070794132,462
+1.0,conservative,1,2,fast path + decay prior,2024-01-18,109.65108167786147,1106
+1.0,conservative,1,2,fast path + decay prior,2024-01-19,9.178463858788257,909
+1.0,conservative,1,2,slow model always,2024-01-14,223.36976389444325,904
+1.0,conservative,1,2,slow model always,2024-01-15,236.43054574442942,1151
+1.0,conservative,1,2,slow model always,2024-01-16,91.17110851476961,511
+1.0,conservative,1,2,slow model always,2024-01-17,94.8863373107008,515
+1.0,conservative,1,2,slow model always,2024-01-18,484.87740761497133,2273
+1.0,conservative,1,2,slow model always,2024-01-19,253.20039761657463,1325
+1.0,conservative,1,2,latency-aware cascade,2024-01-14,231.39787378666668,896
+1.0,conservative,1,2,latency-aware cascade,2024-01-15,235.30595435114617,1148
+1.0,conservative,1,2,latency-aware cascade,2024-01-16,90.61796534949295,509
+1.0,conservative,1,2,latency-aware cascade,2024-01-17,94.17921945772395,514
+1.0,conservative,1,2,latency-aware cascade,2024-01-18,481.617733088203,2266
+1.0,conservative,1,2,latency-aware cascade,2024-01-19,251.49428024435076,1321
+1.0,conservative,1,5,naive fast path,2024-01-14,-3253.005378750031,6770
+1.0,conservative,1,5,naive fast path,2024-01-15,-3732.19828689453,7662
+1.0,conservative,1,5,naive fast path,2024-01-16,-5056.932202980822,8446
+1.0,conservative,1,5,naive fast path,2024-01-17,-3536.4369973591924,5806
+1.0,conservative,1,5,naive fast path,2024-01-18,-6004.588638191671,12877
+1.0,conservative,1,5,naive fast path,2024-01-19,-6805.669208012108,11203
+1.0,conservative,1,5,fast path + decay prior,2024-01-14,-0.5886045206733823,560
+1.0,conservative,1,5,fast path + decay prior,2024-01-15,-5.531919789720188,621
+1.0,conservative,1,5,fast path + decay prior,2024-01-16,-30.442629148811285,542
+1.0,conservative,1,5,fast path + decay prior,2024-01-17,-31.52934574229948,383
+1.0,conservative,1,5,fast path + decay prior,2024-01-18,60.547540334542724,855
+1.0,conservative,1,5,fast path + decay prior,2024-01-19,-19.582142833922997,728
+1.0,conservative,1,5,slow model always,2024-01-14,169.5615016231006,847
+1.0,conservative,1,5,slow model always,2024-01-15,197.80490908568126,1039
+1.0,conservative,1,5,slow model always,2024-01-16,77.33132070061077,466
+1.0,conservative,1,5,slow model always,2024-01-17,85.9572774970119,449
+1.0,conservative,1,5,slow model always,2024-01-18,425.01971390126346,2030
+1.0,conservative,1,5,slow model always,2024-01-19,222.49758734809578,1179
+1.0,conservative,1,5,latency-aware cascade,2024-01-14,168.37340193823218,844
+1.0,conservative,1,5,latency-aware cascade,2024-01-15,197.24822478499323,1036
+1.0,conservative,1,5,latency-aware cascade,2024-01-16,77.33132070061077,466
+1.0,conservative,1,5,latency-aware cascade,2024-01-17,85.25015964403505,448
+1.0,conservative,1,5,latency-aware cascade,2024-01-18,424.0257179328729,2028
+1.0,conservative,1,5,latency-aware cascade,2024-01-19,221.72514351117817,1178
+1.0,conservative,1,10,naive fast path,2024-01-14,-3421.202206719697,6770
+1.0,conservative,1,10,naive fast path,2024-01-15,-3873.6011968692455,7662
+1.0,conservative,1,10,naive fast path,2024-01-16,-5386.430874885952,8446
+1.0,conservative,1,10,naive fast path,2024-01-17,-3632.6466162869356,5806
+1.0,conservative,1,10,naive fast path,2024-01-18,-6492.295665157849,12877
+1.0,conservative,1,10,naive fast path,2024-01-19,-7122.175172932187,11203
+1.0,conservative,1,10,fast path + decay prior,2024-01-14,23.236822537888585,413
+1.0,conservative,1,10,fast path + decay prior,2024-01-15,20.974113872024216,444
+1.0,conservative,1,10,fast path + decay prior,2024-01-16,-29.577539092070463,358
+1.0,conservative,1,10,fast path + decay prior,2024-01-17,-18.97628258830868,285
+1.0,conservative,1,10,fast path + decay prior,2024-01-18,38.508737132862166,538
+1.0,conservative,1,10,fast path + decay prior,2024-01-19,-25.11447647256479,485
+1.0,conservative,1,10,slow model always,2024-01-14,151.5587637133072,724
+1.0,conservative,1,10,slow model always,2024-01-15,154.8903507468376,900
+1.0,conservative,1,10,slow model always,2024-01-16,51.00650957605361,411
+1.0,conservative,1,10,slow model always,2024-01-17,70.26619450050929,378
+1.0,conservative,1,10,slow model always,2024-01-18,329.80586028172416,1603
+1.0,conservative,1,10,slow model always,2024-01-19,182.86097694144948,907
+1.0,conservative,1,10,latency-aware cascade,2024-01-14,120.12757820566705,723
+1.0,conservative,1,10,latency-aware cascade,2024-01-15,154.9651009468376,899
+1.0,conservative,1,10,latency-aware cascade,2024-01-16,51.00650957605361,411
+1.0,conservative,1,10,latency-aware cascade,2024-01-17,70.68580075050929,377
+1.0,conservative,1,10,latency-aware cascade,2024-01-18,329.80586028172416,1603
+1.0,conservative,1,10,latency-aware cascade,2024-01-19,182.86097694144948,907
+1.0,conservative,1,20,naive fast path,2024-01-14,-3750.2848229570336,6770
+1.0,conservative,1,20,naive fast path,2024-01-15,-4229.501591494382,7662
+1.0,conservative,1,20,naive fast path,2024-01-16,-5746.950843575291,8446
+1.0,conservative,1,20,naive fast path,2024-01-17,-3929.567645724665,5806
+1.0,conservative,1,20,naive fast path,2024-01-18,-7313.191807848181,12877
+1.0,conservative,1,20,naive fast path,2024-01-19,-7765.645359822047,11203
+1.0,conservative,1,20,fast path + decay prior,2024-01-14,-6.549165791793132,259
+1.0,conservative,1,20,fast path + decay prior,2024-01-15,6.1299875104163615,253
+1.0,conservative,1,20,fast path + decay prior,2024-01-16,14.29698170455891,186
+1.0,conservative,1,20,fast path + decay prior,2024-01-17,-13.413999819825898,190
+1.0,conservative,1,20,fast path + decay prior,2024-01-18,20.47075181894517,263
+1.0,conservative,1,20,fast path + decay prior,2024-01-19,-6.869083529067403,224
+1.0,conservative,1,20,slow model always,2024-01-14,119.33750830533631,545
+1.0,conservative,1,20,slow model always,2024-01-15,122.97271395799244,710
+1.0,conservative,1,20,slow model always,2024-01-16,45.295323604904326,290
+1.0,conservative,1,20,slow model always,2024-01-17,49.75232081119903,271
+1.0,conservative,1,20,slow model always,2024-01-18,245.28250291320194,1153
+1.0,conservative,1,20,slow model always,2024-01-19,112.52067515629774,630
+1.0,conservative,1,20,latency-aware cascade,2024-01-14,97.4788215276961,542
+1.0,conservative,1,20,latency-aware cascade,2024-01-15,122.97271395799244,710
+1.0,conservative,1,20,latency-aware cascade,2024-01-16,45.295323604904326,290
+1.0,conservative,1,20,latency-aware cascade,2024-01-17,49.75232081119903,270
+1.0,conservative,1,20,latency-aware cascade,2024-01-18,245.28250291320194,1153
+1.0,conservative,1,20,latency-aware cascade,2024-01-19,112.52067515629774,630
+1.0,conservative,1,50,naive fast path,2024-01-14,-4536.165173450293,6770
+1.0,conservative,1,50,naive fast path,2024-01-15,-4895.670110662394,7662
+1.0,conservative,1,50,naive fast path,2024-01-16,-6422.935348883449,8446
+1.0,conservative,1,50,naive fast path,2024-01-17,-4438.477180888363,5806
+1.0,conservative,1,50,naive fast path,2024-01-18,-8604.052523770852,12877
+1.0,conservative,1,50,naive fast path,2024-01-19,-8618.083434014032,11203
+1.0,conservative,1,50,fast path + decay prior,2024-01-14,3.0910882126904156,135
+1.0,conservative,1,50,fast path + decay prior,2024-01-15,-8.634126513826477,134
+1.0,conservative,1,50,fast path + decay prior,2024-01-16,-8.63050877121843,99
+1.0,conservative,1,50,fast path + decay prior,2024-01-17,-23.55801175709621,97
+1.0,conservative,1,50,fast path + decay prior,2024-01-18,-14.484852849089863,93
+1.0,conservative,1,50,fast path + decay prior,2024-01-19,-8.995804019701339,97
+1.0,conservative,1,50,slow model always,2024-01-14,44.35350423916358,299
+1.0,conservative,1,50,slow model always,2024-01-15,54.74128934854892,386
+1.0,conservative,1,50,slow model always,2024-01-16,22.917723789994724,156
+1.0,conservative,1,50,slow model always,2024-01-17,20.06142469387475,125
+1.0,conservative,1,50,slow model always,2024-01-18,73.96532093890491,343
+1.0,conservative,1,50,slow model always,2024-01-19,52.914517898624034,181
+1.0,conservative,1,50,latency-aware cascade,2024-01-14,63.16492678045179,294
+1.0,conservative,1,50,latency-aware cascade,2024-01-15,54.105300665953706,384
+1.0,conservative,1,50,latency-aware cascade,2024-01-16,22.917723789994724,156
+1.0,conservative,1,50,latency-aware cascade,2024-01-17,21.377325447470202,122
+1.0,conservative,1,50,latency-aware cascade,2024-01-18,72.55025798633638,341
+1.0,conservative,1,50,latency-aware cascade,2024-01-19,53.47488354862392,182
+1.0,conservative,1,100,naive fast path,2024-01-14,-4708.326399089751,6770
+1.0,conservative,1,100,naive fast path,2024-01-15,-5189.028411168395,7662
+1.0,conservative,1,100,naive fast path,2024-01-16,-6917.790367082959,8446
+1.0,conservative,1,100,naive fast path,2024-01-17,-4603.249894903838,5806
+1.0,conservative,1,100,naive fast path,2024-01-18,-9533.203417625862,12877
+1.0,conservative,1,100,naive fast path,2024-01-19,-8992.486445179504,11203
+1.0,conservative,1,100,fast path + decay prior,2024-01-14,-0.6437387260344667,88
+1.0,conservative,1,100,fast path + decay prior,2024-01-15,-24.10893697446443,80
+1.0,conservative,1,100,fast path + decay prior,2024-01-16,-5.447649242382364,54
+1.0,conservative,1,100,fast path + decay prior,2024-01-17,-18.5174699694269,63
+1.0,conservative,1,100,fast path + decay prior,2024-01-18,-13.079671288178805,51
+1.0,conservative,1,100,fast path + decay prior,2024-01-19,-11.98519605974098,62
+1.0,conservative,1,100,slow model always,2024-01-14,40.46155322287172,156
+1.0,conservative,1,100,slow model always,2024-01-15,24.758779099282375,183
+1.0,conservative,1,100,slow model always,2024-01-16,7.602983781710898,37
+1.0,conservative,1,100,slow model always,2024-01-17,9.311190653390005,23
+1.0,conservative,1,100,slow model always,2024-01-18,23.017999343630844,109
+1.0,conservative,1,100,slow model always,2024-01-19,19.16757112869117,40
+1.0,conservative,1,100,latency-aware cascade,2024-01-14,40.46155322287172,156
+1.0,conservative,1,100,latency-aware cascade,2024-01-15,24.12662222668716,181
+1.0,conservative,1,100,latency-aware cascade,2024-01-16,6.163411032422538,36
+1.0,conservative,1,100,latency-aware cascade,2024-01-17,8.604072800413151,22
+1.0,conservative,1,100,latency-aware cascade,2024-01-18,22.64022797458641,108
+1.0,conservative,1,100,latency-aware cascade,2024-01-19,18.651429138691114,41
+1.0,conservative,1,200,naive fast path,2024-01-14,-5063.888462900312,6770
+1.0,conservative,1,200,naive fast path,2024-01-15,-5587.67476299664,7662
+1.0,conservative,1,200,naive fast path,2024-01-16,-7537.13999635271,8446
+1.0,conservative,1,200,naive fast path,2024-01-17,-4877.919414727226,5806
+1.0,conservative,1,200,naive fast path,2024-01-18,-10678.432232804184,12877
+1.0,conservative,1,200,naive fast path,2024-01-19,-9582.858332500069,11203
+1.0,conservative,1,200,fast path + decay prior,2024-01-14,-11.558619784187018,59
+1.0,conservative,1,200,fast path + decay prior,2024-01-15,-10.520500252048317,48
+1.0,conservative,1,200,fast path + decay prior,2024-01-16,-5.730942619350601,27
+1.0,conservative,1,200,fast path + decay prior,2024-01-17,-2.127669872754463,43
+1.0,conservative,1,200,fast path + decay prior,2024-01-18,-9.391348553158334,26
+1.0,conservative,1,200,fast path + decay prior,2024-01-19,-14.476129553241886,38
+1.0,conservative,1,200,slow model always,2024-01-14,8.318858812241935,76
+1.0,conservative,1,200,slow model always,2024-01-15,5.46117218110228,83
+1.0,conservative,1,200,slow model always,2024-01-16,3.2785584944041823,12
+1.0,conservative,1,200,slow model always,2024-01-17,1.5717274582734202,9
+1.0,conservative,1,200,slow model always,2024-01-18,6.94057687005483,23
+1.0,conservative,1,200,slow model always,2024-01-19,2.33819387586379,4
+1.0,conservative,1,200,latency-aware cascade,2024-01-14,7.126622317035853,73
+1.0,conservative,1,200,latency-aware cascade,2024-01-15,4.836401848507064,82
+1.0,conservative,1,200,latency-aware cascade,2024-01-16,1.8157430646664139,11
+1.0,conservative,1,200,latency-aware cascade,2024-01-17,1.5717274582734202,9
+1.0,conservative,1,200,latency-aware cascade,2024-01-18,6.840979970054787,24
+1.0,conservative,1,200,latency-aware cascade,2024-01-19,1.9390308258640168,5
+1.0,conservative,2,0,naive fast path,2024-01-20,-1127.4530729969433,1891
+1.0,conservative,2,0,naive fast path,2024-01-21,-627.9323783192543,899
+1.0,conservative,2,0,naive fast path,2024-01-22,-8230.95295654288,18010
+1.0,conservative,2,0,naive fast path,2024-01-23,-5909.889306034405,15216
+1.0,conservative,2,0,naive fast path,2024-01-24,-3670.319671820812,8390
+1.0,conservative,2,0,naive fast path,2024-01-25,-2371.028430578405,4203
+1.0,conservative,2,0,fast path + decay prior,2024-01-20,73.88076780961923,320
+1.0,conservative,2,0,fast path + decay prior,2024-01-21,15.625082464595044,100
+1.0,conservative,2,0,fast path + decay prior,2024-01-22,1369.4090160283831,5188
+1.0,conservative,2,0,fast path + decay prior,2024-01-23,1238.5808857078612,5123
+1.0,conservative,2,0,fast path + decay prior,2024-01-24,559.5006544593778,2401
+1.0,conservative,2,0,fast path + decay prior,2024-01-25,213.70687572691264,1028
+1.0,conservative,2,0,slow model always,2024-01-20,7.147457595275377,42
+1.0,conservative,2,0,slow model always,2024-01-21,8.297266023139976,5
+1.0,conservative,2,0,slow model always,2024-01-22,255.40484170299396,1377
+1.0,conservative,2,0,slow model always,2024-01-23,291.08663171763015,1072
+1.0,conservative,2,0,slow model always,2024-01-24,266.85974960065795,1065
+1.0,conservative,2,0,slow model always,2024-01-25,65.99621660413732,320
+1.0,conservative,2,0,latency-aware cascade,2024-01-20,73.88076780961923,320
+1.0,conservative,2,0,latency-aware cascade,2024-01-21,15.666148874595043,101
+1.0,conservative,2,0,latency-aware cascade,2024-01-22,1398.0058582697131,5217
+1.0,conservative,2,0,latency-aware cascade,2024-01-23,1244.798892773672,5111
+1.0,conservative,2,0,latency-aware cascade,2024-01-24,593.2781279341555,2483
+1.0,conservative,2,0,latency-aware cascade,2024-01-25,218.42667050816038,1035
+1.0,conservative,2,1,naive fast path,2024-01-20,-1179.616672039772,1891
+1.0,conservative,2,1,naive fast path,2024-01-21,-648.0338388470452,899
+1.0,conservative,2,1,naive fast path,2024-01-22,-9917.997319071026,18010
+1.0,conservative,2,1,naive fast path,2024-01-23,-7114.478001089998,15216
+1.0,conservative,2,1,naive fast path,2024-01-24,-4117.827272739862,8390
+1.0,conservative,2,1,naive fast path,2024-01-25,-2521.517095361452,4203
+1.0,conservative,2,1,fast path + decay prior,2024-01-20,1.0900517186416008,146
+1.0,conservative,2,1,fast path + decay prior,2024-01-21,-4.302099856848498,55
+1.0,conservative,2,1,fast path + decay prior,2024-01-22,-49.25967974534017,1155
+1.0,conservative,2,1,fast path + decay prior,2024-01-23,17.378585918818352,948
+1.0,conservative,2,1,fast path + decay prior,2024-01-24,56.953724625618605,629
+1.0,conservative,2,1,fast path + decay prior,2024-01-25,-15.246174983104305,342
+1.0,conservative,2,1,slow model always,2024-01-20,10.359934124766584,41
+1.0,conservative,2,1,slow model always,2024-01-21,10.02541604294682,8
+1.0,conservative,2,1,slow model always,2024-01-22,232.60143455670854,1321
+1.0,conservative,2,1,slow model always,2024-01-23,277.8507061463685,1135
+1.0,conservative,2,1,slow model always,2024-01-24,243.21568374949095,1037
+1.0,conservative,2,1,slow model always,2024-01-25,63.1742356339649,312
+1.0,conservative,2,1,latency-aware cascade,2024-01-20,10.359934124766584,41
+1.0,conservative,2,1,latency-aware cascade,2024-01-21,10.02541604294682,8
+1.0,conservative,2,1,latency-aware cascade,2024-01-22,236.0427425567094,1320
+1.0,conservative,2,1,latency-aware cascade,2024-01-23,277.8507061463685,1135
+1.0,conservative,2,1,latency-aware cascade,2024-01-24,243.21568374949095,1037
+1.0,conservative,2,1,latency-aware cascade,2024-01-25,63.1742356339649,312
+1.0,conservative,2,2,naive fast path,2024-01-20,-1214.9370588105671,1891
+1.0,conservative,2,2,naive fast path,2024-01-21,-646.7520453766656,899
+1.0,conservative,2,2,naive fast path,2024-01-22,-9973.863099988988,18010
+1.0,conservative,2,2,naive fast path,2024-01-23,-7174.778254561735,15216
+1.0,conservative,2,2,naive fast path,2024-01-24,-4117.194773460823,8390
+1.0,conservative,2,2,naive fast path,2024-01-25,-2486.179300725892,4203
+1.0,conservative,2,2,fast path + decay prior,2024-01-20,-8.732948684349797,145
+1.0,conservative,2,2,fast path + decay prior,2024-01-21,-4.085938238260233,55
+1.0,conservative,2,2,fast path + decay prior,2024-01-22,-61.51381778986672,1085
+1.0,conservative,2,2,fast path + decay prior,2024-01-23,-10.980835370842213,902
+1.0,conservative,2,2,fast path + decay prior,2024-01-24,70.43394176135001,602
+1.0,conservative,2,2,fast path + decay prior,2024-01-25,-20.0442983647325,337
+1.0,conservative,2,2,slow model always,2024-01-20,8.354103846047247,42
+1.0,conservative,2,2,slow model always,2024-01-21,0.17470245174187005,6
+1.0,conservative,2,2,slow model always,2024-01-22,223.10446578217218,1176
+1.0,conservative,2,2,slow model always,2024-01-23,237.1704327265348,947
+1.0,conservative,2,2,slow model always,2024-01-24,236.406659037462,987
+1.0,conservative,2,2,slow model always,2024-01-25,54.58322652308281,288
+1.0,conservative,2,2,latency-aware cascade,2024-01-20,8.354103846047247,42
+1.0,conservative,2,2,latency-aware cascade,2024-01-21,-1.8956971338897155,7
+1.0,conservative,2,2,latency-aware cascade,2024-01-22,221.38165147724348,1173
+1.0,conservative,2,2,latency-aware cascade,2024-01-23,237.1704327265348,947
+1.0,conservative,2,2,latency-aware cascade,2024-01-24,236.406659037462,987
+1.0,conservative,2,2,latency-aware cascade,2024-01-25,54.58322652308281,288
+1.0,conservative,2,5,naive fast path,2024-01-20,-1231.4035600461564,1891
+1.0,conservative,2,5,naive fast path,2024-01-21,-650.2265064723874,899
+1.0,conservative,2,5,naive fast path,2024-01-22,-10311.460641184747,18010
+1.0,conservative,2,5,naive fast path,2024-01-23,-7458.631275186458,15216
+1.0,conservative,2,5,naive fast path,2024-01-24,-4302.502354510444,8390
+1.0,conservative,2,5,naive fast path,2024-01-25,-2558.182810305751,4203
+1.0,conservative,2,5,fast path + decay prior,2024-01-20,-11.064401201137752,133
+1.0,conservative,2,5,fast path + decay prior,2024-01-21,-5.118247384225317,54
+1.0,conservative,2,5,fast path + decay prior,2024-01-22,-32.37565438944219,879
+1.0,conservative,2,5,fast path + decay prior,2024-01-23,-13.882711105155567,720
+1.0,conservative,2,5,fast path + decay prior,2024-01-24,40.29614876093218,539
+1.0,conservative,2,5,fast path + decay prior,2024-01-25,-13.876854033286161,297
+1.0,conservative,2,5,slow model always,2024-01-20,2.427485560662551,36
+1.0,conservative,2,5,slow model always,2024-01-21,0.21872473923062508,6
+1.0,conservative,2,5,slow model always,2024-01-22,171.37107441626875,1028
+1.0,conservative,2,5,slow model always,2024-01-23,187.33571583854712,856
+1.0,conservative,2,5,slow model always,2024-01-24,198.79199352657716,894
+1.0,conservative,2,5,slow model always,2024-01-25,46.46696270642564,256
+1.0,conservative,2,5,latency-aware cascade,2024-01-20,2.427485560662551,36
+1.0,conservative,2,5,latency-aware cascade,2024-01-21,0.21872473923062508,6
+1.0,conservative,2,5,latency-aware cascade,2024-01-22,172.2786801462687,1027
+1.0,conservative,2,5,latency-aware cascade,2024-01-23,187.33571583854712,856
+1.0,conservative,2,5,latency-aware cascade,2024-01-24,198.79199352657716,894
+1.0,conservative,2,5,latency-aware cascade,2024-01-25,46.46696270642564,256
+1.0,conservative,2,10,naive fast path,2024-01-20,-1270.8407742034506,1891
+1.0,conservative,2,10,naive fast path,2024-01-21,-669.8685873579926,899
+1.0,conservative,2,10,naive fast path,2024-01-22,-10724.756603581025,18010
+1.0,conservative,2,10,naive fast path,2024-01-23,-7772.415813846312,15216
+1.0,conservative,2,10,naive fast path,2024-01-24,-4596.2214885284675,8390
+1.0,conservative,2,10,naive fast path,2024-01-25,-2618.7984506531375,4203
+1.0,conservative,2,10,fast path + decay prior,2024-01-20,7.276162032200057,115
+1.0,conservative,2,10,fast path + decay prior,2024-01-21,2.9635662262771962,45
+1.0,conservative,2,10,fast path + decay prior,2024-01-22,-14.402142666144176,602
+1.0,conservative,2,10,fast path + decay prior,2024-01-23,-9.41385295725026,525
+1.0,conservative,2,10,fast path + decay prior,2024-01-24,29.481286206462297,420
+1.0,conservative,2,10,fast path + decay prior,2024-01-25,-6.176466698761788,248
+1.0,conservative,2,10,slow model always,2024-01-20,6.1434934369568195,20
+1.0,conservative,2,10,slow model always,2024-01-21,0.8675616645239606,1
+1.0,conservative,2,10,slow model always,2024-01-22,145.43455549227124,709
+1.0,conservative,2,10,slow model always,2024-01-23,135.12068290982143,546
+1.0,conservative,2,10,slow model always,2024-01-24,137.91730281325712,643
+1.0,conservative,2,10,slow model always,2024-01-25,40.96539427825447,191
+1.0,conservative,2,10,latency-aware cascade,2024-01-20,6.1434934369568195,20
+1.0,conservative,2,10,latency-aware cascade,2024-01-21,0.8675616645239606,1
+1.0,conservative,2,10,latency-aware cascade,2024-01-22,145.43455549227124,709
+1.0,conservative,2,10,latency-aware cascade,2024-01-23,135.12068290982143,546
+1.0,conservative,2,10,latency-aware cascade,2024-01-24,137.91730281325712,643
+1.0,conservative,2,10,latency-aware cascade,2024-01-25,40.96539427825447,191
+1.0,conservative,2,20,naive fast path,2024-01-20,-1448.9649178868244,1891
+1.0,conservative,2,20,naive fast path,2024-01-21,-713.0253999500557,899
+1.0,conservative,2,20,naive fast path,2024-01-22,-11763.626409550248,18010
+1.0,conservative,2,20,naive fast path,2024-01-23,-8671.51403127637,15216
+1.0,conservative,2,20,naive fast path,2024-01-24,-5097.750969456817,8390
+1.0,conservative,2,20,naive fast path,2024-01-25,-2752.396629330922,4203
+1.0,conservative,2,20,fast path + decay prior,2024-01-20,2.862206464735144,100
+1.0,conservative,2,20,fast path + decay prior,2024-01-21,-2.1116019784793925,38
+1.0,conservative,2,20,fast path + decay prior,2024-01-22,-45.22032430843986,351
+1.0,conservative,2,20,fast path + decay prior,2024-01-23,-19.066311029776458,259
+1.0,conservative,2,20,fast path + decay prior,2024-01-24,-10.428835594510087,282
+1.0,conservative,2,20,fast path + decay prior,2024-01-25,-6.824119358824282,182
+1.0,conservative,2,20,slow model always,2024-01-20,0.9073224875845562,8
+1.0,conservative,2,20,slow model always,2024-01-21,0.0,0
+1.0,conservative,2,20,slow model always,2024-01-22,74.39319338851541,360
+1.0,conservative,2,20,slow model always,2024-01-23,95.73146082204246,282
+1.0,conservative,2,20,slow model always,2024-01-24,91.21370612447389,375
+1.0,conservative,2,20,slow model always,2024-01-25,20.892482229571154,97
+1.0,conservative,2,20,latency-aware cascade,2024-01-20,0.8452761213832802,11
+1.0,conservative,2,20,latency-aware cascade,2024-01-21,-2.0234818500978515,1
+1.0,conservative,2,20,latency-aware cascade,2024-01-22,74.39319338851541,360
+1.0,conservative,2,20,latency-aware cascade,2024-01-23,95.73146082204246,282
+1.0,conservative,2,20,latency-aware cascade,2024-01-24,91.21370612447389,375
+1.0,conservative,2,20,latency-aware cascade,2024-01-25,20.86812225957116,98
+1.0,conservative,2,50,naive fast path,2024-01-20,-1583.1900208342497,1891
+1.0,conservative,2,50,naive fast path,2024-01-21,-776.6085149936362,899
+1.0,conservative,2,50,naive fast path,2024-01-22,-13618.654152346784,18010
+1.0,conservative,2,50,naive fast path,2024-01-23,-10265.518214529693,15216
+1.0,conservative,2,50,naive fast path,2024-01-24,-5906.607756966682,8390
+1.0,conservative,2,50,naive fast path,2024-01-25,-3111.234324856569,4203
+1.0,conservative,2,50,fast path + decay prior,2024-01-20,-11.906576518911265,74
+1.0,conservative,2,50,fast path + decay prior,2024-01-21,-8.797418019203942,27
+1.0,conservative,2,50,fast path + decay prior,2024-01-22,-46.10844169373892,180
+1.0,conservative,2,50,fast path + decay prior,2024-01-23,-16.254083689089622,104
+1.0,conservative,2,50,fast path + decay prior,2024-01-24,-16.494847986260684,173
+1.0,conservative,2,50,fast path + decay prior,2024-01-25,-22.59265734337828,105
+1.0,conservative,2,50,slow model always,2024-01-20,-2.0236912907921845,1
+1.0,conservative,2,50,slow model always,2024-01-21,0.0,0
+1.0,conservative,2,50,slow model always,2024-01-22,12.72753142338064,61
+1.0,conservative,2,50,slow model always,2024-01-23,19.242146445454548,42
+1.0,conservative,2,50,slow model always,2024-01-24,23.680622973448056,92
+1.0,conservative,2,50,slow model always,2024-01-25,2.126991554834597,11
+1.0,conservative,2,50,latency-aware cascade,2024-01-20,-6.575669169085723,3
+1.0,conservative,2,50,latency-aware cascade,2024-01-21,0.0,0
+1.0,conservative,2,50,latency-aware cascade,2024-01-22,12.72753142338064,61
+1.0,conservative,2,50,latency-aware cascade,2024-01-23,19.242146445454548,42
+1.0,conservative,2,50,latency-aware cascade,2024-01-24,23.680622973448056,92
+1.0,conservative,2,50,latency-aware cascade,2024-01-25,2.126991554834597,11
+1.0,conservative,2,100,naive fast path,2024-01-20,-1634.9219463596178,1891
+1.0,conservative,2,100,naive fast path,2024-01-21,-777.9452778560793,899
+1.0,conservative,2,100,naive fast path,2024-01-22,-14555.316172883086,18010
+1.0,conservative,2,100,naive fast path,2024-01-23,-11273.138657219664,15216
+1.0,conservative,2,100,naive fast path,2024-01-24,-6276.614676862647,8390
+1.0,conservative,2,100,naive fast path,2024-01-25,-3186.290447187777,4203
+1.0,conservative,2,100,fast path + decay prior,2024-01-20,-18.7552201006665,53
+1.0,conservative,2,100,fast path + decay prior,2024-01-21,-6.3395970383560085,21
+1.0,conservative,2,100,fast path + decay prior,2024-01-22,-31.96843660424714,97
+1.0,conservative,2,100,fast path + decay prior,2024-01-23,-26.97898197967348,53
+1.0,conservative,2,100,fast path + decay prior,2024-01-24,-13.134902461522366,102
+1.0,conservative,2,100,fast path + decay prior,2024-01-25,-18.53750144868366,76
+1.0,conservative,2,100,slow model always,2024-01-20,-2.0236912907921845,1
+1.0,conservative,2,100,slow model always,2024-01-21,0.0,0
+1.0,conservative,2,100,slow model always,2024-01-22,3.633484826058707,10
+1.0,conservative,2,100,slow model always,2024-01-23,0.8522605438132915,1
+1.0,conservative,2,100,slow model always,2024-01-24,3.699761093824115,17
+1.0,conservative,2,100,slow model always,2024-01-25,-1.0052077994544946,2
+1.0,conservative,2,100,latency-aware cascade,2024-01-20,-6.407357621905,3
+1.0,conservative,2,100,latency-aware cascade,2024-01-21,0.0,0
+1.0,conservative,2,100,latency-aware cascade,2024-01-22,3.633484826058707,10
+1.0,conservative,2,100,latency-aware cascade,2024-01-23,0.8522605438132915,1
+1.0,conservative,2,100,latency-aware cascade,2024-01-24,3.699761093824115,17
+1.0,conservative,2,100,latency-aware cascade,2024-01-25,-1.0052077994544946,2
+1.0,conservative,2,200,naive fast path,2024-01-20,-1623.512119955575,1891
+1.0,conservative,2,200,naive fast path,2024-01-21,-786.5858864361022,899
+1.0,conservative,2,200,naive fast path,2024-01-22,-15812.060438272749,18010
+1.0,conservative,2,200,naive fast path,2024-01-23,-12545.22478474179,15216
+1.0,conservative,2,200,naive fast path,2024-01-24,-6800.555618151355,8390
+1.0,conservative,2,200,naive fast path,2024-01-25,-3325.9220304080154,4203
+1.0,conservative,2,200,fast path + decay prior,2024-01-20,-15.375267100332888,37
+1.0,conservative,2,200,fast path + decay prior,2024-01-21,-7.737196682056385,16
+1.0,conservative,2,200,fast path + decay prior,2024-01-22,-13.011059119781594,44
+1.0,conservative,2,200,fast path + decay prior,2024-01-23,-16.087720559396487,26
+1.0,conservative,2,200,fast path + decay prior,2024-01-24,-10.837766598404112,47
+1.0,conservative,2,200,fast path + decay prior,2024-01-25,-16.47667394046196,44
+1.0,conservative,2,200,slow model always,2024-01-20,0.0,0
+1.0,conservative,2,200,slow model always,2024-01-21,0.0,0
+1.0,conservative,2,200,slow model always,2024-01-22,2.5441358206505607,4
+1.0,conservative,2,200,slow model always,2024-01-23,0.0,0
+1.0,conservative,2,200,slow model always,2024-01-24,-0.6550823915538528,4
+1.0,conservative,2,200,slow model always,2024-01-25,0.0,0
+1.0,conservative,2,200,latency-aware cascade,2024-01-20,-2.023448262597111,1
+1.0,conservative,2,200,latency-aware cascade,2024-01-21,0.0,0
+1.0,conservative,2,200,latency-aware cascade,2024-01-22,2.5441358206505607,4
+1.0,conservative,2,200,latency-aware cascade,2024-01-23,0.0,0
+1.0,conservative,2,200,latency-aware cascade,2024-01-24,-0.6550823915538528,4
+1.0,conservative,2,200,latency-aware cascade,2024-01-25,0.0,0
+1.0,conservative,3,0,naive fast path,2024-01-26,-4477.434471916197,9299
+1.0,conservative,3,0,naive fast path,2024-01-27,-783.272481843898,2011
+1.0,conservative,3,0,naive fast path,2024-01-28,-1897.378549742294,3758
+1.0,conservative,3,0,naive fast path,2024-01-29,-3106.1252975752673,5963
+1.0,conservative,3,0,naive fast path,2024-01-30,-2849.3539322373686,5954
+1.0,conservative,3,0,naive fast path,2024-01-31,-2603.3612257521713,11040
+1.0,conservative,3,0,fast path + decay prior,2024-01-26,585.9271866114615,2763
+1.0,conservative,3,0,fast path + decay prior,2024-01-27,115.56645527678558,600
+1.0,conservative,3,0,fast path + decay prior,2024-01-28,207.47068488882974,904
+1.0,conservative,3,0,fast path + decay prior,2024-01-29,371.90518498950615,1623
+1.0,conservative,3,0,fast path + decay prior,2024-01-30,359.74897010490616,1573
+1.0,conservative,3,0,fast path + decay prior,2024-01-31,1159.503635819507,4367
+1.0,conservative,3,0,slow model always,2024-01-26,190.68801469219372,773
+1.0,conservative,3,0,slow model always,2024-01-27,64.93121800482156,258
+1.0,conservative,3,0,slow model always,2024-01-28,102.77433041795692,329
+1.0,conservative,3,0,slow model always,2024-01-29,106.0078091272318,599
+1.0,conservative,3,0,slow model always,2024-01-30,120.18791294736884,605
+1.0,conservative,3,0,slow model always,2024-01-31,636.4296063661762,2525
+1.0,conservative,3,0,latency-aware cascade,2024-01-26,590.8261430191859,2858
+1.0,conservative,3,0,latency-aware cascade,2024-01-27,122.57601001865024,623
+1.0,conservative,3,0,latency-aware cascade,2024-01-28,214.31934978445383,943
+1.0,conservative,3,0,latency-aware cascade,2024-01-29,376.7836224451393,1675
+1.0,conservative,3,0,latency-aware cascade,2024-01-30,368.6679494050306,1635
+1.0,conservative,3,0,latency-aware cascade,2024-01-31,1210.8393103255291,4623
+1.0,conservative,3,1,naive fast path,2024-01-26,-4977.660271250764,9299
+1.0,conservative,3,1,naive fast path,2024-01-27,-860.7756852571351,2011
+1.0,conservative,3,1,naive fast path,2024-01-28,-2088.2407886270607,3758
+1.0,conservative,3,1,naive fast path,2024-01-29,-3453.5324930105367,5963
+1.0,conservative,3,1,naive fast path,2024-01-30,-3275.3296096509234,5954
+1.0,conservative,3,1,naive fast path,2024-01-31,-3404.3308173712467,11040
+1.0,conservative,3,1,fast path + decay prior,2024-01-26,-17.849710664060808,501
+1.0,conservative,3,1,fast path + decay prior,2024-01-27,2.8604681578496716,203
+1.0,conservative,3,1,fast path + decay prior,2024-01-28,-9.66864457951092,286
+1.0,conservative,3,1,fast path + decay prior,2024-01-29,-0.17421311285880847,442
+1.0,conservative,3,1,fast path + decay prior,2024-01-30,-32.34625275599345,421
+1.0,conservative,3,1,fast path + decay prior,2024-01-31,138.54559241708904,967
+1.0,conservative,3,1,slow model always,2024-01-26,162.74826860083357,731
+1.0,conservative,3,1,slow model always,2024-01-27,59.3821395176014,258
+1.0,conservative,3,1,slow model always,2024-01-28,95.35130833319289,308
+1.0,conservative,3,1,slow model always,2024-01-29,108.47478169682516,589
+1.0,conservative,3,1,slow model always,2024-01-30,119.52370777898943,582
+1.0,conservative,3,1,slow model always,2024-01-31,613.1728012208441,2490
+1.0,conservative,3,1,latency-aware cascade,2024-01-26,162.74826860083357,731
+1.0,conservative,3,1,latency-aware cascade,2024-01-27,59.3821395176014,258
+1.0,conservative,3,1,latency-aware cascade,2024-01-28,95.35130833319289,308
+1.0,conservative,3,1,latency-aware cascade,2024-01-29,120.6794435568248,589
+1.0,conservative,3,1,latency-aware cascade,2024-01-30,119.52370777898943,582
+1.0,conservative,3,1,latency-aware cascade,2024-01-31,613.1728012208441,2490
+1.0,conservative,3,2,naive fast path,2024-01-26,-4938.858273451184,9299
+1.0,conservative,3,2,naive fast path,2024-01-27,-904.8585459809142,2011
+1.0,conservative,3,2,naive fast path,2024-01-28,-2082.2337401817545,3758
+1.0,conservative,3,2,naive fast path,2024-01-29,-3502.675798292388,5963
+1.0,conservative,3,2,naive fast path,2024-01-30,-3352.0763707740307,5954
+1.0,conservative,3,2,naive fast path,2024-01-31,-3480.77746900498,11040
+1.0,conservative,3,2,fast path + decay prior,2024-01-26,-7.779376311273664,473
+1.0,conservative,3,2,fast path + decay prior,2024-01-27,1.594207674758739,197
+1.0,conservative,3,2,fast path + decay prior,2024-01-28,-6.223338159007371,277
+1.0,conservative,3,2,fast path + decay prior,2024-01-29,-12.884307315406394,426
+1.0,conservative,3,2,fast path + decay prior,2024-01-30,-46.56884278919709,411
+1.0,conservative,3,2,fast path + decay prior,2024-01-31,123.14934418108014,921
+1.0,conservative,3,2,slow model always,2024-01-26,157.71698652906858,727
+1.0,conservative,3,2,slow model always,2024-01-27,57.43739156384164,248
+1.0,conservative,3,2,slow model always,2024-01-28,85.73353013150016,296
+1.0,conservative,3,2,slow model always,2024-01-29,108.92014304981474,572
+1.0,conservative,3,2,slow model always,2024-01-30,107.80921486618736,563
+1.0,conservative,3,2,slow model always,2024-01-31,579.8433696458725,2417
+1.0,conservative,3,2,latency-aware cascade,2024-01-26,157.71698652906858,727
+1.0,conservative,3,2,latency-aware cascade,2024-01-27,57.43739156384164,248
+1.0,conservative,3,2,latency-aware cascade,2024-01-28,85.73353013150016,296
+1.0,conservative,3,2,latency-aware cascade,2024-01-29,104.6297555698151,572
+1.0,conservative,3,2,latency-aware cascade,2024-01-30,107.80921486618736,563
+1.0,conservative,3,2,latency-aware cascade,2024-01-31,579.8433696458725,2417
+1.0,conservative,3,5,naive fast path,2024-01-26,-5154.242541813831,9299
+1.0,conservative,3,5,naive fast path,2024-01-27,-923.0554671191121,2011
+1.0,conservative,3,5,naive fast path,2024-01-28,-2165.51493746486,3758
+1.0,conservative,3,5,naive fast path,2024-01-29,-3543.0932050053616,5963
+1.0,conservative,3,5,naive fast path,2024-01-30,-3421.91014783931,5954
+1.0,conservative,3,5,naive fast path,2024-01-31,-3761.8761964063715,11040
+1.0,conservative,3,5,fast path + decay prior,2024-01-26,-36.267910107692146,389
+1.0,conservative,3,5,fast path + decay prior,2024-01-27,5.648323849139979,185
+1.0,conservative,3,5,fast path + decay prior,2024-01-28,-23.23110692469582,253
+1.0,conservative,3,5,fast path + decay prior,2024-01-29,-12.99553175796628,376
+1.0,conservative,3,5,fast path + decay prior,2024-01-30,-47.12370303022258,363
+1.0,conservative,3,5,fast path + decay prior,2024-01-31,119.31804190897444,777
+1.0,conservative,3,5,slow model always,2024-01-26,111.2173602635051,596
+1.0,conservative,3,5,slow model always,2024-01-27,46.8290541237101,223
+1.0,conservative,3,5,slow model always,2024-01-28,78.08280080169806,271
+1.0,conservative,3,5,slow model always,2024-01-29,82.72806774703265,493
+1.0,conservative,3,5,slow model always,2024-01-30,82.9527849216964,483
+1.0,conservative,3,5,slow model always,2024-01-31,482.5382818573012,2152
+1.0,conservative,3,5,latency-aware cascade,2024-01-26,111.2173602635051,596
+1.0,conservative,3,5,latency-aware cascade,2024-01-27,46.8290541237101,223
+1.0,conservative,3,5,latency-aware cascade,2024-01-28,79.94374974158903,270
+1.0,conservative,3,5,latency-aware cascade,2024-01-29,82.72806774703265,493
+1.0,conservative,3,5,latency-aware cascade,2024-01-30,83.46246502320845,480
+1.0,conservative,3,5,latency-aware cascade,2024-01-31,482.5382818573012,2152
+1.0,conservative,3,10,naive fast path,2024-01-26,-5559.774782566936,9299
+1.0,conservative,3,10,naive fast path,2024-01-27,-981.2021134562082,2011
+1.0,conservative,3,10,naive fast path,2024-01-28,-2257.4349771193442,3758
+1.0,conservative,3,10,naive fast path,2024-01-29,-3679.1666090799786,5963
+1.0,conservative,3,10,naive fast path,2024-01-30,-3726.0854678395294,5954
+1.0,conservative,3,10,naive fast path,2024-01-31,-4130.494852922022,11040
+1.0,conservative,3,10,fast path + decay prior,2024-01-26,-18.832091723855267,268
+1.0,conservative,3,10,fast path + decay prior,2024-01-27,7.482505030009416,163
+1.0,conservative,3,10,fast path + decay prior,2024-01-28,-13.827036604963457,206
+1.0,conservative,3,10,fast path + decay prior,2024-01-29,-2.288445688956785,294
+1.0,conservative,3,10,fast path + decay prior,2024-01-30,-40.9127207946868,287
+1.0,conservative,3,10,fast path + decay prior,2024-01-31,71.62974154210713,567
+1.0,conservative,3,10,slow model always,2024-01-26,88.77714956336423,472
+1.0,conservative,3,10,slow model always,2024-01-27,41.02314989311754,198
+1.0,conservative,3,10,slow model always,2024-01-28,68.28855202876214,232
+1.0,conservative,3,10,slow model always,2024-01-29,71.74148767968795,432
+1.0,conservative,3,10,slow model always,2024-01-30,54.48103686652376,402
+1.0,conservative,3,10,slow model always,2024-01-31,377.5024967663055,1908
+1.0,conservative,3,10,latency-aware cascade,2024-01-26,88.81379303336423,471
+1.0,conservative,3,10,latency-aware cascade,2024-01-27,41.02314989311754,198
+1.0,conservative,3,10,latency-aware cascade,2024-01-28,68.28855202876214,232
+1.0,conservative,3,10,latency-aware cascade,2024-01-29,71.34010847968796,431
+1.0,conservative,3,10,latency-aware cascade,2024-01-30,54.48103686652376,402
+1.0,conservative,3,10,latency-aware cascade,2024-01-31,377.5024967663055,1908
+1.0,conservative,3,20,naive fast path,2024-01-26,-6209.833443825272,9299
+1.0,conservative,3,20,naive fast path,2024-01-27,-1075.7265826884948,2011
+1.0,conservative,3,20,naive fast path,2024-01-28,-2466.7424809547815,3758
+1.0,conservative,3,20,naive fast path,2024-01-29,-3929.255257693395,5963
+1.0,conservative,3,20,naive fast path,2024-01-30,-4001.9222278003745,5954
+1.0,conservative,3,20,naive fast path,2024-01-31,-4673.392120998393,11040
+1.0,conservative,3,20,fast path + decay prior,2024-01-26,-8.712954689131749,158
+1.0,conservative,3,20,fast path + decay prior,2024-01-27,4.803870265076045,131
+1.0,conservative,3,20,fast path + decay prior,2024-01-28,-4.333779009449435,154
+1.0,conservative,3,20,fast path + decay prior,2024-01-29,7.546684672045997,207
+1.0,conservative,3,20,fast path + decay prior,2024-01-30,-13.322836068917114,187
+1.0,conservative,3,20,fast path + decay prior,2024-01-31,26.038005833785938,309
+1.0,conservative,3,20,slow model always,2024-01-26,80.68383257793054,384
+1.0,conservative,3,20,slow model always,2024-01-27,26.077605099707043,175
+1.0,conservative,3,20,slow model always,2024-01-28,56.36930263323634,179
+1.0,conservative,3,20,slow model always,2024-01-29,55.216696938870605,350
+1.0,conservative,3,20,slow model always,2024-01-30,34.0819041415652,285
+1.0,conservative,3,20,slow model always,2024-01-31,317.2231094921643,1599
+1.0,conservative,3,20,latency-aware cascade,2024-01-26,80.68383257793054,384
+1.0,conservative,3,20,latency-aware cascade,2024-01-27,26.077605099707043,175
+1.0,conservative,3,20,latency-aware cascade,2024-01-28,56.36930263323634,179
+1.0,conservative,3,20,latency-aware cascade,2024-01-29,55.3401702188706,349
+1.0,conservative,3,20,latency-aware cascade,2024-01-30,34.0819041415652,285
+1.0,conservative,3,20,latency-aware cascade,2024-01-31,317.2231094921643,1599
+1.0,conservative,3,50,naive fast path,2024-01-26,-7096.491408433135,9299
+1.0,conservative,3,50,naive fast path,2024-01-27,-1286.1751085293824,2011
+1.0,conservative,3,50,naive fast path,2024-01-28,-2775.5698782281866,3758
+1.0,conservative,3,50,naive fast path,2024-01-29,-4333.864196657292,5963
+1.0,conservative,3,50,naive fast path,2024-01-30,-4546.838759218153,5954
+1.0,conservative,3,50,naive fast path,2024-01-31,-5757.76329682549,11040
+1.0,conservative,3,50,fast path + decay prior,2024-01-26,-10.502583861426547,71
+1.0,conservative,3,50,fast path + decay prior,2024-01-27,-12.08000981248921,87
+1.0,conservative,3,50,fast path + decay prior,2024-01-28,-16.327678420296635,92
+1.0,conservative,3,50,fast path + decay prior,2024-01-29,-12.561188936341432,125
+1.0,conservative,3,50,fast path + decay prior,2024-01-30,-19.818536604031788,111
+1.0,conservative,3,50,fast path + decay prior,2024-01-31,-10.696917224057081,150
+1.0,conservative,3,50,slow model always,2024-01-26,23.49111306845796,140
+1.0,conservative,3,50,slow model always,2024-01-27,8.482328422663668,107
+1.0,conservative,3,50,slow model always,2024-01-28,42.45641914735967,130
+1.0,conservative,3,50,slow model always,2024-01-29,41.165996932812234,218
+1.0,conservative,3,50,slow model always,2024-01-30,6.240608393287351,139
+1.0,conservative,3,50,slow model always,2024-01-31,134.14284282658295,955
+1.0,conservative,3,50,latency-aware cascade,2024-01-26,23.49111306845796,140
+1.0,conservative,3,50,latency-aware cascade,2024-01-27,8.482328422663668,107
+1.0,conservative,3,50,latency-aware cascade,2024-01-28,42.45641914735967,130
+1.0,conservative,3,50,latency-aware cascade,2024-01-29,41.28947021281222,217
+1.0,conservative,3,50,latency-aware cascade,2024-01-30,6.240608393287351,139
+1.0,conservative,3,50,latency-aware cascade,2024-01-31,134.14284282658295,955
+1.0,conservative,3,100,naive fast path,2024-01-26,-7765.955971538418,9299
+1.0,conservative,3,100,naive fast path,2024-01-27,-1354.52949394406,2011
+1.0,conservative,3,100,naive fast path,2024-01-28,-2923.039883909168,3758
+1.0,conservative,3,100,naive fast path,2024-01-29,-4610.178378546606,5963
+1.0,conservative,3,100,naive fast path,2024-01-30,-4855.987824739937,5954
+1.0,conservative,3,100,naive fast path,2024-01-31,-6594.671358469967,11040
+1.0,conservative,3,100,fast path + decay prior,2024-01-26,-10.19684536023847,39
+1.0,conservative,3,100,fast path + decay prior,2024-01-27,-6.7927914148775645,65
+1.0,conservative,3,100,fast path + decay prior,2024-01-28,-25.081921179013367,58
+1.0,conservative,3,100,fast path + decay prior,2024-01-29,-3.828295903773732,86
+1.0,conservative,3,100,fast path + decay prior,2024-01-30,-13.620829653127663,73
+1.0,conservative,3,100,fast path + decay prior,2024-01-31,-7.4847778650167,79
+1.0,conservative,3,100,slow model always,2024-01-26,0.5045529305153793,9
+1.0,conservative,3,100,slow model always,2024-01-27,-1.8456541168526732,38
+1.0,conservative,3,100,slow model always,2024-01-28,9.888287162248824,34
+1.0,conservative,3,100,slow model always,2024-01-29,1.977749874075647,58
+1.0,conservative,3,100,slow model always,2024-01-30,-0.5492976358728002,30
+1.0,conservative,3,100,slow model always,2024-01-31,60.90454491186764,298
+1.0,conservative,3,100,latency-aware cascade,2024-01-26,0.5045529305153793,9
+1.0,conservative,3,100,latency-aware cascade,2024-01-27,-1.8456541168526732,38
+1.0,conservative,3,100,latency-aware cascade,2024-01-28,9.888287162248824,34
+1.0,conservative,3,100,latency-aware cascade,2024-01-29,1.977749874075647,58
+1.0,conservative,3,100,latency-aware cascade,2024-01-30,-0.5492976358728002,30
+1.0,conservative,3,100,latency-aware cascade,2024-01-31,60.90454491186764,298
+1.0,conservative,3,200,naive fast path,2024-01-26,-8271.473096250711,9299
+1.0,conservative,3,200,naive fast path,2024-01-27,-1438.8400228888174,2011
+1.0,conservative,3,200,naive fast path,2024-01-28,-3043.1814545013294,3758
+1.0,conservative,3,200,naive fast path,2024-01-29,-4886.302896057551,5963
+1.0,conservative,3,200,naive fast path,2024-01-30,-5116.487390244453,5954
+1.0,conservative,3,200,naive fast path,2024-01-31,-7515.4904306420185,11040
+1.0,conservative,3,200,fast path + decay prior,2024-01-26,-7.98303746595416,20
+1.0,conservative,3,200,fast path + decay prior,2024-01-27,-11.207276747125956,51
+1.0,conservative,3,200,fast path + decay prior,2024-01-28,-16.773221529693092,35
+1.0,conservative,3,200,fast path + decay prior,2024-01-29,-6.9584296171905615,49
+1.0,conservative,3,200,fast path + decay prior,2024-01-30,-12.851950174373645,40
+1.0,conservative,3,200,fast path + decay prior,2024-01-31,-11.292978489814335,47
+1.0,conservative,3,200,slow model always,2024-01-26,-1.189444241055896,2
+1.0,conservative,3,200,slow model always,2024-01-27,-3.8114223311173276,15
+1.0,conservative,3,200,slow model always,2024-01-28,6.316574430301287,9
+1.0,conservative,3,200,slow model always,2024-01-29,-11.435560249149631,12
+1.0,conservative,3,200,slow model always,2024-01-30,1.7028998641381943,7
+1.0,conservative,3,200,slow model always,2024-01-31,5.717085329056477,57
+1.0,conservative,3,200,latency-aware cascade,2024-01-26,-1.189444241055896,2
+1.0,conservative,3,200,latency-aware cascade,2024-01-27,-3.8114223311173276,15
+1.0,conservative,3,200,latency-aware cascade,2024-01-28,6.316574430301287,9
+1.0,conservative,3,200,latency-aware cascade,2024-01-29,-11.435560249149631,12
+1.0,conservative,3,200,latency-aware cascade,2024-01-30,1.7028998641381943,7
+1.0,conservative,3,200,latency-aware cascade,2024-01-31,5.717085329056477,57

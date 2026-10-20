@@ -1,0 +1,30 @@
+btc_perp_binance_bybit: 31 development days, 4 folds
+  fee 1.0 bps/leg: 336,478 triggers over 31 days
+  measured inference: fast prior 4 µs, slow model 27.67 ms -> slow path waits 28.0 ms
+    optimistic fold 0: done
+    optimistic fold 1: done
+    optimistic fold 2: done
+    optimistic fold 3: done
+    conservative fold 0: done
+    conservative fold 1: done
+    conservative fold 2: done
+    conservative fold 3: done
+strategy             fast path + decay prior  hindsight ceiling  latency-aware cascade  naive fast path  slow model always
+mode         tau_ms                                                                                                       
+conservative 0                         845.1             1784.0                  878.2          -4496.7              312.3
+             1                          10.6             1419.5                  293.6          -5497.5              284.6
+             2                          -0.1             1392.9                  278.6          -5545.1              272.6
+             5                         -11.7             1330.5                  233.6          -5779.2              227.8
+             10                        -10.3             1236.3                  181.7          -6133.2              179.1
+             20                         -8.7             1100.5                  132.6          -6710.8              132.8
+             50                        -15.6              908.8                   54.7          -7737.4               54.2
+             100                       -14.5              855.4                   19.3          -8241.0               19.7
+             200                       -11.5              806.2                    2.7          -8863.2                3.3
+optimistic   1                        2387.2             2820.1                 2429.9           2376.8             2268.8
+             2                        2045.4             2784.5                 2174.4           2016.7             2083.4
+             5                        1406.2             2731.1                 1713.7           1254.6             1656.3
+             10                        827.2             2695.0                 1268.8            391.9             1255.9
+             20                        322.2             2646.9                  837.5           -635.7              837.6
+             50                         30.0             2481.6                  358.1          -2507.1              358.5
+             100                       -17.2             1575.6                   35.1          -5945.7               34.6
+             200                       -13.1             1041.3                    5.9          -8088.2                5.4

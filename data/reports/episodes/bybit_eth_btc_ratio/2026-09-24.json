@@ -1,0 +1,82 @@
+{
+ "pair": "bybit_eth_btc_ratio",
+ "date": "2026-09-24",
+ "status": "ok",
+ "events": 1704520,
+ "valid_share": 0.9999900265177293,
+ "episodes": 68719,
+ "by_hurdle": {
+  "gross>0bps|buy_b_sell_a": {
+   "n": 26663,
+   "died_share": 1.0,
+   "median_obs_ms": 698.0,
+   "sub_resolution_share": 0.2284064058808086,
+   "resolved_median_obs_ms": 1099.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.3387090724974684
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 26713,
+   "died_share": 1.0,
+   "median_obs_ms": 698.0,
+   "sub_resolution_share": 0.23138546774978475,
+   "resolved_median_obs_ms": 1100.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.3375135701718264
+  },
+  "gross>1bps|buy_b_sell_a": {
+   "n": 6931,
+   "died_share": 1.0,
+   "median_obs_ms": 99.0,
+   "sub_resolution_share": 0.5253210214976194,
+   "resolved_median_obs_ms": 294.5,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.31092194488529795
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 6729,
+   "died_share": 1.0,
+   "median_obs_ms": 99.0,
+   "sub_resolution_share": 0.5379699806806361,
+   "resolved_median_obs_ms": 201.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.32441670381928966
+  },
+  "gross>2bps|buy_b_sell_a": {
+   "n": 822,
+   "died_share": 1.0,
+   "median_obs_ms": 98.0,
+   "sub_resolution_share": 0.7031630170316302,
+   "resolved_median_obs_ms": 199.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.33698296836982966
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 793,
+   "died_share": 1.0,
+   "median_obs_ms": 98.0,
+   "sub_resolution_share": 0.6771752837326608,
+   "resolved_median_obs_ms": 199.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.3682219419924338
+  },
+  "gross>5bps|buy_b_sell_a": {
+   "n": 32,
+   "died_share": 1.0,
+   "median_obs_ms": 98.0,
+   "sub_resolution_share": 0.59375,
+   "resolved_median_obs_ms": 197.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.21875
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 36,
+   "died_share": 1.0,
+   "median_obs_ms": 99.0,
+   "sub_resolution_share": 0.5833333333333334,
+   "resolved_median_obs_ms": 197.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.2777777777777778
+  }
+ }
+}

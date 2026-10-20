@@ -1,0 +1,30 @@
+[project]
+name = "arbdata"
+version = "0.1.0"
+description = "Leakage-safe market data pipeline for cross-asset arbitrage decay research"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "sortedcontainers",
+    "requests",
+    "pyyaml",
+    "orjson",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+arbdata = "arbdata.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["arbdata", "arbtrade"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

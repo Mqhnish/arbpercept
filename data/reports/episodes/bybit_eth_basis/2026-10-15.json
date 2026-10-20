@@ -1,0 +1,82 @@
+{
+ "pair": "bybit_eth_basis",
+ "date": "2026-10-15",
+ "status": "ok",
+ "events": 1175653,
+ "valid_share": 0.9999974482266452,
+ "episodes": 98345,
+ "by_hurdle": {
+  "gross>0bps|buy_perp_sell_spot": {
+   "n": 36274,
+   "died_share": 1.0,
+   "median_obs_ms": 299.0,
+   "sub_resolution_share": 0.27901527264707504,
+   "resolved_median_obs_ms": 599.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.33547444450570657
+  },
+  "gross>0bps|sell_perp_buy_spot": {
+   "n": 36166,
+   "died_share": 0.9999723497207322,
+   "median_obs_ms": 300.0,
+   "sub_resolution_share": 0.2690648675551623,
+   "resolved_median_obs_ms": 600.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.3422828070563513
+  },
+  "gross>1bps|buy_perp_sell_spot": {
+   "n": 10773,
+   "died_share": 1.0,
+   "median_obs_ms": 2.0,
+   "sub_resolution_share": 0.6958136080943098,
+   "resolved_median_obs_ms": 201.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.6849531235496148
+  },
+  "gross>1bps|sell_perp_buy_spot": {
+   "n": 10952,
+   "died_share": 0.99990869247626,
+   "median_obs_ms": 2.0,
+   "sub_resolution_share": 0.6896457268078889,
+   "resolved_median_obs_ms": 202.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.6911066471877283
+  },
+  "gross>2bps|buy_perp_sell_spot": {
+   "n": 2033,
+   "died_share": 1.0,
+   "median_obs_ms": 1.0,
+   "sub_resolution_share": 0.8612887358583374,
+   "resolved_median_obs_ms": 102.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.8425971470732907
+  },
+  "gross>2bps|sell_perp_buy_spot": {
+   "n": 1813,
+   "died_share": 1.0,
+   "median_obs_ms": 1.0,
+   "sub_resolution_share": 0.9564258135686707,
+   "resolved_median_obs_ms": 101.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.9415333701047987
+  },
+  "gross>5bps|buy_perp_sell_spot": {
+   "n": 238,
+   "died_share": 1.0,
+   "median_obs_ms": 2.0,
+   "sub_resolution_share": 0.9327731092436975,
+   "resolved_median_obs_ms": 102.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.8739495798319328
+  },
+  "gross>5bps|sell_perp_buy_spot": {
+   "n": 96,
+   "died_share": 1.0,
+   "median_obs_ms": 2.0,
+   "sub_resolution_share": 1.0,
+   "resolved_median_obs_ms": NaN,
+   "stale_share": 0.0,
+   "stale_partner_share": 1.0
+  }
+ }
+}

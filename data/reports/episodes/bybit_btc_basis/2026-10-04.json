@@ -1,0 +1,82 @@
+{
+ "pair": "bybit_btc_basis",
+ "date": "2026-10-04",
+ "status": "ok",
+ "events": 1582078,
+ "valid_share": 0.9999987358398259,
+ "episodes": 10375,
+ "by_hurdle": {
+  "gross>0bps|buy_perp_sell_spot": {
+   "n": 4287,
+   "died_share": 1.0,
+   "median_obs_ms": 787.0,
+   "sub_resolution_share": 0.3279682761838115,
+   "resolved_median_obs_ms": 2986.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.4359692092372288
+  },
+  "gross>0bps|sell_perp_buy_spot": {
+   "n": 4249,
+   "died_share": 0.9997646505060014,
+   "median_obs_ms": 786.0,
+   "sub_resolution_share": 0.32360555424805837,
+   "resolved_median_obs_ms": 3200.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.4104495175335373
+  },
+  "gross>1bps|buy_perp_sell_spot": {
+   "n": 790,
+   "died_share": 1.0,
+   "median_obs_ms": 15.0,
+   "sub_resolution_share": 0.6873417721518987,
+   "resolved_median_obs_ms": 987.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.579746835443038
+  },
+  "gross>1bps|sell_perp_buy_spot": {
+   "n": 839,
+   "died_share": 1.0,
+   "median_obs_ms": 86.0,
+   "sub_resolution_share": 0.6543504171632897,
+   "resolved_median_obs_ms": 1394.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.47794994040524436
+  },
+  "gross>2bps|buy_perp_sell_spot": {
+   "n": 101,
+   "died_share": 1.0,
+   "median_obs_ms": 14.0,
+   "sub_resolution_share": 0.9504950495049505,
+   "resolved_median_obs_ms": 14914.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.9801980198019802
+  },
+  "gross>2bps|sell_perp_buy_spot": {
+   "n": 98,
+   "died_share": 1.0,
+   "median_obs_ms": 15.0,
+   "sub_resolution_share": 0.9081632653061225,
+   "resolved_median_obs_ms": 414.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.7755102040816326
+  },
+  "gross>5bps|buy_perp_sell_spot": {
+   "n": 5,
+   "died_share": 1.0,
+   "median_obs_ms": 12.0,
+   "sub_resolution_share": 1.0,
+   "resolved_median_obs_ms": NaN,
+   "stale_share": 0.0,
+   "stale_partner_share": 1.0
+  },
+  "gross>5bps|sell_perp_buy_spot": {
+   "n": 6,
+   "died_share": 1.0,
+   "median_obs_ms": 14.0,
+   "sub_resolution_share": 1.0,
+   "resolved_median_obs_ms": NaN,
+   "stale_share": 0.0,
+   "stale_partner_share": 1.0
+  }
+ }
+}

@@ -1,0 +1,18 @@
+# systemd unit for running the live recorder on a Linux VM.
+# Copy the project to /opt/arbdata, create its .venv, then:
+#   sudo cp deploy/arbdata-recorder.service /etc/systemd/system/
+#   sudo systemctl enable --now arbdata-recorder
+#   journalctl -u arbdata-recorder -f        # watch it
+[Unit]
+Description=arbdata: record Bybit live 10 ms book and trades
+After=network-online.target time-sync.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/arbdata
+ExecStart=/opt/arbdata/.venv/bin/python -m arbdata record
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

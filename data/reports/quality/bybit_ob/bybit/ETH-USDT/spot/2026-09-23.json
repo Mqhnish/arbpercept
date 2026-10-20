@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/ETH-USDT/spot",
+ "date": "2026-09-23",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 735139,
+ "raw_updates": 735139,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 1.901,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 5.0,
+ "feed_lag_ms_p99": 44.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.03671981860322779,
+ "daily_rv_bps": 254.43724152620885,
+ "first_raw_ts": 1790121600055000,
+ "last_raw_ts": 1790208000055000,
+ "mid_first": 2753.915,
+ "mid_last": 2684.815,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 310736,
+  "rpi_share": 0.006413804644457031,
+  "anomalous_minute_share": 0.0,
+  "longest_anomaly_run_min": 0,
+  "in_band_share": 0.9425638799908014,
+  "sweep_share": 0.04263416498511707,
+  "wrong_side_share": 0.014801955024081518,
+  "far_share": 0.00034332762200276607,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}

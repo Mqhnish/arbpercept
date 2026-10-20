@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/BTC-USDT/perp",
+ "date": "2024-01-24",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 863898,
+ "raw_updates": 863898,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 1.001,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 3.0,
+ "feed_lag_ms_p99": 10.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.025050633592785625,
+ "daily_rv_bps": 237.1036062734815,
+ "first_raw_ts": 1706054401001000,
+ "last_raw_ts": 1706140801002000,
+ "mid_first": 39901.649999999994,
+ "mid_last": 40078.05,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 1072748,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.0006944444444444445,
+  "longest_anomaly_run_min": 1,
+  "in_band_share": 0.9183297925198256,
+  "sweep_share": 0.06889997380512693,
+  "wrong_side_share": 0.012770233675047472,
+  "far_share": 0.0010067780399336645,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}

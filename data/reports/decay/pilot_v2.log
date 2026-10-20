@@ -1,0 +1,178 @@
+bybit_btc_basis [all] gross>1bps tau=500ms: 160,516 episodes, 3% undecidable, 4 scored folds (17s)
+bybit_btc_basis [all] gross>1bps tau=1000ms: 160,516 episodes, 1% undecidable, 4 scored folds (15s)
+bybit_btc_basis [all] gross>2bps tau=500ms: 19,608 episodes, 1% undecidable, 4 scored folds (7s)
+bybit_btc_basis [all] gross>2bps tau=1000ms: 19,608 episodes, 0% undecidable, 3 scored folds (5s)
+bybit_btc_basis [clean] gross>1bps tau=500ms: 70,034 episodes, 7% undecidable, 4 scored folds (13s)
+bybit_btc_basis [clean] gross>1bps tau=1000ms: 70,034 episodes, 3% undecidable, 4 scored folds (17s)
+bybit_btc_basis [clean] gross>2bps tau=500ms: 2,533 episodes, 3% undecidable, 3 scored folds (3s)
+bybit_btc_basis [clean] gross>2bps tau=1000ms: 2,533 episodes, 1% undecidable, 2 scored folds (2s)
+bybit_eth_basis [all] gross>1bps tau=500ms: 387,838 episodes, 3% undecidable, 4 scored folds (34s)
+bybit_eth_basis [all] gross>1bps tau=1000ms: 387,838 episodes, 1% undecidable, 4 scored folds (29s)
+bybit_eth_basis [all] gross>2bps tau=500ms: 54,482 episodes, 1% undecidable, 3 scored folds (8s)
+bybit_eth_basis [all] gross>2bps tau=1000ms: 54,482 episodes, 0% undecidable, 0 scored folds (0s)
+bybit_eth_basis [clean] gross>1bps tau=500ms: 98,241 episodes, 4% undecidable, 4 scored folds (12s)
+bybit_eth_basis [clean] gross>1bps tau=1000ms: 98,241 episodes, 1% undecidable, 4 scored folds (11s)
+bybit_eth_basis [clean] gross>2bps tau=500ms: 11,743 episodes, 1% undecidable, 0 scored folds (0s)
+bybit_eth_basis [clean] gross>2bps tau=1000ms: 11,743 episodes, 0% undecidable, 0 scored folds (0s)
+btc_perp_binance_bybit [all] gross>1bps tau=500ms: 428,188 episodes, 5% undecidable, 4 scored folds (27s)
+btc_perp_binance_bybit [all] gross>1bps tau=1000ms: 428,188 episodes, 3% undecidable, 4 scored folds (36s)
+btc_perp_binance_bybit [all] gross>2bps tau=500ms: 336,478 episodes, 5% undecidable, 4 scored folds (32s)
+btc_perp_binance_bybit [all] gross>2bps tau=1000ms: 336,478 episodes, 2% undecidable, 4 scored folds (27s)
+btc_perp_binance_bybit [clean] gross>1bps tau=500ms: 300,531 episodes, 6% undecidable, 4 scored folds (23s)
+btc_perp_binance_bybit [clean] gross>1bps tau=1000ms: 300,531 episodes, 3% undecidable, 4 scored folds (29s)
+btc_perp_binance_bybit [clean] gross>2bps tau=500ms: 230,409 episodes, 6% undecidable, 4 scored folds (30s)
+btc_perp_binance_bybit [clean] gross>2bps tau=1000ms: 230,409 episodes, 3% undecidable, 4 scored folds (34s)
+bybit_eth_btc_ratio [all] gross>1bps tau=500ms: 380,079 episodes, 6% undecidable, 4 scored folds (39s)
+bybit_eth_btc_ratio [all] gross>1bps tau=1000ms: 380,079 episodes, 1% undecidable, 4 scored folds (33s)
+bybit_eth_btc_ratio [all] gross>2bps tau=500ms: 64,885 episodes, 3% undecidable, 4 scored folds (16s)
+bybit_eth_btc_ratio [all] gross>2bps tau=1000ms: 64,885 episodes, 1% undecidable, 4 scored folds (15s)
+bybit_eth_btc_ratio [clean] gross>1bps tau=500ms: 261,938 episodes, 8% undecidable, 4 scored folds (21s)
+bybit_eth_btc_ratio [clean] gross>1bps tau=1000ms: 261,938 episodes, 1% undecidable, 4 scored folds (22s)
+bybit_eth_btc_ratio [clean] gross>2bps tau=500ms: 40,611 episodes, 5% undecidable, 4 scored folds (12s)
+bybit_eth_btc_ratio [clean] gross>2bps tau=1000ms: 40,611 episodes, 1% undecidable, 4 scored folds (10s)
+                       pair births      hurdle  tau_ms                                         model  folds   n_val  alive  undecidable    auc  auc_sd    bss  bss_sd    ece  auc_fresh
+0    btc_perp_binance_bybit    all  gross>1bps     500              all features (gradient boosting)      4  354202  0.395        0.051  0.847   0.028  0.374   0.034  0.028      0.834
+1    btc_perp_binance_bybit    all  gross>1bps     500  all features (gradient boosting, calibrated)      4  354202  0.395        0.051  0.840   0.031  0.358   0.043  0.033      0.826
+2    btc_perp_binance_bybit    all  gross>1bps     500                       all features (logistic)      4  354202  0.395        0.051  0.783   0.048  0.252   0.059  0.051      0.773
+3    btc_perp_binance_bybit    all  gross>1bps     500                      gap size only (logistic)      4  354202  0.395        0.051  0.574   0.008 -0.000   0.001  0.106      0.578
+4    btc_perp_binance_bybit    all  gross>1bps     500       survival rate only (Kaplan-Meier style)      4  354202  0.395        0.051  0.500   0.000  0.000   0.000  0.105      0.500
+5    btc_perp_binance_bybit    all  gross>1bps    1000              all features (gradient boosting)      4  364128  0.302        0.025  0.847   0.034  0.342   0.040  0.029      0.834
+6    btc_perp_binance_bybit    all  gross>1bps    1000  all features (gradient boosting, calibrated)      4  364128  0.302        0.025  0.840   0.037  0.329   0.048  0.027      0.826
+7    btc_perp_binance_bybit    all  gross>1bps    1000                       all features (logistic)      4  364128  0.302        0.025  0.791   0.053  0.239   0.062  0.044      0.782
+8    btc_perp_binance_bybit    all  gross>1bps    1000                      gap size only (logistic)      4  364128  0.302        0.025  0.568   0.006 -0.000   0.001  0.093      0.573
+9    btc_perp_binance_bybit    all  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4  364128  0.302        0.025  0.500   0.000  0.000   0.000  0.092      0.500
+10   btc_perp_binance_bybit    all  gross>2bps     500              all features (gradient boosting)      4  266300  0.315        0.050  0.853   0.023  0.348   0.064  0.031      0.839
+11   btc_perp_binance_bybit    all  gross>2bps     500  all features (gradient boosting, calibrated)      4  266300  0.315        0.050  0.842   0.029  0.325   0.080  0.034      0.828
+12   btc_perp_binance_bybit    all  gross>2bps     500                       all features (logistic)      4  266300  0.315        0.050  0.776   0.056  0.208   0.120  0.065      0.764
+13   btc_perp_binance_bybit    all  gross>2bps     500                      gap size only (logistic)      4  266300  0.315        0.050  0.558   0.012  0.000   0.000  0.074      0.558
+14   btc_perp_binance_bybit    all  gross>2bps     500       survival rate only (Kaplan-Meier style)      4  266300  0.315        0.050  0.500   0.000  0.000   0.000  0.062      0.500
+15   btc_perp_binance_bybit    all  gross>2bps    1000              all features (gradient boosting)      4  274079  0.229        0.023  0.856   0.027  0.319   0.071  0.026      0.843
+16   btc_perp_binance_bybit    all  gross>2bps    1000  all features (gradient boosting, calibrated)      4  274079  0.229        0.023  0.845   0.033  0.297   0.088  0.028      0.832
+17   btc_perp_binance_bybit    all  gross>2bps    1000                       all features (logistic)      4  274079  0.229        0.023  0.788   0.060  0.205   0.122  0.054      0.778
+18   btc_perp_binance_bybit    all  gross>2bps    1000                      gap size only (logistic)      4  274079  0.229        0.023  0.553   0.012  0.000   0.000  0.062      0.555
+19   btc_perp_binance_bybit    all  gross>2bps    1000       survival rate only (Kaplan-Meier style)      4  274079  0.229        0.023  0.500   0.000  0.000   0.000  0.055      0.500
+20   btc_perp_binance_bybit  clean  gross>1bps     500              all features (gradient boosting)      4  247582  0.447        0.057  0.832   0.030  0.355   0.044  0.030      0.832
+21   btc_perp_binance_bybit  clean  gross>1bps     500  all features (gradient boosting, calibrated)      4  247582  0.447        0.057  0.825   0.034  0.339   0.053  0.036      0.825
+22   btc_perp_binance_bybit  clean  gross>1bps     500                       all features (logistic)      4  247582  0.447        0.057  0.778   0.048  0.254   0.067  0.049      0.778
+23   btc_perp_binance_bybit  clean  gross>1bps     500                      gap size only (logistic)      4  247582  0.447        0.057  0.578   0.008  0.000   0.001  0.109      0.578
+24   btc_perp_binance_bybit  clean  gross>1bps     500       survival rate only (Kaplan-Meier style)      4  247582  0.447        0.057  0.500   0.000  0.000   0.000  0.107      0.500
+25   btc_perp_binance_bybit  clean  gross>1bps    1000              all features (gradient boosting)      4  255131  0.343        0.028  0.833   0.035  0.330   0.048  0.030      0.833
+26   btc_perp_binance_bybit  clean  gross>1bps    1000  all features (gradient boosting, calibrated)      4  255131  0.343        0.028  0.826   0.039  0.317   0.054  0.027      0.826
+27   btc_perp_binance_bybit  clean  gross>1bps    1000                       all features (logistic)      4  255131  0.343        0.028  0.787   0.052  0.245   0.069  0.044      0.787
+28   btc_perp_binance_bybit  clean  gross>1bps    1000                      gap size only (logistic)      4  255131  0.343        0.028  0.573   0.008  0.000   0.001  0.097      0.573
+29   btc_perp_binance_bybit  clean  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4  255131  0.343        0.028  0.500   0.000  0.000   0.000  0.095      0.500
+30   btc_perp_binance_bybit  clean  gross>2bps     500              all features (gradient boosting)      4  180052  0.367        0.056  0.838   0.026  0.334   0.073  0.035      0.838
+31   btc_perp_binance_bybit  clean  gross>2bps     500  all features (gradient boosting, calibrated)      4  180052  0.367        0.056  0.826   0.032  0.310   0.088  0.036      0.826
+32   btc_perp_binance_bybit  clean  gross>2bps     500                       all features (logistic)      4  180052  0.367        0.056  0.773   0.054  0.210   0.126  0.069      0.773
+33   btc_perp_binance_bybit  clean  gross>2bps     500                      gap size only (logistic)      4  180052  0.367        0.056  0.558   0.011  0.000   0.000  0.078      0.558
+34   btc_perp_binance_bybit  clean  gross>2bps     500       survival rate only (Kaplan-Meier style)      4  180052  0.367        0.056  0.500   0.000  0.000   0.000  0.066      0.500
+35   btc_perp_binance_bybit  clean  gross>2bps    1000              all features (gradient boosting)      4  185905  0.267        0.027  0.842   0.029  0.312   0.079  0.029      0.842
+36   btc_perp_binance_bybit  clean  gross>2bps    1000  all features (gradient boosting, calibrated)      4  185905  0.267        0.027  0.830   0.035  0.289   0.094  0.031      0.830
+37   btc_perp_binance_bybit  clean  gross>2bps    1000                       all features (logistic)      4  185905  0.267        0.027  0.787   0.056  0.214   0.126  0.058      0.787
+38   btc_perp_binance_bybit  clean  gross>2bps    1000                      gap size only (logistic)      4  185905  0.267        0.027  0.555   0.013  0.000   0.000  0.069      0.555
+39   btc_perp_binance_bybit  clean  gross>2bps    1000       survival rate only (Kaplan-Meier style)      4  185905  0.267        0.027  0.500   0.000  0.000   0.000  0.062      0.500
+40          bybit_btc_basis    all  gross>1bps     500              all features (gradient boosting)      4  126433  0.146        0.033  0.908   0.009  0.347   0.017  0.019      0.781
+41          bybit_btc_basis    all  gross>1bps     500  all features (gradient boosting, calibrated)      4  126433  0.146        0.033  0.903   0.009  0.339   0.017  0.015      0.775
+42          bybit_btc_basis    all  gross>1bps     500                       all features (logistic)      4  126433  0.146        0.033  0.882   0.013  0.294   0.025  0.018      0.739
+43          bybit_btc_basis    all  gross>1bps     500                      gap size only (logistic)      4  126433  0.146        0.033  0.602   0.025  0.018   0.014  0.022      0.488
+44          bybit_btc_basis    all  gross>1bps     500       survival rate only (Kaplan-Meier style)      4  126433  0.146        0.033  0.500   0.000  0.000   0.000  0.014      0.500
+45          bybit_btc_basis    all  gross>1bps    1000              all features (gradient boosting)      4  128860  0.099        0.014  0.905   0.011  0.275   0.023  0.015      0.792
+46          bybit_btc_basis    all  gross>1bps    1000  all features (gradient boosting, calibrated)      4  128860  0.099        0.014  0.900   0.012  0.268   0.022  0.013      0.785
+47          bybit_btc_basis    all  gross>1bps    1000                       all features (logistic)      4  128860  0.099        0.014  0.887   0.013  0.241   0.024  0.015      0.768
+48          bybit_btc_basis    all  gross>1bps    1000                      gap size only (logistic)      4  128860  0.099        0.014  0.597   0.023  0.011   0.010  0.018      0.488
+49          bybit_btc_basis    all  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4  128860  0.099        0.014  0.500   0.000  0.000   0.000  0.013      0.500
+50          bybit_btc_basis    all  gross>2bps     500              all features (gradient boosting)      4   15544  0.021        0.006  0.968   0.023  0.312   0.157  0.010      0.872
+51          bybit_btc_basis    all  gross>2bps     500  all features (gradient boosting, calibrated)      4   15544  0.021        0.006  0.961   0.030  0.337   0.123  0.007      0.855
+52          bybit_btc_basis    all  gross>2bps     500                       all features (logistic)      4   15544  0.021        0.006  0.939   0.017  0.285   0.105  0.006      0.867
+53          bybit_btc_basis    all  gross>2bps     500                      gap size only (logistic)      4   15544  0.021        0.006  0.511   0.200  0.001   0.001  0.013      0.472
+54          bybit_btc_basis    all  gross>2bps     500       survival rate only (Kaplan-Meier style)      4   15544  0.021        0.006  0.500   0.000  0.000   0.000  0.013      0.500
+55          bybit_btc_basis    all  gross>2bps    1000              all features (gradient boosting)      3    9878  0.020        0.001  0.970   0.019  0.339   0.185  0.009      0.912
+56          bybit_btc_basis    all  gross>2bps    1000  all features (gradient boosting, calibrated)      3    9878  0.020        0.001  0.920   0.081  0.366   0.146  0.007      0.873
+57          bybit_btc_basis    all  gross>2bps    1000                       all features (logistic)      3    9878  0.020        0.001  0.943   0.042  0.251   0.202  0.004      0.902
+58          bybit_btc_basis    all  gross>2bps    1000                      gap size only (logistic)      3    9878  0.020        0.001  0.612   0.061  0.002   0.001  0.013      0.524
+59          bybit_btc_basis    all  gross>2bps    1000       survival rate only (Kaplan-Meier style)      3    9878  0.020        0.001  0.500   0.000  0.000   0.000  0.013      0.500
+60          bybit_btc_basis  clean  gross>1bps     500              all features (gradient boosting)      4   52069  0.328        0.067  0.780   0.006  0.207   0.009  0.032      0.780
+61          bybit_btc_basis  clean  gross>1bps     500  all features (gradient boosting, calibrated)      4   52069  0.328        0.067  0.774   0.006  0.198   0.005  0.030      0.774
+62          bybit_btc_basis  clean  gross>1bps     500                       all features (logistic)      4   52069  0.328        0.067  0.746   0.010  0.156   0.013  0.034      0.746
+63          bybit_btc_basis  clean  gross>1bps     500                      gap size only (logistic)      4   52069  0.328        0.067  0.488   0.017 -0.001   0.002  0.029      0.488
+64          bybit_btc_basis  clean  gross>1bps     500       survival rate only (Kaplan-Meier style)      4   52069  0.328        0.067  0.500   0.000  0.000   0.000  0.012      0.500
+65          bybit_btc_basis  clean  gross>1bps    1000              all features (gradient boosting)      4   54145  0.220        0.030  0.791   0.008  0.182   0.016  0.031      0.791
+66          bybit_btc_basis  clean  gross>1bps    1000  all features (gradient boosting, calibrated)      4   54145  0.220        0.030  0.785   0.009  0.175   0.010  0.026      0.785
+67          bybit_btc_basis  clean  gross>1bps    1000                       all features (logistic)      4   54145  0.220        0.030  0.771   0.011  0.156   0.013  0.029      0.771
+68          bybit_btc_basis  clean  gross>1bps    1000                      gap size only (logistic)      4   54145  0.220        0.030  0.488   0.014 -0.000   0.002  0.025      0.488
+69          bybit_btc_basis  clean  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4   54145  0.220        0.030  0.500   0.000  0.000   0.000  0.015      0.500
+70          bybit_btc_basis  clean  gross>2bps     500              all features (gradient boosting)      3    1343  0.143        0.032  0.880   0.077  0.376   0.126  0.053      0.880
+71          bybit_btc_basis  clean  gross>2bps     500  all features (gradient boosting, calibrated)      3    1343  0.143        0.032  0.858   0.078  0.362   0.164  0.051      0.858
+72          bybit_btc_basis  clean  gross>2bps     500                       all features (logistic)      3    1343  0.143        0.032  0.884   0.042  0.380   0.076  0.057      0.884
+73          bybit_btc_basis  clean  gross>2bps     500                      gap size only (logistic)      3    1343  0.143        0.032  0.485   0.086 -0.003   0.007  0.086      0.485
+74          bybit_btc_basis  clean  gross>2bps     500       survival rate only (Kaplan-Meier style)      3    1343  0.143        0.032  0.500   0.000  0.000   0.000  0.074      0.500
+75          bybit_btc_basis  clean  gross>2bps    1000              all features (gradient boosting)      2     718  0.121        0.009  0.906   0.059  0.392   0.118  0.052      0.906
+76          bybit_btc_basis  clean  gross>2bps    1000  all features (gradient boosting, calibrated)      2     718  0.121        0.009  0.864   0.093  0.349   0.222  0.038      0.864
+77          bybit_btc_basis  clean  gross>2bps    1000                       all features (logistic)      2     718  0.121        0.009  0.913   0.030  0.365   0.145  0.033      0.913
+78          bybit_btc_basis  clean  gross>2bps    1000                      gap size only (logistic)      2     718  0.121        0.009  0.493   0.011  0.000   0.000  0.081      0.493
+79          bybit_btc_basis  clean  gross>2bps    1000       survival rate only (Kaplan-Meier style)      2     718  0.121        0.009  0.500   0.000  0.000   0.000  0.074      0.500
+80          bybit_eth_basis    all  gross>1bps     500              all features (gradient boosting)      4  305900  0.090        0.031  0.850   0.005  0.171   0.025  0.015      0.836
+81          bybit_eth_basis    all  gross>1bps     500  all features (gradient boosting, calibrated)      4  305900  0.090        0.031  0.845   0.006  0.167   0.019  0.008      0.828
+82          bybit_eth_basis    all  gross>1bps     500                       all features (logistic)      4  305900  0.090        0.031  0.749   0.015  0.065   0.007  0.009      0.748
+83          bybit_eth_basis    all  gross>1bps     500                      gap size only (logistic)      4  305900  0.090        0.031  0.562   0.026  0.005   0.002  0.009      0.567
+84          bybit_eth_basis    all  gross>1bps     500       survival rate only (Kaplan-Meier style)      4  305900  0.090        0.031  0.500   0.000  0.000   0.000  0.008      0.500
+85          bybit_eth_basis    all  gross>1bps    1000              all features (gradient boosting)      4  312320  0.050        0.011  0.857   0.011  0.117   0.026  0.008      0.850
+86          bybit_eth_basis    all  gross>1bps    1000  all features (gradient boosting, calibrated)      4  312320  0.050        0.011  0.849   0.012  0.112   0.019  0.006      0.842
+87          bybit_eth_basis    all  gross>1bps    1000                       all features (logistic)      4  312320  0.050        0.011  0.776   0.021  0.050   0.008  0.006      0.781
+88          bybit_eth_basis    all  gross>1bps    1000                      gap size only (logistic)      4  312320  0.050        0.011  0.566   0.030  0.003   0.001  0.006      0.577
+89          bybit_eth_basis    all  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4  312320  0.050        0.011  0.500   0.000  0.000   0.000  0.004      0.500
+90          bybit_eth_basis    all  gross>2bps     500              all features (gradient boosting)      3   36439  0.008        0.006  0.882   0.022  0.008   0.016  0.006      0.860
+91          bybit_eth_basis    all  gross>2bps     500  all features (gradient boosting, calibrated)      3   36439  0.008        0.006  0.818   0.065  0.021   0.019  0.003      0.820
+92          bybit_eth_basis    all  gross>2bps     500                       all features (logistic)      3   36439  0.008        0.006  0.816   0.047 -0.059   0.073  0.003      0.797
+93          bybit_eth_basis    all  gross>2bps     500                      gap size only (logistic)      3   36439  0.008        0.006  0.604   0.036  0.001   0.000  0.003      0.570
+94          bybit_eth_basis    all  gross>2bps     500       survival rate only (Kaplan-Meier style)      3   36439  0.008        0.006  0.500   0.000  0.000   0.000  0.002      0.500
+95          bybit_eth_basis  clean  gross>1bps     500              all features (gradient boosting)      4   76728  0.109        0.041  0.842   0.017  0.189   0.033  0.016      0.842
+96          bybit_eth_basis  clean  gross>1bps     500  all features (gradient boosting, calibrated)      4   76728  0.109        0.041  0.828   0.022  0.178   0.039  0.010      0.828
+97          bybit_eth_basis  clean  gross>1bps     500                       all features (logistic)      4   76728  0.109        0.041  0.790   0.020  0.112   0.009  0.020      0.790
+98          bybit_eth_basis  clean  gross>1bps     500                      gap size only (logistic)      4   76728  0.109        0.041  0.567   0.018  0.006   0.001  0.017      0.567
+99          bybit_eth_basis  clean  gross>1bps     500       survival rate only (Kaplan-Meier style)      4   76728  0.109        0.041  0.500   0.000  0.000   0.000  0.016      0.500
+100         bybit_eth_basis  clean  gross>1bps    1000              all features (gradient boosting)      4   78966  0.058        0.013  0.852   0.025  0.126   0.055  0.011      0.852
+101         bybit_eth_basis  clean  gross>1bps    1000  all features (gradient boosting, calibrated)      4   78966  0.058        0.013  0.839   0.028  0.126   0.040  0.007      0.839
+102         bybit_eth_basis  clean  gross>1bps    1000                       all features (logistic)      4   78966  0.058        0.013  0.814   0.029  0.072   0.019  0.014      0.814
+103         bybit_eth_basis  clean  gross>1bps    1000                      gap size only (logistic)      4   78966  0.058        0.013  0.577   0.024  0.004   0.002  0.010      0.577
+104         bybit_eth_basis  clean  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4   78966  0.058        0.013  0.500   0.000  0.000   0.000  0.009      0.500
+105     bybit_eth_btc_ratio    all  gross>1bps     500              all features (gradient boosting)      4  289751  0.047        0.061  0.919   0.009  0.301   0.023  0.007      0.909
+106     bybit_eth_btc_ratio    all  gross>1bps     500  all features (gradient boosting, calibrated)      4  289751  0.047        0.061  0.917   0.010  0.294   0.018  0.007      0.905
+107     bybit_eth_btc_ratio    all  gross>1bps     500                       all features (logistic)      4  289751  0.047        0.061  0.871   0.008  0.193   0.011  0.018      0.853
+108     bybit_eth_btc_ratio    all  gross>1bps     500                      gap size only (logistic)      4  289751  0.047        0.061  0.838   0.013  0.089   0.029  0.023      0.866
+109     bybit_eth_btc_ratio    all  gross>1bps     500       survival rate only (Kaplan-Meier style)      4  289751  0.047        0.061  0.500   0.000  0.000   0.000  0.009      0.500
+110     bybit_eth_btc_ratio    all  gross>1bps    1000              all features (gradient boosting)      4  305457  0.008        0.008  0.927   0.013  0.138   0.037  0.002      0.921
+111     bybit_eth_btc_ratio    all  gross>1bps    1000  all features (gradient boosting, calibrated)      4  305457  0.008        0.008  0.920   0.015  0.130   0.028  0.002      0.915
+112     bybit_eth_btc_ratio    all  gross>1bps    1000                       all features (logistic)      4  305457  0.008        0.008  0.890   0.007  0.085   0.031  0.004      0.889
+113     bybit_eth_btc_ratio    all  gross>1bps    1000                      gap size only (logistic)      4  305457  0.008        0.008  0.881   0.016  0.049   0.032  0.005      0.897
+114     bybit_eth_btc_ratio    all  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4  305457  0.008        0.008  0.500   0.000  0.000   0.000  0.002      0.500
+115     bybit_eth_btc_ratio    all  gross>2bps     500              all features (gradient boosting)      4   48149  0.030        0.033  0.927   0.011  0.245   0.045  0.007      0.910
+116     bybit_eth_btc_ratio    all  gross>2bps     500  all features (gradient boosting, calibrated)      4   48149  0.030        0.033  0.918   0.019  0.229   0.061  0.007      0.900
+117     bybit_eth_btc_ratio    all  gross>2bps     500                       all features (logistic)      4   48149  0.030        0.033  0.909   0.011  0.187   0.038  0.011      0.889
+118     bybit_eth_btc_ratio    all  gross>2bps     500                      gap size only (logistic)      4   48149  0.030        0.033  0.885   0.019  0.098   0.040  0.017      0.904
+119     bybit_eth_btc_ratio    all  gross>2bps     500       survival rate only (Kaplan-Meier style)      4   48149  0.030        0.033  0.500   0.000  0.000   0.000  0.006      0.500
+120     bybit_eth_btc_ratio    all  gross>2bps    1000              all features (gradient boosting)      4   49500  0.006        0.005  0.933   0.021  0.046   0.034  0.005      0.920
+121     bybit_eth_btc_ratio    all  gross>2bps    1000  all features (gradient boosting, calibrated)      4   49500  0.006        0.005  0.907   0.030  0.063   0.033  0.002      0.893
+122     bybit_eth_btc_ratio    all  gross>2bps    1000                       all features (logistic)      4   49500  0.006        0.005  0.909   0.019  0.042   0.077  0.002      0.878
+123     bybit_eth_btc_ratio    all  gross>2bps    1000                      gap size only (logistic)      4   49500  0.006        0.005  0.924   0.007  0.028   0.025  0.005      0.933
+124     bybit_eth_btc_ratio    all  gross>2bps    1000       survival rate only (Kaplan-Meier style)      4   49500  0.006        0.005  0.500   0.000  0.000   0.000  0.002      0.500
+125     bybit_eth_btc_ratio  clean  gross>1bps     500              all features (gradient boosting)      4  195204  0.066        0.082  0.909   0.009  0.307   0.025  0.010      0.909
+126     bybit_eth_btc_ratio  clean  gross>1bps     500  all features (gradient boosting, calibrated)      4  195204  0.066        0.082  0.906   0.009  0.300   0.014  0.009      0.906
+127     bybit_eth_btc_ratio  clean  gross>1bps     500                       all features (logistic)      4  195204  0.066        0.082  0.858   0.005  0.222   0.008  0.019      0.858
+128     bybit_eth_btc_ratio  clean  gross>1bps     500                      gap size only (logistic)      4  195204  0.066        0.082  0.866   0.007  0.201   0.012  0.022      0.866
+129     bybit_eth_btc_ratio  clean  gross>1bps     500       survival rate only (Kaplan-Meier style)      4  195204  0.066        0.082  0.500   0.000  0.000   0.000  0.013      0.500
+130     bybit_eth_btc_ratio  clean  gross>1bps    1000              all features (gradient boosting)      4  209861  0.011        0.011  0.920   0.017  0.145   0.038  0.002      0.920
+131     bybit_eth_btc_ratio  clean  gross>1bps    1000  all features (gradient boosting, calibrated)      4  209861  0.011        0.011  0.912   0.019  0.137   0.028  0.003      0.912
+132     bybit_eth_btc_ratio  clean  gross>1bps    1000                       all features (logistic)      4  209861  0.011        0.011  0.888   0.008  0.105   0.031  0.005      0.888
+133     bybit_eth_btc_ratio  clean  gross>1bps    1000                      gap size only (logistic)      4  209861  0.011        0.011  0.897   0.011  0.109   0.031  0.006      0.897
+134     bybit_eth_btc_ratio  clean  gross>1bps    1000       survival rate only (Kaplan-Meier style)      4  209861  0.011        0.011  0.500   0.000  0.000   0.000  0.003      0.500
+135     bybit_eth_btc_ratio  clean  gross>2bps     500              all features (gradient boosting)      4   29256  0.047        0.050  0.909   0.015  0.241   0.052  0.011      0.909
+136     bybit_eth_btc_ratio  clean  gross>2bps     500  all features (gradient boosting, calibrated)      4   29256  0.047        0.050  0.899   0.020  0.222   0.058  0.013      0.899
+137     bybit_eth_btc_ratio  clean  gross>2bps     500                       all features (logistic)      4   29256  0.047        0.050  0.893   0.016  0.206   0.036  0.016      0.893
+138     bybit_eth_btc_ratio  clean  gross>2bps     500                      gap size only (logistic)      4   29256  0.047        0.050  0.904   0.016  0.209   0.043  0.021      0.904
+139     bybit_eth_btc_ratio  clean  gross>2bps     500       survival rate only (Kaplan-Meier style)      4   29256  0.047        0.050  0.500   0.000  0.000   0.000  0.008      0.500
+140     bybit_eth_btc_ratio  clean  gross>2bps    1000              all features (gradient boosting)      4   30520  0.009        0.008  0.918   0.023  0.045   0.032  0.007      0.918
+141     bybit_eth_btc_ratio  clean  gross>2bps    1000  all features (gradient boosting, calibrated)      4   30520  0.009        0.008  0.889   0.020  0.057   0.029  0.002      0.889
+142     bybit_eth_btc_ratio  clean  gross>2bps    1000                       all features (logistic)      4   30520  0.009        0.008  0.869   0.012  0.049   0.085  0.003      0.869
+143     bybit_eth_btc_ratio  clean  gross>2bps    1000                      gap size only (logistic)      4   30520  0.009        0.008  0.933   0.005  0.061   0.046  0.007      0.933
+144     bybit_eth_btc_ratio  clean  gross>2bps    1000       survival rate only (Kaplan-Meier style)      4   30520  0.009        0.008  0.500   0.000  0.000   0.000  0.003      0.500

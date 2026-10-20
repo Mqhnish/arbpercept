@@ -1,0 +1,33 @@
+# Taker strategies with inventory accounted: btc_perp_binance_bybit
+
+Mean net P&L per validation day (USD) with day-bootstrap 95% intervals, $10k per trade. Old: each hedged trade credited with the whole gap. Realised: positions tracked, funding paid or received, the remainder closed with taker orders at the day's end. Capped: no trade that takes the position past $50,000.
+
+## Fees 1 bps per leg
+
+| Fill bound | Latency | Strategy | Trades going one way | Old | Realised, no cap | Realised, capped |
+|---|---|---|---|---|---|---|
+| optimistic | 1 ms | Naive | 52% | 708 [403, 1,086] | 587 [308, 917] | 413 [229, 647] |
+| optimistic | 1 ms | Prior only | 54% | 672 [378, 1,037] | 554 [290, 875] | 413 [230, 645] |
+| optimistic | 1 ms | Slow always | 54% | 672 [380, 1,034] | 557 [296, 871] | 415 [237, 643] |
+| optimistic | 1 ms | Cascade | 52% | 707 [401, 1,084] | 586 [309, 915] | 412 [229, 646] |
+| optimistic | 10 ms | Naive | 40% | 158 [75, 280] | 69 [-7, 167] | -61 [-140, 9] |
+| optimistic | 10 ms | Prior only | 46% | 222 [120, 362] | 141 [66, 235] | 85 [43, 147] |
+| optimistic | 10 ms | Slow always | 49% | 252 [142, 399] | 164 [81, 266] | 116 [64, 190] |
+| optimistic | 10 ms | Cascade | 47% | 238 [137, 377] | 149 [75, 240] | 96 [54, 158] |
+| optimistic | 50 ms | Naive | 21% | -378 [-576, -218] | -433 [-627, -276] | -511 [-761, -307] |
+| optimistic | 50 ms | Prior only | 28% | 77 [34, 144] | 59 [23, 111] | 34 [2, 76] |
+| optimistic | 50 ms | Slow always | 40% | 130 [76, 207] | 98 [53, 156] | 72 [35, 120] |
+| optimistic | 50 ms | Cascade | 39% | 129 [76, 206] | 98 [53, 155] | 71 [36, 117] |
+| conservative | 1 ms | Naive | 16% | -1,102 [-1,578, -700] | -1,183 [-1,681, -767] | -1,191 [-1,708, -754] |
+| conservative | 1 ms | Prior only | 25% | -45 [-87, -12] | -54 [-99, -18] | -64 [-120, -20] |
+| conservative | 1 ms | Slow always | 32% | -14 [-43, 6] | -27 [-56, -4] | -33 [-75, -3] |
+| conservative | 1 ms | Cascade | 41% | 5 [-3, 12] | -5 [-12, 2] | -8 [-21, 2] |
+| conservative | 10 ms | Naive | 11% | -1,088 [-1,546, -697] | -1,142 [-1,610, -742] | -1,141 [-1,622, -732] |
+| conservative | 10 ms | Prior only | 19% | -17 [-35, -5] | -20 [-38, -8] | -25 [-45, -9] |
+| conservative | 10 ms | Slow always | 30% | -5 [-15, 2] | -13 [-23, -5] | -17 [-32, -5] |
+| conservative | 10 ms | Cascade | 29% | -4 [-12, 2] | -11 [-20, -4] | -16 [-29, -5] |
+| conservative | 50 ms | Naive | 4% | -1,145 [-1,601, -753] | -1,173 [-1,633, -779] | -1,169 [-1,634, -770] |
+| conservative | 50 ms | Prior only | 17% | -8 [-15, -2] | -8 [-15, -2] | -8 [-15, -2] |
+| conservative | 50 ms | Slow always | 17% | -8 [-19, -2] | -10 [-22, -3] | -10 [-22, -3] |
+| conservative | 50 ms | Cascade | 14% | -8 [-17, -1] | -8 [-18, -1] | -8 [-18, -1] |
+

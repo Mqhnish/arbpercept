@@ -1,0 +1,124 @@
+# arbdata configuration. Every threshold that shapes labels lives here so it is
+# versioned with the data, and none of it is ever tuned on the holdout split.
+
+data_root: data
+
+# How each source's clocks and sampling behave. resolution_ms bounds how precisely
+# an opportunity's birth and death can be timed; max_gap_ms is the silence after
+# which a stream is treated as missing (episodes crossing it are censored).
+sources:
+  bybit_ob:
+    description: Bybit public order book archive (snapshot + 100 ms deltas)
+    resolution_ms: 100
+    max_gap_ms: 3000      # Bybit sends nothing while the book is unchanged
+    clock: exchange_publish      # avail_ts = Bybit publish time (ts), exch_ts = matching engine (cts)
+  binance_bt:
+    description: Binance USD-M public bookTicker archive (every top-of-book change)
+    resolution_ms: 1
+    max_gap_ms: 5000
+    clock: exchange_publish      # avail_ts = event_time, exch_ts = transaction_time
+  bybit_live:
+    description: Our own recording of Bybit's live level-1 book (10 ms pushes), see arbdata/recorder.py
+    resolution_ms: 10
+    max_gap_ms: 5000      # level 1 re-sends a snapshot every 3 s when nothing changes
+    clock: observer_receive      # avail_ts = this machine's receive time, exch_ts = matching engine (cts)
+  binance_live:
+    description: Our own recording of Binance USD-M bookTicker (every top-of-book change), see arbdata/recorder.py
+    resolution_ms: 1
+    max_gap_ms: 5000
+    clock: observer_receive      # avail_ts = this machine's receive time (same clock as bybit_live), exch_ts = transaction time
+  tardis:
+    description: Tardis.dev free first-of-month quotes (every top-of-book change)
+    resolution_ms: 1
+    max_gap_ms: 5000
+    clock: collector_receive     # avail_ts = Tardis collector receive time, exch_ts = exchange time
+
+# One entry per raw stream. Key = source/venue/pair/kind.
+streams:
+  - {source: bybit_ob,   venue: bybit,   pair: BTC-USDT, kind: spot, symbol: BTCUSDT, market: spot}
+  - {source: bybit_ob,   venue: bybit,   pair: BTC-USDT, kind: perp, symbol: BTCUSDT, market: linear}
+  - {source: bybit_ob,   venue: bybit,   pair: ETH-USDT, kind: spot, symbol: ETHUSDT, market: spot}
+  - {source: bybit_ob,   venue: bybit,   pair: ETH-USDT, kind: perp, symbol: ETHUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: BTC-USDT, kind: spot, symbol: BTCUSDT, market: spot}
+  - {source: bybit_live, venue: bybit,   pair: BTC-USDT, kind: perp, symbol: BTCUSDT, market: linear}
+  - {source: bybit_live, venue: bybit,   pair: ETH-USDT, kind: spot, symbol: ETHUSDT, market: spot}
+  - {source: bybit_live, venue: bybit,   pair: ETH-USDT, kind: perp, symbol: ETHUSDT, market: linear}
+  - {source: binance_live, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT}
+  - {source: binance_live, venue: binance, pair: ETH-USDT, kind: perp, symbol: ETHUSDT}
+  - {source: binance_bt, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT}
+  - {source: binance_bt, venue: binance, pair: ETH-USDT, kind: perp, symbol: ETHUSDT}
+  - {source: tardis, venue: binance, pair: BTC-USDT, kind: spot, symbol: BTCUSDT,       exchange: binance}
+  - {source: tardis, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT,       exchange: binance-futures}
+  - {source: tardis, venue: okx,     pair: BTC-USDT, kind: spot, symbol: BTC-USDT,      exchange: okex}
+  - {source: tardis, venue: okx,     pair: BTC-USDT, kind: perp, symbol: BTC-USDT-SWAP, exchange: okex-swap}
+  - {source: tardis, venue: bybit,   pair: BTC-USDT, kind: spot, symbol: BTCUSDT,       exchange: bybit-spot}
+  - {source: tardis, venue: bybit,   pair: BTC-USDT, kind: perp, symbol: BTCUSDT,       exchange: bybit}
+
+# What gets compared. basis pairs: a = spot, b = perp on the same venue.
+# cross pairs: the same instrument type on two venues.
+# Only USDT-quoted instruments are paired: USD and USDT are different currencies.
+pairs:
+  - {name: bybit_btc_basis,        type: basis, a: bybit_ob/bybit/BTC-USDT/spot,     b: bybit_ob/bybit/BTC-USDT/perp}
+  - {name: bybit_eth_basis,        type: basis, a: bybit_ob/bybit/ETH-USDT/spot,     b: bybit_ob/bybit/ETH-USDT/perp}
+  - {name: live_btc_basis,         type: basis, a: bybit_live/bybit/BTC-USDT/spot,   b: bybit_live/bybit/BTC-USDT/perp}
+  - {name: live_eth_basis,         type: basis, a: bybit_live/bybit/ETH-USDT/spot,   b: bybit_live/bybit/ETH-USDT/perp}
+  # ratio pairs: two different assets on one venue; fair value from a drifting hedge ratio.
+  - {name: bybit_eth_btc_ratio,    type: ratio, a: bybit_ob/bybit/BTC-USDT/perp,     b: bybit_ob/bybit/ETH-USDT/perp}
+  - {name: live_btc_perp_binance_bybit, type: cross, a: binance_live/binance/BTC-USDT/perp, b: bybit_live/bybit/BTC-USDT/perp}
+  - {name: live_eth_perp_binance_bybit, type: cross, a: binance_live/binance/ETH-USDT/perp, b: bybit_live/bybit/ETH-USDT/perp}
+  - {name: btc_perp_binance_bybit, type: cross, a: binance_bt/binance/BTC-USDT/perp, b: bybit_ob/bybit/BTC-USDT/perp}
+  - {name: eth_perp_binance_bybit, type: cross, a: binance_bt/binance/ETH-USDT/perp, b: bybit_ob/bybit/ETH-USDT/perp}
+  - {name: tick_btc_spot_binance_okx,   type: cross, a: tardis/binance/BTC-USDT/spot, b: tardis/okx/BTC-USDT/spot}
+  - {name: tick_btc_spot_binance_bybit, type: cross, a: tardis/binance/BTC-USDT/spot, b: tardis/bybit/BTC-USDT/spot}
+  - {name: tick_btc_spot_okx_bybit,     type: cross, a: tardis/okx/BTC-USDT/spot,     b: tardis/bybit/BTC-USDT/spot}
+  - {name: tick_btc_perp_binance_okx,   type: cross, a: tardis/binance/BTC-USDT/perp, b: tardis/okx/BTC-USDT/perp}
+  - {name: tick_btc_perp_binance_bybit, type: cross, a: tardis/binance/BTC-USDT/perp, b: tardis/bybit/BTC-USDT/perp}
+  - {name: tick_btc_basis_binance,      type: basis, a: tardis/binance/BTC-USDT/spot, b: tardis/binance/BTC-USDT/perp}
+  - {name: tick_btc_basis_okx,          type: basis, a: tardis/okx/BTC-USDT/spot,     b: tardis/okx/BTC-USDT/perp}
+  - {name: tick_btc_basis_bybit,        type: basis, a: tardis/bybit/BTC-USDT/spot,   b: tardis/bybit/BTC-USDT/perp}
+
+# Published VIP0 taker fees in bps. Verify against each venue's current schedule.
+# The dataset stores gross edges; fees only define the optional "retail_taker" hurdle.
+fees_taker_bps:
+  binance: {spot: 10.0, perp: 5.0}
+  okx:     {spot: 10.0, perp: 5.0}
+  bybit:   {spot: 10.0, perp: 5.5}
+
+quality:
+  min_coverage: 0.95       # a stream-day below this share of gap-free time is excluded
+  spike_bps: 50            # a one-update mid jump this large that reverts is dropped as a bad tick
+  # Checked against Bybit's independent trade record. A stream-day fails if its book
+  # disagrees with real trades for minutes on end, or if the two clocks disagree.
+  # Thresholds are set by the faults they must catch (a 10-minute corrupted book, a
+  # 300 ms clock skew), not by the data they must pass.
+  max_anomaly_run_min: 4          # 5+ consecutive minutes with most trades outside the book fails
+  max_anomalous_minute_share: 0.01
+  max_clock_shift_ms: 20
+
+episodes:
+  hurdles_bps: [0.0, 1.0, 2.0, 5.0]   # gross-edge thresholds; choose one on validation folds only
+  retail_taker_hurdle: true           # also label at each pair's VIP0 taker cost
+  basis_ref_window_s: 300             # trailing window for the "normal" basis level (past data only)
+  warmup_s: 300                       # no births in the first minutes of a day: trailing features are incomplete
+  max_feed_lag_ms: 250                # births when a leg's publish lag exceeds this are flagged stale
+
+features:
+  vol_windows_s: [1, 10, 60]
+  rate_windows_s: [1, 10]
+  recent_births_window_s: 60
+  trade_windows_s: [1, 10]       # order flow from Bybit's public trade archive
+  trade_publish_margin_ms: 50    # trades stamped with matching-engine time count only once this
+                                 # old, since they reach an observer slightly later (feed lag p99 ~ 42 ms)
+  stale_partner_fraction: 0.5    # a sampled leg older than this share of its step at a birth is flagged
+  kalman_q_bps_per_sqrt_s: 0.2   # how fast the fair log-spread may drift (random walk)
+  kalman_r_bps: 0.5              # observation noise of the spread
+  ou_window_s: 300               # trailing window for the mean-reversion half-life
+  ratio_q_alpha_bps_per_sqrt_s: 0.5   # ratio pairs: drift of the intercept of log(b) on log(a)
+  ratio_q_beta_per_sqrt_s: 0.001      # ratio pairs: drift of the hedge ratio
+  ratio_r_bps: 2.0                    # ratio pairs: observation noise around the fair relationship
+
+splits:
+  holdout_fraction: 0.2    # the most recent dates, touched once at the very end
+  min_holdout_days: 7
+  embargo_days: 1          # dates dropped between consecutive blocks to stop regime bleed-through
+  n_folds: 4               # expanding-window walk-forward folds inside the development period

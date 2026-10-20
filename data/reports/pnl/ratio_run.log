@@ -1,0 +1,40 @@
+bybit_eth_btc_ratio: 32 development days, 4 folds
+  fee 1.0 bps/leg: 8,503 triggers over 32 days
+  measured inference: fast prior 5 µs, slow model 2.63 ms -> slow path waits 3.0 ms
+    optimistic fold 0: done
+    optimistic fold 1: done
+    optimistic fold 2: done
+    optimistic fold 3: done
+    conservative fold 0: done
+    conservative fold 1: done
+    conservative fold 2: done
+    conservative fold 3: done
+  fee 0.0 bps/leg: 1,345,497 triggers over 32 days
+  measured inference: fast prior 3 µs, slow model 2.60 ms -> slow path waits 3.0 ms
+    optimistic fold 0: done
+    optimistic fold 1: done
+    optimistic fold 2: done
+    optimistic fold 3: done
+    conservative fold 0: done
+    conservative fold 1: done
+    conservative fold 2: done
+    conservative fold 3: done
+strategy             fast path + decay prior  hindsight ceiling  latency-aware cascade  naive fast path  slow model always
+mode         tau_ms                                                                                                       
+conservative 0                           0.0                2.4                    0.0           -392.7                0.0
+             1                           0.0                0.1                   -0.5           -385.7                0.0
+             2                           0.0                0.1                   -0.5           -386.5                0.0
+             5                           0.0                0.2                   -0.5           -386.5                0.0
+             10                          0.0                0.2                   -0.5           -386.5                0.0
+             20                          0.0                0.2                   -0.5           -386.5                0.0
+             50                          0.0                0.2                   -0.4           -405.3                0.0
+             100                         0.0                1.1                   -0.3           -325.5                0.0
+             200                         0.0                2.7                   -0.2           -288.9                0.0
+optimistic   1                           1.2               67.8                    0.1           -300.5               -0.6
+             2                          -1.0               35.0                   -0.4           -381.9               -0.4
+             5                          -0.6               10.8                   -0.1           -436.6               -0.1
+             10                         -0.6                8.4                   -0.2           -441.6               -0.1
+             20                         -0.1                7.8                   -0.5           -443.2               -0.1
+             50                         -0.1                9.6                   -0.2           -459.8               -0.1
+             100                         0.0                6.2                   -0.4           -317.3                0.0
+             200                         0.0                8.6                   -0.1           -282.2                0.0

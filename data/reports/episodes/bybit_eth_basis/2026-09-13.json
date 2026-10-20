@@ -1,0 +1,82 @@
+{
+ "pair": "bybit_eth_basis",
+ "date": "2026-09-13",
+ "status": "ok",
+ "events": 1528482,
+ "valid_share": 0.9999914948295106,
+ "episodes": 25201,
+ "by_hurdle": {
+  "gross>0bps|buy_perp_sell_spot": {
+   "n": 9385,
+   "died_share": 0.9998934469898775,
+   "median_obs_ms": 579.0,
+   "sub_resolution_share": 0.287266915290357,
+   "resolved_median_obs_ms": 1500.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.5470431539690996
+  },
+  "gross>0bps|sell_perp_buy_spot": {
+   "n": 9246,
+   "died_share": 1.0,
+   "median_obs_ms": 578.0,
+   "sub_resolution_share": 0.30532121998702144,
+   "resolved_median_obs_ms": 1678.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.5625135193597232
+  },
+  "gross>1bps|buy_perp_sell_spot": {
+   "n": 3065,
+   "died_share": 0.999673735725938,
+   "median_obs_ms": 23.0,
+   "sub_resolution_share": 0.7177814029363785,
+   "resolved_median_obs_ms": 377.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.7288743882544861
+  },
+  "gross>1bps|sell_perp_buy_spot": {
+   "n": 2575,
+   "died_share": 1.0,
+   "median_obs_ms": 23.0,
+   "sub_resolution_share": 0.7188349514563107,
+   "resolved_median_obs_ms": 500.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.7860194174757281
+  },
+  "gross>2bps|buy_perp_sell_spot": {
+   "n": 557,
+   "died_share": 1.0,
+   "median_obs_ms": 22.0,
+   "sub_resolution_share": 0.9012567324955116,
+   "resolved_median_obs_ms": 178.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.7414721723518851
+  },
+  "gross>2bps|sell_perp_buy_spot": {
+   "n": 311,
+   "died_share": 1.0,
+   "median_obs_ms": 21.0,
+   "sub_resolution_share": 0.9742765273311897,
+   "resolved_median_obs_ms": 299.5,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.77491961414791
+  },
+  "gross>5bps|buy_perp_sell_spot": {
+   "n": 46,
+   "died_share": 1.0,
+   "median_obs_ms": 21.0,
+   "sub_resolution_share": 0.9565217391304348,
+   "resolved_median_obs_ms": 409.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.8913043478260869
+  },
+  "gross>5bps|sell_perp_buy_spot": {
+   "n": 16,
+   "died_share": 1.0,
+   "median_obs_ms": 22.0,
+   "sub_resolution_share": 1.0,
+   "resolved_median_obs_ms": NaN,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.5625
+  }
+ }
+}
