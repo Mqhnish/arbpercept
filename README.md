@@ -119,31 +119,36 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 
 ## Results so far (development data only)
 
-> **These numbers predate the review fixes on branch `anay/review-fixes`, and none of them has been re-run.** The fixes change what is measured:
-> - Offset-aware births are now labelled on the gap minus the usual offset. Before, they were labelled on the raw gap and filtered afterwards, which missed some opportunities and timed others late.
-> - The slow path's re-check and the cascade's margin choice now use the offset-relative gap and P&L.
-> - Fees and latencies can differ per venue.
-> - The day-end close no longer takes more than the books show.
-> - The position cap is converted at each trade's price.
-> - Days without triggers count as $0.
->
-> Re-run `arbtrade.evaluate --offset-aware --dump-trades` and `analysis/inventory_check.py --baseline-tag _v4_offset` to get the new numbers, and report them even if they are worse.
+All numbers below were re-run after the review fixes (offset-relative labelling, per-venue fees and latency, a depth-limited close, the cap at each trade's price, and $0 days for days without trades).
 
-**Profit, with inventory accounted** (`data/reports/pnl/btc_perp_binance_bybit_v4_offset/inventory.md`). Binance vs Bybit BTC perpetual, January 2024, 24 walk-forward validation days, 1 bps per leg, $10k per trade. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, and whatever is left is closed with taker orders at each day's end. Net P&L per validation day, with day-bootstrap 95% intervals:
+**Profit, with inventory accounted.** Binance vs Bybit BTC perpetual, January 2024, 24 walk-forward validation days, $10k per trade. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Net P&L per validation day, with day-bootstrap 95% intervals.
 
-| Latency, fill bound | Naive fast path | Fast + decay prior | Slow model always | Cascade |
+*Realistic setup* (`data/reports/pnl/btc_perp_binance_bybit_v5_real/inventory.md`): top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps) and the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms).
+
+| Fill bound | Naive fast path | Gap size only | Fast + decay prior | Slow model always | Cascade |
+|---|---|---|---|---|---|
+| Optimistic | −$567 [−961, −263] | $34 [8, 69] | $61 [17, 122] | $73 [23, 141] | **$69 [20, 135]** |
+| Conservative | −$730 [−1,257, −329] | −$5 [−12, −0] | −$4 [−8, −0] | −$1 [−4, 1] | $0 [−1, 1] |
+
+Paired differences (same days resampled): cascade minus naive is +$636 a day [+284, +1,093] with optimistic fills and +$730 [+329, +1,256] with conservative ones. Cascade minus the gap-size-only rule is +$35 [+10, +66] and +$5 [+0, +12].
+
+*Fee sweep at 1 bps per leg, equal latency on both legs* (`data/reports/pnl/btc_perp_binance_bybit_v5/inventory.md`), for comparison with earlier runs:
+
+| Latency, fill bound | Naive fast path | Gap size only | Cascade | Cascade − gap size only |
 |---|---|---|---|---|
-| 1 ms, optimistic | $413 [229, 647] | $413 [230, 645] | $415 [237, 643] | $412 [229, 646] |
-| 10 ms, optimistic | −$61 [−140, 9] | $85 [43, 147] | $116 [64, 190] | $96 [54, 158] |
-| 50 ms, optimistic | −$511 [−761, −307] | $34 [2, 76] | $72 [35, 120] | $71 [36, 117] |
-| 10 ms, conservative | −$1,141 [−1,622, −732] | −$25 [−45, −9] | −$17 [−32, −5] | −$16 [−29, −5] |
+| 1 ms, optimistic | $228 [69, 449] | $360 [174, 606] | $370 [170, 637] | +$10 [−8, +32] |
+| 10 ms, optimistic | −$1,074 [−1,567, −665] | $144 [83, 227] | $105 [30, 215] | −$39 [−77, −0] |
+| 50 ms, optimistic | −$2,557 [−3,660, −1,636] | $98 [33, 190] | $157 [78, 271] | +$59 [+36, +86] |
+| 10 ms, conservative | −$4,505 [−6,349, −2,971] | −$0 [−2, 1] | −$19 [−33, −8] | −$19 [−34, −7] |
 
-- **Why the numbers changed.** Earlier versions credited each trade with the whole gap measured from zero and assumed the positions it left could be closed for free. In January 2024 Binance's BTC perpetual traded 0.5–3 bps below Bybit's, so most trades went the same way and mainly harvested that offset; closing the positions pays it back. Scored with inventory, the earlier cascade's $221 a day (10 ms, conservative) becomes −$185 [−261, −122] with a $50k cap, and −$1,725 without one (`..._v3/inventory.md`).
-- **The fix:** measure each gap against the venues' usual offset. That keeps about 15% of the old triggers, trades both directions roughly evenly, and makes the gated policies profitable with optimistic fills and close to break-even with conservative fills.
-- **Decay gating** is still what separates a loss from break-even: naive trading loses $1,100+ a day with conservative fills at every latency.
-- **Cascade vs slow-always:** with the slow model at 6 µs, they are statistically the same.
+- **What the fixes changed.** Labelling births on the offset-relative gap finds about four times as many opportunities (173,702 at 1 bps, against 44,102 when raw births were filtered). Day by day, the cascade is statistically unchanged from the earlier run (+$9 a day [−37, +68] at 10 ms, optimistic), while naive trading looks much worse because it now takes every relative gap.
+- **Against a simple rule.** The decay models beat trading every gap above the fee threshold (the gap-size-only rule) in the realistic setup and at 50 ms, but not at 10 ms in the 1 bps sweep. Their edge over a simple rule is real but not uniform.
+- **With conservative fills** every gated policy is close to break-even, and naive trading loses $600–4,700 a day.
+- **Cascade vs slow-always:** statistically the same. The slow model's 6.4 µs is inference only; computing its features live has not been timed yet.
+- **Why earlier numbers were higher.** Versions before the inventory accounting credited each trade with the whole gap measured from zero. In January 2024 Binance's BTC perpetual traded 0.5–3 bps below Bybit's, so most trades went the same way and mainly harvested that offset, which closing the positions pays back (`..._v3/inventory.md`).
+- **Not yet modelled:** the delay before the trader sees each venue's quotes, the same displayed size being reused by trades close together, and a cross-venue holdout (see Evaluation rules).
 
-Fills are limited to displayed top-of-book size, with no queue position or market impact. The older numbers without inventory, for comparison, are in `data/reports/pnl/btc_perp_binance_bybit_v2/` and `..._v3/`.
+Fills are limited to displayed top-of-book size, with no queue position or market impact.
 
 **Decay** (`data/reports/decay/clean_vs_all.md`). Walk-forward AUC of "the gap is still open after 500 ms", births above 1 bps:
 
@@ -159,7 +164,7 @@ Fills are limited to displayed top-of-book size, with no queue position or marke
 - **Calibration:** the boosted model is already well calibrated (expected calibration error 0.01–0.03), and isotonic calibration does not improve it. It matters for the logistic prior (error up to 0.07), which is where it changed the P&L above.
 
 **Maker-taker execution** (`arbtrade/makertaker.py`, `data/reports/maker_taker/summary.md`). Rest a buy or sell at Bybit's best price whenever Binance's price, as observed, covers both fees plus a margin. Queue behind the displayed size, fill from real Bybit trades, and hedge on Binance as a taker after both latencies. Positions, funding and closing are accounted as above.
-- **January 2024, out of sample** (margin chosen on the first 20 days, P&L reported on the last 11), top-tier fees (0 maker, 1.7 bps taker), $50k cap: **+$19–20 a day [5, 36] from our machine** and **+$33–38 [10, 64] co-located**. Mid tier is about $5–13 a day; base tier is indistinguishable from zero.
+- **January 2024, out of sample** (margin chosen on the first 20 days, P&L reported on the last 11), top-tier fees (0 maker, 1.7 bps taker), $50k cap, each partial fill hedged on its own: **+$17–19 a day [5, 36] from our machine** and **+$32–37 [10, 63] co-located** (`data/reports/maker_taker/summary.md`). Mid tier is about $4–12 a day; base tier is indistinguishable from zero.
 - **Without inventory accounting** this was reported as $202 a day. Closing the one-way position (88% of fills went the same way) costs most of it; without a cap the same strategy loses $178 a day.
 - **Today's market** (15.5 h of our recordings, a first look): between −$1.50 and +$1.10 an hour across settings. An earlier "$5–11 an hour" came partly from quotes frozen by a network outage, which a stale-quote guard now rejects.
 - **Simplifications:** cancellations by others in the queue are ignored (pessimistic), one order per quoting spell, and no requotes.
