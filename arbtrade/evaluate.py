@@ -11,6 +11,12 @@ only harvest it build a one-way position that must be closed against the same of
 
 --leg-latency-ms A B: one latency per venue (leg a, leg b) instead of the equal-latency sweep.
 --venue-fees A B: one taker fee per venue (bps) instead of the same fee on both legs.
+--feed-delay-ms A B: one market-data delay per venue (cross pairs). The trader sees each book
+that late, so it reacts later and prices from older quotes. A trigger is traded only if the
+delayed books still show a gap above the trigger. The order latency is separate.
+--deplete-liquidity (cross pairs): a fill uses up the displayed size it took, until that side's
+price changes. Each strategy is scored on a replay of only the triggers it sends.
+Both are off by default, and then results are the same as before they existed.
 
 Development days only. Folds come from the pair's own dates (training strictly before
 validation, one embargo day). Within each fold, models are fitted on the first 70% of
@@ -39,7 +45,7 @@ from arbdata.splits import walk_forward_folds
 from .policies import (GAP_ONLY_FEATURES, Calibrator, FastPrior, SlowModel, choose_margins, expected_value_gain,
                        fit_gain, miss_loss_bps)
 from .convergence import exit_signal_times, execute_convergence
-from .replay import MODES, Leg, execute
+from .replay import MODES, Leg, execute, seen_after_us
 
 TAUS_MS = [0, 1, 2, 5, 10, 20, 50, 100, 200]
 NOTIONAL = 10_000.0
@@ -134,12 +140,18 @@ def convergence_context(cfg, spec, al: pd.DataFrame) -> dict:
 
 
 def replay_day(eps: pd.DataFrame, legs: dict, delay_ms: float, fee_bps: float, mode: str,
-               decide_after_ms: float = 0.0, delay_b_ms: float | None = None, fee_b_bps: float | None = None) -> pd.DataFrame:
+               decide_after_ms: float | np.ndarray = 0.0, delay_b_ms: float | None = None, fee_b_bps: float | None = None,
+               feed_delay_ms: tuple[float, float] = (0.0, 0.0), deplete: bool = False) -> pd.DataFrame:
     """Replay every birth. delay_ms and fee_bps are leg a's, and leg b's too unless delay_b_ms or
     fee_b_bps is given.
 
     decide_after_ms > 0: the order is priced from quotes seen that long after the trigger
-    (a slow path that re-reads the book once its model has finished).
+    (a slow path that re-reads the book once its model has finished). One value, or one per birth.
+
+    feed_delay_ms (leg a, leg b): each venue's market-data delay. The trader sees a birth once
+    the update that opened it reaches it (replay.seen_after_us), and from then on sees each book
+    that venue's feed delay late. The order latencies are separate (delay_ms, delay_b_ms).
+    deplete: fills use up the displayed size they took, shared by all the births given (replay.py).
 
     With an offset in legs (load_day with offset_window_s), edge_dec_bps is the gap seen at
     decision time measured against the usual offset, and pnl_rel credits each hedged unit with
@@ -149,24 +161,36 @@ def replay_day(eps: pd.DataFrame, legs: dict, delay_ms: float, fee_bps: float, m
     """
     lat = {"a": delay_ms, "b": delay_ms if delay_b_ms is None else delay_b_ms}
     fee = {"a": fee_bps, "b": fee_bps if fee_b_bps is None else fee_b_bps}
+    feed = {"a": feed_delay_ms[0], "b": feed_delay_ms[1]}
     ctx = legs.get("ctx")
     if ctx is not None:
+        if any(feed.values()) or deplete or np.ndim(decide_after_ms):
+            raise ValueError("feed delay, liquidity reuse and per-birth decision times apply to cross-venue pairs only")
         r = replay_convergence(eps, legs, ctx, max(lat.values()), (fee["a"] + fee["b"]) / 2, mode, decide_after_ms)
         r["pnl_rel"], r["pnl_rel_bps"] = r.pnl, r.pnl_bps
         return r
     us = lambda ms: int(round(ms * 1000))
+    after = (us(decide_after_ms) if np.ndim(decide_after_ms) == 0
+             else np.round(np.asarray(decide_after_ms, float) * 1000).astype(np.int64))
     off = legs.get("offset")
     parts = []
     for direction, (sell, buy) in DIRECTIONS.items():
         m = (eps.direction == direction).to_numpy()
         if m.any():
-            t_dec = eps.birth_ts.to_numpy()[m] + us(decide_after_ms)
+            t_birth = eps.birth_ts.to_numpy()[m]
+            seen = (seen_after_us(legs[sell], legs[buy], t_birth, us(feed[sell]), us(feed[buy]))
+                    if any(feed.values()) else np.zeros(len(t_birth), np.int64))
+            t_dec = t_birth + seen + (after if np.ndim(after) == 0 else after[m])
             r = execute(legs[sell], legs[buy], t_dec, us(lat[sell]), fee[sell], fee[buy], NOTIONAL, mode,
-                        delay_buy_us=us(lat[buy]))
-            o = np.zeros(len(t_dec)) if off is None else offset_at_times(off, t_dec, CROSS_SIGN[direction])
+                        delay_buy_us=us(lat[buy]), feed_sell_us=us(feed[sell]), feed_buy_us=us(feed[buy]),
+                        deplete=deplete)
+            # The usual offset as of the books the trader has seen (both venues' views reach that far).
+            t_view = t_dec - us(max(feed.values()))
+            o = np.zeros(len(t_dec)) if off is None else offset_at_times(off, t_view, CROSS_SIGN[direction])
             r["edge_dec_bps"] = r.edge_dec_bps - o
             r["pnl_rel"] = r.pnl - np.where(r.hedged > 0, r.hedged * r.mid_dec * o / 1e4, 0.0)
             r["pnl_rel_bps"] = np.where(r.notional > 0, r.pnl_rel / r.notional * 1e4, 0.0)
+            r["seen_after_us"] = seen  # how long after the birth the trader saw it (0 without a feed delay)
             r.index = eps.index[m]
             parts.append(r)
     return pd.concat(parts).loc[eps.index]
@@ -230,13 +254,23 @@ DUMP_TAUS_MS = [1, 10, 50]  # latencies whose individual trades are written out 
 
 def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None, dump_trades: bool = False,
         offset_aware: bool = False, leg_latency_ms: tuple[float, float] | None = None,
-        venue_fees: tuple[float, float] | None = None) -> pd.DataFrame:
+        venue_fees: tuple[float, float] | None = None, feed_delay_ms: tuple[float, float] | None = None,
+        deplete_liquidity: bool = False) -> pd.DataFrame:
+    """feed_delay_ms (leg a, leg b): each venue's market-data delay. A trigger is then traded only
+    if the books the trader has seen still show a gap above the trigger, the same re-check the
+    slow path makes. deplete_liquidity: fills use up the displayed size they took. Models are
+    fitted and calibrated on replays that send every trigger. Each strategy is scored on a replay
+    of only the triggers it sends, so it never loses size to trades it did not make."""
     cfg = load_config()
+    convergence = cfg.pairs[pair].type in CONV_DIRECTIONS
+    feed = tuple(float(f) for f in feed_delay_ms) if feed_delay_ms else (0.0, 0.0)
+    gate_fast = any(feed)  # without a feed delay the trader sees every birth as it happens
+    if convergence and (gate_fast or deplete_liquidity):
+        raise ValueError("--feed-delay-ms and --deplete-liquidity apply to cross-venue pairs only")
     splits = json.loads(cfg.splits_path.read_text())
     dev_dates = sorted(set(splits["development"]) & {p.stem for p in (cfg.data_root / "episodes" / pair).glob("*.parquet")})
     folds = walk_forward_folds(dev_dates, splits["params"]["embargo_days"], splits["params"]["n_folds"])
     print(f"{pair}: {len(dev_dates)} development days, {len(folds)} folds", flush=True)
-    convergence = cfg.pairs[pair].type in CONV_DIRECTIONS
     offset_aware = offset_aware and not convergence
     ecol = "edge_rel_bps" if offset_aware else "edge_birth_bps"
     pcol = "pnl_rel" if offset_aware else "pnl"  # the P&L that calibration choices maximise
@@ -249,13 +283,14 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
     rows, day_rows, trade_rows = [], [], []
     meta = {"pair": pair, "offset_aware": offset_aware, "offset_window_s": OFFSET_WINDOW_S if offset_aware else None,
             "latencies_ms": {str(t): list(lat_of[t]) for t in taus},
+            "feed_delay_ms": list(feed), "deplete_liquidity": deplete_liquidity,
             "folds": [{"train": [f["train"][0], f["train"][-1]], "val": [f["val"][0], f["val"][-1]]} for f in folds]}
 
     for fee_a, fee_b in fee_sets:
         fee = (fee_a + fee_b) / 2  # label: average fee per leg
         trigger = (2 if convergence else 1) * (fee_a + fee_b)  # gross edge must cover every fill's fee
         rp = lambda e, legs, tau, mode, after=0.0: replay_day(e, legs, lat_of[tau][0], fee_a, mode, after,
-                                                               lat_of[tau][1], fee_b)
+                                                               lat_of[tau][1], fee_b, feed, deplete_liquidity)
         days, quiet = {}, set()
         for d in dev_dates:
             got = load_day(cfg, pair, d, trigger, OFFSET_WINDOW_S if offset_aware else None)
@@ -295,16 +330,21 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                 zero_days = [d for d in va_all if d not in days]
                 meta.setdefault("val_days", {}).setdefault(str(fee), {})[str(k)] = va_all
                 cat = lambda ds: pd.concat([days[d][0] for d in ds], ignore_index=True)
-                res = lambda ds, t: pd.concat([out[d][t] for d in ds], ignore_index=True)
 
-                def res_slow(ds, t):
-                    r = pd.concat([out_slow[d][t] for d in ds], ignore_index=True)
-                    still = r.edge_dec_bps.to_numpy() > trigger  # gap vanished during inference: skip
+                def gated(r):
+                    # Trade only a gap the trader still sees above the trigger: the slow path's view after
+                    # inference, and with a feed delay the fast path's delayed view too. Otherwise skip.
+                    still = r.edge_dec_bps.to_numpy() > trigger
                     for c in ("pnl", "pnl_bps", "pnl_rel", "pnl_rel_bps"):
                         r[c] = np.where(still, r[c], 0.0)
                     r["full_fill"] = r.full_fill & still
                     r["still_open"] = still
                     return r
+
+                def res(ds, t):
+                    r = pd.concat([out[d][t] for d in ds], ignore_index=True)
+                    return gated(r) if gate_fast else r.assign(still_open=True)
+                res_slow = lambda ds, t: gated(pd.concat([out_slow[d][t] for d in ds], ignore_index=True))
                 Xfit, Xcal, Xval = cat(fit_d), cat(cal_d), cat(va)
                 for tau in taus:
                     fit_now, fit_slow = res(fit_d, tau), res_slow(fit_d, tau)
@@ -313,7 +353,7 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                         continue
                     fast, slow = FastPrior().fit(Xfit, yf), SlowModel().fit(Xfit, yfd)
                     gap = FastPrior(GAP_ONLY_FEATURES).fit(Xfit, yf)
-                    L_now = miss_loss_bps(fit_now, pcol + "_bps")
+                    L_now = miss_loss_bps(fit_now[fit_now.still_open], pcol + "_bps")
                     L_slow = miss_loss_bps(fit_slow[fit_slow.still_open], pcol + "_bps")
                     if convergence:  # payoff of a fill is learned: it depends on the later reversion
                         e_fit = Xfit.edge_birth_bps.to_numpy()
@@ -332,44 +372,61 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                     ev_cal_f = expected_value_gain(q_fast(Xcal), Xcal[ecol].to_numpy(), g_now, L_now)
                     ev_cal_s = expected_value_gain(q_slow(Xcal), Xcal[ecol].to_numpy(), g_slow, L_slow)
                     lo, hi = choose_margins(ev_cal_f, cal_now[pcol].to_numpy(), cal_slow[pcol].to_numpy(),
-                                            (ev_cal_s > 0) & cal_slow.still_open.to_numpy())
+                                            (ev_cal_s > 0) & cal_slow.still_open.to_numpy() & cal_now.still_open.to_numpy())
 
                     edge = Xval[ecol].to_numpy()
-                    ev_f = expected_value_gain(q_fast(Xval), edge, g_now, L_now)
-                    ev_g = expected_value_gain(cal_g.transform(gap.predict(Xval)), edge, g_now, L_now)
                     now, later = res(va, tau), res_slow(va, tau)
-                    ev_s = np.where(later.still_open, expected_value_gain(q_slow(Xval), edge, g_slow, L_slow), -np.inf)
+                    seen = now.still_open.to_numpy()  # all True without a feed delay
+                    ev_f = np.where(seen, expected_value_gain(q_fast(Xval), edge, g_now, L_now), -np.inf)
+                    ev_g = np.where(seen, expected_value_gain(cal_g.transform(gap.predict(Xval)), edge, g_now, L_now), -np.inf)
+                    ev_s = np.where(later.still_open.to_numpy() & seen,
+                                    expected_value_gain(q_slow(Xval), edge, g_slow, L_slow), -np.inf)
                     act = ev_f > hi
                     ask = (ev_f >= lo) & ~act
-                    choices = {
-                        "naive fast path": (np.ones(len(now), bool), now),
-                        "gap size only": (ev_g > 0, now),
-                        "fast path + decay prior": (ev_f > 0, now),
-                        "slow model always": (ev_s > 0, later),
-                        "latency-aware cascade": None,
+                    cols = ["pnl", "pnl_rel", "full_fill", "hedged"]
+
+                    def outcome(take, slow_ch):
+                        """Each trigger's outcome under a strategy that trades `take`, deciding the `slow_ch`
+                        ones after the slow model. Rows it does not take are never used."""
+                        if deplete_liquidity:  # replay only what it sends: it shares size only with its own fills
+                            o, pos = {c: now[c].to_numpy().copy() for c in cols}, 0
+                            for d in va:
+                                e, legs = days[d]
+                                tk = take[pos:pos + len(e)]
+                                if tk.any():
+                                    r = rp(e[tk], legs, tau, mode, np.where(slow_ch[pos:pos + len(e)][tk], delta, 0.0))
+                                    for c in cols:
+                                        o[c][pos + np.flatnonzero(tk)] = r[c].to_numpy()
+                                pos += len(e)
+                            return pd.DataFrame(o)
+                        if not slow_ch.any():
+                            return now
+                        if slow_ch.all():
+                            return later
+                        return pd.DataFrame({c: np.where(slow_ch, later[c], now[c]) for c in cols})
+
+                    never, always = np.zeros(len(now), bool), np.ones(len(now), bool)
+                    choices = {  # strategy: (triggers it trades, which of them wait for the slow model)
+                        "naive fast path": (seen, never),
+                        "gap size only": (ev_g > 0, never),
+                        "fast path + decay prior": (ev_f > 0, never),
+                        "slow model always": (ev_s > 0, always),
+                        "latency-aware cascade": (act | (ask & (ev_s > 0)), ~act),
                     }
-                    for name, ch in choices.items():
-                        if ch is None:
-                            pnl = np.where(act, now.pnl, 0.0) + np.where(ask & (ev_s > 0), later.pnl, 0.0)
-                            pnl_rel = np.where(act, now.pnl_rel, 0.0) + np.where(ask & (ev_s > 0), later.pnl_rel, 0.0)
-                            traded = act | (ask & (ev_s > 0))
-                            full = np.where(act, now.full_fill, later.full_fill)
-                            slow_share = float((ask).mean())
-                            hedged = np.where(act, now.hedged, later.hedged)
-                            waited = np.where(act, 0.0, delta)
-                        else:
-                            take, o = ch
-                            pnl = np.where(take, o.pnl, 0.0)
-                            pnl_rel = np.where(take, o.pnl_rel, 0.0)
-                            traded = take
-                            full = o.full_fill.to_numpy()
-                            slow_share = 1.0 if name == "slow model always" else 0.0
-                            hedged = o.hedged.to_numpy()
-                            waited = np.full(len(o), delta if o is later else 0.0)
+                    for name, (take, slow_ch) in choices.items():
+                        o = outcome(take, slow_ch)
+                        pnl = np.where(take, o.pnl, 0.0)
+                        pnl_rel = np.where(take, o.pnl_rel, 0.0)
+                        traded = take
+                        full = o.full_fill.to_numpy()
+                        hedged = o.hedged.to_numpy()
+                        waited = np.where(slow_ch, delta, 0.0)
+                        slow_share = float(ask.mean()) if name == "latency-aware cascade" else float(name == "slow model always")
                         if dump_trades and tau in dump_taus and not convergence:
                             # Position change on leg a: selling there (sell_a_buy_b) leaves a short on a.
                             sign = np.where(Xval.direction.to_numpy() == "sell_a_buy_b", -1.0, 1.0)
-                            fill_t = Xval.birth_ts.to_numpy() + np.round((waited + tau) * 1000).astype(np.int64)
+                            fill_t = (Xval.birth_ts.to_numpy() + np.round((waited + tau) * 1000).astype(np.int64)
+                                      + now.seen_after_us.to_numpy())
                             tk = np.asarray(traded, bool)
                             trade_rows.append(pd.DataFrame({
                                 "fee_bps_per_leg": fee, "fee_a_bps": fee_a, "fee_b_bps": fee_b, "mode": mode, "fold": k,
@@ -395,6 +452,9 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                                              "trades": 0})
                     # Ceiling for reference: trade exactly the triggers that turned out profitable at tau.
                     best = now[pcol].clip(lower=0)
+                    if deplete_liquidity:  # replay only the winners, so they do not lose size to the others
+                        win = (now[pcol] > 0).to_numpy()
+                        best = pd.Series(np.where(win, outcome(win, never)[pcol], 0.0)).clip(lower=0)
                     rows.append({"fee_bps_per_leg": fee, "fee_a_bps": fee_a, "fee_b_bps": fee_b, "mode": mode, "fold": k,
                                  "tau_ms": tau, "lat_a_ms": lat_of[tau][0], "lat_b_ms": lat_of[tau][1],
                                  "strategy": "hindsight ceiling", "val_days": len(va_all), "triggers": len(now),
@@ -429,6 +489,10 @@ def main() -> None:
                     help="taker fee per venue (bps) for leg a and leg b; replaces --fees")
     ap.add_argument("--leg-latency-ms", nargs=2, type=float, default=None, metavar=("A", "B"),
                     help="order latency per venue (ms) for leg a and leg b; replaces the equal-latency sweep")
+    ap.add_argument("--feed-delay-ms", nargs=2, type=float, default=None, metavar=("A", "B"),
+                    help="market-data delay per venue (ms) for leg a and leg b: the trader sees each book this late")
+    ap.add_argument("--deplete-liquidity", action="store_true",
+                    help="a fill uses up the displayed size it took until that side's price changes")
     ap.add_argument("--slow-wait-ms", type=float, default=None,
                     help="override the measured slow-model latency (e.g. 1.0 for a compiled model)")
     ap.add_argument("--tag", default="", help="suffix for the output folder")
@@ -440,7 +504,8 @@ def main() -> None:
     args = ap.parse_args()
     cfg = load_config()
     agg = run(args.pair, args.fees, cfg.reports_dir / "pnl" / f"{args.pair}{args.tag}", args.slow_wait_ms,
-              args.dump_trades, args.offset_aware, args.leg_latency_ms, args.venue_fees)
+              args.dump_trades, args.offset_aware, args.leg_latency_ms, args.venue_fees, args.feed_delay_ms,
+              args.deplete_liquidity)
     first_fee = sum(args.venue_fees) / 2 if args.venue_fees else args.fees[0]
     col = "pnl_rel_per_day_usd" if args.offset_aware else "pnl_per_day_usd"
     show = agg[agg.fee_bps_per_leg == first_fee].pivot_table(index=["mode", "tau_ms"], columns="strategy", values=col)

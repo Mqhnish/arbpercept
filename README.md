@@ -59,6 +59,9 @@ For the exact versions the tests last passed with, install `requirements-lock.tx
 Useful `arbtrade.evaluate` options:
 - `--venue-fees A B`: one taker fee per venue (leg a, leg b), for example `--venue-fees 1.7 3.0`.
 - `--leg-latency-ms A B`: one order latency per venue instead of the equal-latency sweep, for example `--leg-latency-ms 50 8`.
+- `--feed-delay-ms A B`: one market-data delay per venue (leg a, leg b). The trader sees each book that late. It reacts later and prices from older quotes. A trigger is traded only if the delayed books still show a gap above the trigger. This is separate from the order latency. For example, `--feed-delay-ms 0 45` adds the 45 ms median feed delay measured to Bybit (leg b) and none to Binance. Cross pairs only.
+- `--deplete-liquidity`: a simulated fill uses up the displayed size it took. A second trigger at the same price only gets what is left. The size comes back when that side's price changes. Each strategy is scored on a replay of only its own trades. Cross pairs only.
+- Both are off by default. Without them, results are the same as before they existed.
 
 `inventory_check.py` stops trading in each day's last 60 s and works the position down without taking more than the books show (`--close-window-s 0` gives the old close at the last quotes). It reports paired day-bootstrap differences against the naive and gap-size-only baselines, and against an earlier run with `--baseline-tag`.
 
