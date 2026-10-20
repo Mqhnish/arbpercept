@@ -53,10 +53,10 @@ def main() -> None:
             by = by[by.avail_ts >= lo]
             legs = (Leg.from_l1(bn, sampled=False), Leg.from_l1(by, sampled=False))
             ref = offset_reference(by, bn)
-            price = float(((by.bid_px + by.ask_px) / 2).mean())
             for (fname, (mk, tk)), m, (lname, lat), (rname, use_ref) in itertools.product(
                     FEES.items(), MARGINS, LAT.items(), RULES.items()):
-                p = Params(maker_fee_bps=mk, taker_fee_bps=tk, min_margin_bps=m, lat_bybit_ms=8.0, lat_binance_ms=lat)
+                p = Params(maker_fee_bps=mk, taker_fee_bps=tk, min_margin_bps=m,
+                           lat_bybit_ms=cfg.latency_ms.get("bybit", 8.0), lat_binance_ms=lat)
                 parts = []
                 for side, sign in (("bid", -1.0), ("ask", 1.0)):
                     r = simulate(by, tr, bn, side, p, ref if use_ref else None)
@@ -65,7 +65,7 @@ def main() -> None:
                         parts.append(pd.DataFrame({"t": f.t_fill, "dq_a": sign * f.filled, "pnl": f.pnl}))
                 fills = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=["t", "dq_a", "pnl"])
                 acc = account_day(fills.t.to_numpy(), fills.dq_a.to_numpy(), fills.pnl.to_numpy(), *legs,
-                                  None, fund_by, lo, hi + 1, CAP_USD / price, tk, tk)
+                                  None, fund_by, lo, hi + 1, fee_a_bps=tk, fee_b_bps=tk, cap_usd=CAP_USD)
                 rows.append({"asset": asset, "date": d, "hours": (hi - lo) / 3.6e9, "fees": fname, "margin": m,
                              "latency": lname, "rule": rname, "fills": len(fills), "kept": acc["trades"],
                              "one_way": float(max((fills.dq_a > 0).mean(), (fills.dq_a < 0).mean())) if len(fills) else np.nan,
@@ -77,8 +77,8 @@ def main() -> None:
     for c in ("fills", "old", "realised"):
         g[c] = g[c] / g.asset.map(hrs)
     lines = [f"# Maker-taker on today's market ({', '.join(args.dates)}), first look", "",
-             ", ".join(f"{a}: {h:.1f} h" for a, h in hrs.items()) + " of overlapping recordings. Bybit latency 8 ms, $10k clips. "
-             f"Per hour. Realised: positions capped at ${CAP_USD:,.0f}, Bybit funding, the remainder closed with taker orders "
+             ", ".join(f"{a}: {h:.1f} h" for a, h in hrs.items()) + f" of overlapping recordings. Bybit latency {cfg.latency_ms.get('bybit', 8.0):g} ms, $10k clips. "
+             f"Per hour. Realised: positions capped at ${CAP_USD:,.0f} at the price of each fill, Bybit funding, the remainder closed with taker orders "
              "at the end of each recorded stretch.", "",
              "| Asset | Fees (maker / taker bps) | Binance latency | Quoting rule | Margin (bps) | Fills per hour | Old accounting | Realised, capped |",
              "|---|---|---|---|---|---|---|---|"]

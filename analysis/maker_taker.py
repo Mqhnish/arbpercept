@@ -29,9 +29,10 @@ import pandas as pd
 from arbdata import pipeline as P
 from arbdata.config import load_config
 from arbdata.funding import load_funding
-from arbtrade.inventory import account_day
+from arbtrade.inventory import CLOSE_WINDOW_S, account_day
 from arbtrade.makertaker import Params, offset_reference, simulate
 from arbtrade.replay import Leg
+from arbtrade.stats import boot_ci
 
 FEES = {"top tier (maker 0, taker 1.7)": (0.0, 1.7), "mid tier (1, 3)": (1.0, 3.0), "base tier (2, 5)": (2.0, 5.0)}
 MARGINS = [0.5, 1.0, 2.0, 3.0, 5.0]
@@ -41,8 +42,8 @@ CAP_USD = 50_000.0
 DAY_US = 86_400_000_000
 
 
-def score_day(by, tr, bn, ref, legs, funding, day_start, mk, tk, margin, lat, use_ref) -> list[dict]:
-    p = Params(maker_fee_bps=mk, taker_fee_bps=tk, min_margin_bps=margin, lat_bybit_ms=8.0, lat_binance_ms=lat)
+def score_day(by, tr, bn, ref, legs, funding, day_start, mk, tk, margin, lat, use_ref, lat_bybit=8.0) -> list[dict]:
+    p = Params(maker_fee_bps=mk, taker_fee_bps=tk, min_margin_bps=margin, lat_bybit_ms=lat_bybit, lat_binance_ms=lat)
     parts = []
     for side, sign in (("bid", -1.0), ("ask", 1.0)):  # bid: long Bybit, short Binance (venue a)
         r = simulate(by, tr, bn, side, p, ref if use_ref else None)
@@ -50,11 +51,12 @@ def score_day(by, tr, bn, ref, legs, funding, day_start, mk, tk, margin, lat, us
             f = r[r.filled > 0]
             parts.append(pd.DataFrame({"t": f.t_fill, "dq_a": sign * f.filled, "pnl": f.pnl, "notional": f.filled * f.price}))
     fills = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=["t", "dq_a", "pnl", "notional"])
-    price = float(((by.bid_px + by.ask_px) / 2).mean())
+    price = float(((by.bid_px + by.ask_px) / 2).mean())  # only to express the peak position in USD
     out = []
-    for cap_name, cap in (("no cap", np.inf), ("$50k cap", CAP_USD)):
+    for cap_name, cap in (("no cap", None), ("$50k cap", CAP_USD)):
         acc = account_day(fills.t.to_numpy(), fills.dq_a.to_numpy(), fills.pnl.to_numpy(), legs["a"], legs["b"],
-                          funding["binance"], funding["bybit"], day_start, day_start + DAY_US, cap / price, tk, tk)
+                          funding["binance"], funding["bybit"], day_start, day_start + DAY_US, fee_a_bps=tk, fee_b_bps=tk,
+                          cap_usd=cap, close_window_s=CLOSE_WINDOW_S)
         out.append({"cap": cap_name, "fills": acc["trades"], "skipped_by_cap": acc["skipped_by_cap"],
                     "one_way_share": float(max((fills.dq_a > 0).mean(), (fills.dq_a < 0).mean())) if len(fills) else np.nan,
                     "old_accounting": acc["raw"], "trade_pnl": acc["trade_pnl"], "funding": acc["funding"],
@@ -62,11 +64,6 @@ def score_day(by, tr, bn, ref, legs, funding, day_start, mk, tk, margin, lat, us
                     "peak_position_usd": acc["peak_position"] * price,
                     "filled_notional": float(fills.notional[acc["keep"]].sum()) if len(fills) else 0.0})
     return out
-
-
-def boot(x: np.ndarray, rng) -> tuple[float, float]:
-    b = x[rng.integers(0, len(x), (10_000, len(x)))].mean(1)
-    return float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5))
 
 
 def main() -> None:
@@ -88,7 +85,8 @@ def main() -> None:
         day_start = P.day_start_us(d)
         for (fname, (mk, tk)), m, (lname, lat), (rname, use_ref) in itertools.product(
                 FEES.items(), MARGINS, BINANCE_LAT.items(), RULES.items()):
-            for r in score_day(by, tr, bn, ref, legs, funding, day_start, mk, tk, m, lat, use_ref):
+            for r in score_day(by, tr, bn, ref, legs, funding, day_start, mk, tk, m, lat, use_ref,
+                               cfg.latency_ms.get("bybit", 8.0)):
                 rows.append({"date": d, "fees": fname, "margin_bps": m, "latency": lname, "rule": rname, **r})
         print(d, "done", flush=True)
     df = pd.DataFrame(rows)
@@ -98,14 +96,15 @@ def main() -> None:
 
     days = sorted(df.date.unique())
     sel_days, rep_days = days[:20], days[20:]
-    rng = np.random.default_rng(0)
     lines = ["# Maker-taker prototype, January 2024 (Bybit maker, Binance taker hedge), with inventory", "",
              f"{len(days)} days. Margin chosen on the first {len(sel_days)} days by capped realised P&L; "
              f"everything below is the last {len(rep_days)} days.",
-             "Bybit latency 8 ms; one order per quoting spell; queue cancellations ignored (pessimistic).",
+             f"Bybit latency {cfg.latency_ms.get('bybit', 8.0):g} ms; one order per quoting spell; queue cancellations "
+             "ignored (pessimistic); each partial fill hedged on its own.",
              "Old accounting: each fill credited with the whole gap. Realised: positions tracked, funding paid or "
-             "received, the remainder closed with taker orders at the day's end. Capped: no fill that would take the "
-             f"position past ${CAP_USD:,.0f}.", "",
+             f"received, no new fills in the day's last {CLOSE_WINDOW_S:g} s while the position is closed with taker orders, "
+             "never taking more than both books show. Capped: no fill that would take the "
+             f"position past ${CAP_USD:,.0f} at the price of that fill.", "",
              "| Fees (bps) | Binance latency | Quoting rule | Margin | Fills per day | Fills going one way | Old accounting | "
              "Realised, no cap | Realised, capped | 95% interval (capped) | Marked, capped |",
              "|---|---|---|---|---|---|---|---|---|---|---|"]
@@ -114,7 +113,7 @@ def main() -> None:
         m = float(capped[capped.date.isin(sel_days)].groupby("margin_bps").realised.mean().idxmax())
         rep = g[(g.margin_bps == m) & g.date.isin(rep_days)]
         c, u = rep[rep.cap == "$50k cap"], rep[rep.cap == "no cap"]
-        lo, hi = boot(c.realised.to_numpy(), rng)
+        lo, hi = boot_ci(c.realised.to_numpy())
         lines.append(f"| {fname} | {lname} | {rname} | {m:g} | {u.fills.mean():,.0f} | {u.one_way_share.mean():.0%} | "
                      f"${u.old_accounting.mean():,.0f} | ${u.realised.mean():,.0f} | ${c.realised.mean():,.0f} | "
                      f"[{lo:,.0f}, {hi:,.0f}] | ${c.marked.mean():,.0f} |")

@@ -5,6 +5,10 @@
 Days are the resampling unit (trades within a day are not independent), 10,000 bootstrap
 draws, percentile 95% intervals. Regimes are terciles of the validation days' realised
 volatility on the pair's second leg.
+
+For an --offset-aware run the P&L is pnl_rel (each trade net of the venues' usual offset).
+That is a quick view: the reported result is analysis/inventory_check.py, which tracks
+positions, funding and the day-end close.
 """
 
 from __future__ import annotations
@@ -16,17 +20,11 @@ import numpy as np
 import pandas as pd
 
 from arbdata.config import load_config
+from arbtrade.stats import boot_ci
 
 SHOW_TAUS = [0, 1, 10, 50, 100]
-NAMES = {"naive fast path": "Naive", "fast path + decay prior": "Prior only",
+NAMES = {"naive fast path": "Naive", "gap size only": "Gap size only", "fast path + decay prior": "Prior only",
          "slow model always": "Slow always", "latency-aware cascade": "Cascade"}
-
-
-def boot_ci(x: np.ndarray, reps: int = 10_000, seed: int = 0) -> tuple[float, float]:
-    rng = np.random.default_rng(seed)
-    idx = rng.integers(0, len(x), (reps, len(x)))
-    means = x[idx].mean(1)
-    return float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5))
 
 
 def main() -> None:
@@ -43,19 +41,24 @@ def main() -> None:
         raise SystemExit(f"no rows at {args.fee} bps per leg in {d}")
     leg = cfg.pairs[args.pair].b
     rv = {q.stem: json.loads(q.read_text())["daily_rv_bps"] for q in (cfg.reports_dir / "quality" / leg).glob("*.json")}
+    meta = json.loads((d / "meta.json").read_text()) if (d / "meta.json").exists() else {}
+    value = "pnl_rel_usd" if meta.get("offset_aware") and "pnl_rel_usd" in days else "pnl_usd"
+    names = {s: n for s, n in NAMES.items() if s in set(days.strategy)}  # older runs have no gap-size baseline
 
     lines = [f"# P&L uncertainty and regimes: {args.pair}", "",
-             f"Mean net P&L per validation day (USD) with day-bootstrap 95% intervals. Fees {args.fee:g} bps per leg, $10k per trade.", ""]
+             f"Mean net P&L per validation day (USD) with day-bootstrap 95% intervals. Fees {args.fee:g} bps per leg, $10k per trade. "
+             + ("P&L net of the venues' usual offset (pnl_rel), positions not tracked: see inventory.md for the reported result."
+                if value == "pnl_rel_usd" else ""), ""]
     for mode in ("optimistic", "conservative"):
         lines += [f"## {mode.capitalize()} fill bound", "",
-                  "| Latency | Days | Naive | Prior only | Slow always | Cascade | Cascade − Naive | Cascade − Slow always |",
-                  "|---|---|---|---|---|---|---|---|"]
+                  "| Latency | Days | " + " | ".join(names.values()) + " | Cascade − Naive | Cascade − Slow always |",
+                  "|---|---|" + "---|" * (len(names) + 2)]
         for tau in SHOW_TAUS:
-            w = days[(days["mode"] == mode) & (days.tau_ms == tau)].pivot_table(index="date", columns="strategy", values="pnl_usd")
+            w = days[(days["mode"] == mode) & (days.tau_ms == tau)].pivot_table(index="date", columns="strategy", values=value)
             if w.empty or "latency-aware cascade" not in w:
                 continue
             cells = []
-            for s in NAMES:
+            for s in names:
                 x = w[s].to_numpy()
                 lo, hi = boot_ci(x)
                 cells.append(f"{x.mean():,.0f} [{lo:,.0f}, {hi:,.0f}]")
@@ -74,11 +77,11 @@ def main() -> None:
         bucket = pd.qcut(dvals, 3, labels=["calm", "normal", "volatile"])
         w["regime"] = w.date.map(bucket)
         lines += ["## By volatility regime at 10 ms latency", "",
-                  "| Fill bound | Regime | Days | Naive | Prior only | Slow always | Cascade |", "|---|---|---|---|---|---|---|"]
+                  "| Fill bound | Regime | Days | " + " | ".join(names.values()) + " |", "|---|---|---|" + "---|" * len(names)]
         for (mode, reg), g in w.groupby(["mode", "regime"], observed=True):
-            m = g.groupby("strategy").pnl_usd.mean()
+            m = g.groupby("strategy")[value].mean()
             lines.append(f"| {mode} | {reg} | {g.date.nunique()} | " +
-                         " | ".join(f"{m.get(s, np.nan):,.0f}" for s in NAMES) + " |")
+                         " | ".join(f"{m.get(s, np.nan):,.0f}" for s in names) + " |")
     out = d / ("stats.md" if args.fee == 1.0 else f"stats_fee{args.fee:g}.md")
     out.write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
