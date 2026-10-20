@@ -11,11 +11,11 @@ An arbitrage opportunity is worth acting on only if it will still be there when 
 | Trading system | `arbtrade/` | Replay execution with injected latency, IOC legs, fees and leg risk (`replay.py`). Fast prior, slow model, isotonic calibration and cascade policies (`policies.py`), with the slow model compiled to a Numba tree walker (`compiled.py`). Walk-forward P&L-vs-latency evaluation (`evaluate.py`). Maker-taker execution (`makertaker.py`), a live paper trader (`live.py`), and inventory accounting: positions per venue, funding, end-of-day closing and a position cap (`inventory.py`). |
 | Analysis | `analysis/` | Decay models and figures (`decay_pilot.py`, `decay_figures.py`), the P&L chart and intervals (`pnl_figure.py`, `pnl_stats.py`), the 100 ms vs 10 ms resolution check (`resolution_check.py`), models retrained on our 10 ms recordings (`live_prior.py`, `live_decay.py`), and the maker-taker sweeps (`maker_taker.py`, `maker_taker_live.py`). |
 | Live recorder | `arbdata/recorder.py`, `deploy/` | Records Bybit's 10 ms book and trades, and Binance USD-M top-of-book, on one receive clock. A systemd unit is provided for an always-on VM. |
-| Tests | `tests/` | Run with `.venv/bin/python -m pytest`. They cover book rebuild, outage detection, censoring, splits, trade validation with planted faults, Kalman/OU against known answers, replay mechanics, and a lookahead test that cuts the raw feeds at each decision and checks nothing changes. |
+| Tests | `tests/` | Run with `.venv/bin/python -m pytest`. They cover book rebuild, outage detection, censoring, splits, trade validation with planted faults, Kalman/OU against known answers, replay mechanics, and a lookahead test that cuts the raw feeds at each decision and checks nothing changes. They use synthetic data only, so they run without the data folders. GitHub Actions runs them on every pull request (`.github/workflows/tests.yml`). |
 
 ## How the decision works
 
-1. **Fast path (microseconds):** the fee-adjusted gap between venues crosses a threshold.
+1. **Fast path (microseconds):** the fee-adjusted gap between venues crosses a threshold. For cross-venue pairs the gap is measured against the venues' usual offset (`--offset-aware`), since a steady offset is not arbitrage.
 2. **Decay prior (1.5 µs, measured):** a six-feature logistic model estimates q, the chance both legs still fill after the order latency. The expected value in bps is `q·(edge − fees) + (1 − q)·L`, where L is the measured average outcome of incomplete fills (leg risk).
 3. **Cascade:**
    - If the prior is confidently positive, act now.
@@ -30,13 +30,15 @@ Before any order goes out, each trigger passes four checks, and every decision i
 - **Expected value:** the decay prior's expected value must be positive.
 - **Inventory:** the trade must not push the net position past the cap ($50k by default). Trades that shrink the position always pass.
 
-With the slow model at microseconds, model compute no longer costs edge; network latency does (about 8 ms to Bybit and 50 ms to Binance from our machine). The cascade's job is now the decay-aware decision itself, and it keeps room for heavier models later.
+With the slow model at microseconds, model compute no longer costs edge; network latency does (about 8 ms to Bybit and 50 ms to Binance from our machine, stored once as `order_latency_ms` in `config/sources.yaml`). The 6.4 µs is model inference only. The slow model's features are computed offline, so their live cost is not yet measured. The cascade's job is now the decay-aware decision itself, and it keeps room for heavier models later.
 
 ## Running it
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install -e ".[dev]" scikit-learn lifelines matplotlib numba websockets
+python3 -m venv .venv && .venv/bin/pip install -e ".[dev,models,live]"
 ```
+
+For the exact versions the tests last passed with, install `requirements-lock.txt` first, then `pip install -e . --no-deps`. On Windows, use `.venv\Scripts\python` wherever these commands say `.venv/bin/python`.
 
 ```bash
 .venv/bin/python -m arbdata download --start 2026-09-07 --end 2026-10-18 --source bybit_ob
@@ -47,8 +49,18 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]" scikit-learn lifeline
 ```
 
 ```bash
-.venv/bin/python -m arbtrade.evaluate --pair btc_perp_binance_bybit
+.venv/bin/python -m arbtrade.evaluate --pair btc_perp_binance_bybit --fees 1.0 --offset-aware --dump-trades --tag _v5
 ```
+
+```bash
+.venv/bin/python analysis/inventory_check.py --tag _v5 --baseline-tag _v4_offset
+```
+
+Useful `arbtrade.evaluate` options:
+- `--venue-fees A B`: one taker fee per venue (leg a, leg b), for example `--venue-fees 1.7 3.0`.
+- `--leg-latency-ms A B`: one order latency per venue instead of the equal-latency sweep, for example `--leg-latency-ms 50 8`.
+
+`inventory_check.py` stops trading in each day's last 60 s and works the position down without taking more than the books show (`--close-window-s 0` gives the old close at the last quotes). It reports paired day-bootstrap differences against the naive and gap-size-only baselines, and against an earlier run with `--baseline-tag`.
 
 ```bash
 .venv/bin/python -m arbdata record
@@ -103,8 +115,19 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 - **Holdout:** 10–18 Oct 2026 is frozen and locked behind `ARBDATA_UNLOCK_HOLDOUT=1`. Open it once, at the end.
 - **Results so far:** everything reported here comes from development days, with walk-forward folds (training always before validation, one embargo day).
 - **Two fill bounds:** the Bybit archive is sampled every 100 ms, so simulated fills on that leg are reported as an optimistic and a conservative bound. The 10 ms recorder narrows them.
+- **The holdout has no cross-venue data.** All Binance vs Bybit data (January 2024) is in development, and the holdout window holds Bybit archive days only. So the taker and maker-taker strategies below cannot be scored on it. A separate cross-venue holdout (for example February–March 2024, which Binance's archive still covers) has to be frozen before anyone looks at it.
 
 ## Results so far (development data only)
+
+> **These numbers predate the review fixes on branch `anay/review-fixes`, and none of them has been re-run.** The fixes change what is measured:
+> - Offset-aware births are now labelled on the gap minus the usual offset. Before, they were labelled on the raw gap and filtered afterwards, which missed some opportunities and timed others late.
+> - The slow path's re-check and the cascade's margin choice now use the offset-relative gap and P&L.
+> - Fees and latencies can differ per venue.
+> - The day-end close no longer takes more than the books show.
+> - The position cap is converted at each trade's price.
+> - Days without triggers count as $0.
+>
+> Re-run `arbtrade.evaluate --offset-aware --dump-trades` and `analysis/inventory_check.py --baseline-tag _v4_offset` to get the new numbers, and report them even if they are worse.
 
 **Profit, with inventory accounted** (`data/reports/pnl/btc_perp_binance_bybit_v4_offset/inventory.md`). Binance vs Bybit BTC perpetual, January 2024, 24 walk-forward validation days, 1 bps per leg, $10k per trade. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, and whatever is left is closed with taker orders at each day's end. Net P&L per validation day, with day-bootstrap 95% intervals:
 
@@ -162,7 +185,7 @@ We compared our system with three public arbitrage projects and adopted what was
 | Per-venue inventory, a rebalancing cost and an inventory cap; never assume positions close for free | [TacosyHorchata/hackathon-btc-arbitrage](https://github.com/TacosyHorchata/hackathon-btc-arbitrage) | `arbtrade/inventory.py`, applied by `analysis/inventory_check.py` and `analysis/maker_taker.py` |
 | A recorded reason for every accept or skip; stale-book rejection; a minimum size | the same project | `PaperEngine` decisions in `arbtrade/live.py`; the stale guard also in `arbtrade/makertaker.py` |
 | Funding rates: a perpetual position pays or earns funding while it is held | [ksmit323/funding-rate-arbitrage](https://github.com/ksmit323/funding-rate-arbitrage) | `arbdata/funding.py`, charged in `inventory.py` |
-| Per-venue fee tiers and a minimum-profit setting | [ArbiFlow](https://www.hackquest.io/projects/ArbiFlow) | already in `config/sources.yaml` and every evaluation's fee sweep |
+| Per-venue fee tiers and a minimum-profit setting | [ArbiFlow](https://www.hackquest.io/projects/ArbiFlow) | `--venue-fees` in `arbtrade.evaluate`, the tier sweep in `analysis/maker_taker.py`, and the trigger (minimum profit). `config/sources.yaml` stores only VIP0 taker fees. |
 
 ## Next steps (from what the data showed)
 
