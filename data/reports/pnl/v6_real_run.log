@@ -1,0 +1,15 @@
+btc_perp_binance_bybit: 31 development days, 4 folds
+  fees 1.7/3.0 bps: 17,924 triggers over 31 days (0 days without triggers)
+  measured inference: fast prior 1.5 µs, compiled slow model 9.1 µs -> slow path waits 0.03 ms
+    optimistic fold 0: done
+    optimistic fold 1: done
+    optimistic fold 2: done
+    optimistic fold 3: done
+    conservative fold 0: done
+    conservative fold 1: done
+    conservative fold 2: done
+    conservative fold 3: done
+strategy             fast path + decay prior  gap size only  hindsight ceiling  latency-aware cascade  naive fast path  slow model always
+mode         tau_ms                                                                                                                      
+conservative 50.0                       -3.0           -3.3               36.8                   -0.3           -557.8                0.4
+optimistic   50.0                       67.3           13.4              247.5                   72.9           -299.1               74.1
