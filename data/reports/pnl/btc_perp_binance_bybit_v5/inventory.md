@@ -1,0 +1,96 @@
+# Taker strategies with inventory accounted: btc_perp_binance_bybit
+
+Mean net P&L per validation day (USD) with day-bootstrap 95% intervals, $10k per trade. Old: each hedged trade credited with the whole gap. Realised: positions tracked, funding paid or received, no new trades in the day's last 60 s while the position is worked down, never taking more than both books show. Capped: no trade that takes the position past $50,000 at the price of that trade. Validation days without a trade count as $0.
+
+## Fees 1 bps per leg (average of the two venues)
+
+24 validation days.
+
+| Fill bound | Latency | Strategy | Trades going one way | Old | Realised, no cap | Realised, capped |
+|---|---|---|---|---|---|---|
+| optimistic | 1 ms | Naive | 50% | 679 [300, 1,172] | 372 [-23, 846] | 228 [69, 449] |
+| optimistic | 1 ms | Gap size only | 50% | 862 [430, 1,429] | 604 [176, 1,158] | 360 [174, 606] |
+| optimistic | 1 ms | Prior only | 50% | 859 [422, 1,438] | 611 [176, 1,185] | 370 [174, 635] |
+| optimistic | 1 ms | Slow always | 51% | 841 [416, 1,407] | 608 [181, 1,161] | 370 [170, 638] |
+| optimistic | 1 ms | Cascade | 51% | 841 [416, 1,406] | 608 [181, 1,163] | 370 [170, 637] |
+| optimistic | 10 ms | Naive | 41% | -794 [-1,188, -452] | -1,038 [-1,483, -656] | -1,074 [-1,567, -665] |
+| optimistic | 10 ms | Gap size only | 37% | 316 [160, 534] | 251 [112, 453] | 144 [83, 227] |
+| optimistic | 10 ms | Prior only | 41% | 302 [137, 542] | 207 [43, 439] | 63 [10, 135] |
+| optimistic | 10 ms | Slow always | 45% | 344 [178, 583] | 238 [59, 482] | 105 [30, 215] |
+| optimistic | 10 ms | Cascade | 45% | 344 [178, 583] | 239 [59, 482] | 105 [30, 215] |
+| optimistic | 50 ms | Naive | 22% | -2,411 [-3,461, -1,515] | -2,567 [-3,643, -1,645] | -2,557 [-3,660, -1,636] |
+| optimistic | 50 ms | Gap size only | 21% | 113 [43, 208] | 107 [39, 202] | 98 [33, 190] |
+| optimistic | 50 ms | Prior only | 23% | 89 [29, 180] | 78 [19, 169] | 60 [12, 133] |
+| optimistic | 50 ms | Slow always | 42% | 200 [109, 329] | 174 [82, 305] | 157 [78, 271] |
+| optimistic | 50 ms | Cascade | 42% | 200 [110, 330] | 174 [82, 305] | 157 [78, 271] |
+| conservative | 1 ms | Naive | 16% | -4,912 [-6,952, -3,184] | -5,091 [-7,182, -3,318] | -4,748 [-6,726, -3,103] |
+| conservative | 1 ms | Gap size only | 15% | -42 [-80, -13] | -45 [-84, -14] | -47 [-88, -15] |
+| conservative | 1 ms | Prior only | 21% | -43 [-80, -14] | -49 [-88, -19] | -60 [-112, -21] |
+| conservative | 1 ms | Slow always | 41% | -4 [-34, 32] | -28 [-61, 8] | -32 [-53, -14] |
+| conservative | 1 ms | Cascade | 40% | -3 [-33, 32] | -26 [-59, 9] | -28 [-48, -11] |
+| conservative | 10 ms | Naive | 11% | -4,725 [-6,691, -3,080] | -4,853 [-6,841, -3,180] | -4,505 [-6,349, -2,971] |
+| conservative | 10 ms | Gap size only | 14% | -0 [-2, 2] | -0 [-2, 1] | -0 [-2, 1] |
+| conservative | 10 ms | Prior only | 22% | -11 [-21, -1] | -15 [-26, -6] | -15 [-26, -6] |
+| conservative | 10 ms | Slow always | 43% | -18 [-46, 3] | -29 [-64, -3] | -19 [-35, -5] |
+| conservative | 10 ms | Cascade | 44% | -17 [-36, -2] | -25 [-46, -8] | -19 [-33, -8] |
+| conservative | 50 ms | Naive | 5% | -4,851 [-6,863, -3,148] | -4,928 [-6,959, -3,207] | -4,607 [-6,492, -3,013] |
+| conservative | 50 ms | Prior only | 24% | -0 [-1, 0] | -1 [-1, -0] | -1 [-1, -0] |
+| conservative | 50 ms | Slow always | 35% | -11 [-20, -2] | -14 [-24, -6] | -12 [-20, -5] |
+| conservative | 50 ms | Cascade | 36% | -8 [-17, -1] | -11 [-20, -3] | -9 [-15, -3] |
+
+Paired differences, realised and capped (same days resampled for both):
+
+| Fill bound | Latency | Comparison | Difference per day |
+|---|---|---|---|
+| optimistic | 1 ms | Cascade − Naive | +141 [+91, +201] |
+| optimistic | 1 ms | Cascade − Slow always | -0 [-2, +1] |
+| optimistic | 1 ms | Prior only − Gap size only | +10 [-5, +28] |
+| optimistic | 1 ms | Cascade − Gap size only | +10 [-8, +32] |
+| optimistic | 10 ms | Cascade − Naive | +1,179 [+724, +1,734] |
+| optimistic | 10 ms | Cascade − Slow always | +0 [-1, +1] |
+| optimistic | 10 ms | Prior only − Gap size only | -81 [-118, -48] |
+| optimistic | 10 ms | Cascade − Gap size only | -39 [-77, -0] |
+| optimistic | 50 ms | Cascade − Naive | +2,714 [+1,722, +3,906] |
+| optimistic | 50 ms | Cascade − Slow always | +0 [+0, +1] |
+| optimistic | 50 ms | Prior only − Gap size only | -38 [-66, -15] |
+| optimistic | 50 ms | Cascade − Gap size only | +59 [+36, +86] |
+| conservative | 1 ms | Cascade − Naive | +4,720 [+3,084, +6,695] |
+| conservative | 1 ms | Cascade − Slow always | +4 [+0, +10] |
+| conservative | 1 ms | Prior only − Gap size only | -13 [-29, -2] |
+| conservative | 1 ms | Cascade − Gap size only | +19 [-8, +54] |
+| conservative | 10 ms | Cascade − Naive | +4,486 [+2,955, +6,331] |
+| conservative | 10 ms | Cascade − Slow always | -1 [-4, +3] |
+| conservative | 10 ms | Prior only − Gap size only | -15 [-26, -6] |
+| conservative | 10 ms | Cascade − Gap size only | -19 [-34, -7] |
+| conservative | 50 ms | Cascade − Naive | +4,599 [+3,007, +6,481] |
+| conservative | 50 ms | Cascade − Slow always | +3 [+1, +6] |
+
+Against the earlier run `_v4_offset`, realised and capped:
+
+| Fill bound | Latency | Strategy | This run − earlier run |
+|---|---|---|---|
+| optimistic | 1 ms | Naive | -185 [-265, -121] |
+| optimistic | 1 ms | Prior only | -43 [-96, +14] |
+| optimistic | 1 ms | Slow always | -45 [-100, +18] |
+| optimistic | 1 ms | Cascade | -43 [-94, +15] |
+| optimistic | 10 ms | Naive | -1,013 [-1,483, -631] |
+| optimistic | 10 ms | Prior only | -22 [-51, +11] |
+| optimistic | 10 ms | Slow always | -11 [-50, +34] |
+| optimistic | 10 ms | Cascade | +9 [-37, +68] |
+| optimistic | 50 ms | Naive | -2,046 [-2,967, -1,299] |
+| optimistic | 50 ms | Prior only | +26 [-6, +68] |
+| optimistic | 50 ms | Slow always | +85 [+29, +162] |
+| optimistic | 50 ms | Cascade | +86 [+29, +165] |
+| conservative | 1 ms | Naive | -3,557 [-5,077, -2,318] |
+| conservative | 1 ms | Prior only | +4 [-6, +18] |
+| conservative | 1 ms | Slow always | +1 [-20, +28] |
+| conservative | 1 ms | Cascade | -20 [-39, -3] |
+| conservative | 10 ms | Naive | -3,364 [-4,776, -2,210] |
+| conservative | 10 ms | Prior only | +9 [-5, +28] |
+| conservative | 10 ms | Slow always | -2 [-17, +19] |
+| conservative | 10 ms | Cascade | -4 [-17, +14] |
+| conservative | 50 ms | Naive | -3,439 [-4,923, -2,223] |
+| conservative | 50 ms | Prior only | +8 [+2, +15] |
+| conservative | 50 ms | Slow always | -2 [-8, +5] |
+| conservative | 50 ms | Cascade | -0 [-7, +7] |
+
