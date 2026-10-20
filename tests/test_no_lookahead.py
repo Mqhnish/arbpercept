@@ -64,27 +64,29 @@ def _normalize(raw):
     return col.frame(), down
 
 
-def _episodes(raw_a, raw_b, pair_type, tr_a, tr_b):
+def _episodes(raw_a, raw_b, pair_type, tr_a, tr_b, offset_window_s=None):
     (a, da), (b, db) = _normalize(raw_a), _normalize(raw_b)
     pair = PairSpec(name="synthetic", type=pair_type, a="x", b="y")
     return label_pair_day(align(a, b, da, db), pair, DATE, HURDLES, 100, EP_CFG, FEAT_CFG,
-                          leg_resolution_ms=(1, 100), trades=(tr_a, tr_b))
+                          leg_resolution_ms=(1, 100), trades=(tr_a, tr_b), cross_offset_window_s=offset_window_s)
 
 
-def _check(pair_type, seed):
+def _check(pair_type, seed, offset_window_s=None):
     rng = np.random.default_rng(seed)
     latent = _latent(rng)
     raw_a = _raw_leg(rng, latent, 30_000, 12_000, 20_000)       # irregular, ~30 ms
     raw_b = _raw_leg(rng, latent, 100_000, 3_600, 2_000, 3.0)   # sampled, ~100 ms, small premium
     tr_a, tr_b = _trades(rng, raw_a), _trades(rng, raw_b)
-    full = _episodes(raw_a, raw_b, pair_type, tr_a, tr_b)
+    full = _episodes(raw_a, raw_b, pair_type, tr_a, tr_b, offset_window_s)
     assert len(full) > 20, "synthetic data should produce episodes"
     assert full.f_a_trades_per_s_1s.gt(0).any() and full.stale_partner.any() and (~full.stale_partner).any()
     fcols = [c for c in full.columns if c.startswith("f_")] + ["edge_birth_bps", "stale_birth", "stale_partner"]
+    if offset_window_s:
+        fcols.append("edge_offset_bps")  # the venues' usual offset must come from the past only
     for _, ep in full.sample(25, random_state=seed).iterrows():
         cut = ep.birth_ts
         part = _episodes(raw_a[raw_a.t <= cut], raw_b[raw_b.t <= cut], pair_type,
-                         tr_a[tr_a.ts <= cut], tr_b[tr_b.ts <= cut])
+                         tr_a[tr_a.ts <= cut], tr_b[tr_b.ts <= cut], offset_window_s)
         match = part[(part.birth_ts == cut) & (part.direction == ep.direction) & (part.hurdle_name == ep.hurdle_name)]
         assert len(match) == 1, "a birth must still exist when everything after it is removed"
         got = match.iloc[0][fcols].astype(float).to_numpy()
@@ -102,3 +104,8 @@ def test_basis_features_are_causal():
 
 def test_ratio_features_are_causal():
     _check("ratio", 3)
+
+
+def test_cross_features_against_the_usual_offset_are_causal():
+    # births labelled on the gap minus the trailing offset (arbtrade.evaluate --offset-aware)
+    _check("cross", 4, offset_window_s=60)

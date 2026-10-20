@@ -6,7 +6,10 @@ observed ask on the other. They reach the exchanges at t + delay. Each leg fills
 the book at arrival still crosses its limit, up to the displayed size, at the arrival price.
 
 If exactly one leg fills, the position is unhedged and is closed by crossing the spread on
-that venue one more latency later. That is the leg risk in S = e*q - (1-q)*pi*l - c.
+that venue. The closing order is sent once both legs have arrived and reaches that venue one
+of its own latencies later. That is the leg risk in S = e*q - (1-q)*pi*l - c.
+
+Each leg can have its own latency (delay_buy_us), since the two venues are not equally far away.
 
 A sampled leg (Bybit's 100 ms archive) is only known at its snapshots, so between them the
 true book is unknown. Two bounds bracket the truth:
@@ -59,23 +62,25 @@ class Leg:
 
 
 def execute(sell: Leg, buy: Leg, t_dec: np.ndarray, delay_us: np.ndarray | int, fee_sell_bps: float,
-            fee_buy_bps: float, notional_cap: float, mode: str) -> pd.DataFrame:
+            fee_buy_bps: float, notional_cap: float, mode: str, delay_buy_us: np.ndarray | int | None = None) -> pd.DataFrame:
     """Outcome of selling on `sell` and buying on `buy` for decisions at t_dec (µs).
 
+    delay_us is the sell venue's latency; delay_buy_us the buy venue's (default: the same).
     Returns per decision: filled legs, hedged quantity, gross/fee/unwind P&L in quote currency,
     and pnl_bps relative to the intended notional.
     """
     t_dec = np.asarray(t_dec, dtype=np.int64)
-    delay = np.broadcast_to(np.asarray(delay_us, dtype=np.int64), t_dec.shape)
+    d_sell = np.broadcast_to(np.asarray(delay_us, dtype=np.int64), t_dec.shape)
+    d_buy = d_sell if delay_buy_us is None else np.broadcast_to(np.asarray(delay_buy_us, dtype=np.int64), t_dec.shape)
     # What the trader saw: the latest quotes at decision time (no bounds needed: this is observed).
     s_bid0, _, s_bsz0, _ = sell.quote(t_dec, "optimistic")
     _, b_ask0, _, b_asz0 = buy.quote(t_dec, "optimistic")
     mid0 = (s_bid0 + b_ask0) / 2
     qty = np.minimum(notional_cap / mid0, np.minimum(s_bsz0, b_asz0))
 
-    t_arr = t_dec + delay
-    s_bid, _, s_bsz, _ = sell.quote(t_arr, mode)
-    _, b_ask, _, b_asz = buy.quote(t_arr, mode)
+    t_arr_s, t_arr_b = t_dec + d_sell, t_dec + d_buy
+    s_bid, _, s_bsz, _ = sell.quote(t_arr_s, mode)
+    _, b_ask, _, b_asz = buy.quote(t_arr_b, mode)
     sell_q = np.where(s_bid >= s_bid0, np.minimum(qty, s_bsz), 0.0)
     buy_q = np.where(b_ask <= b_ask0, np.minimum(qty, b_asz), 0.0)
     sell_q, buy_q = np.nan_to_num(sell_q), np.nan_to_num(buy_q)
@@ -83,12 +88,13 @@ def execute(sell: Leg, buy: Leg, t_dec: np.ndarray, delay_us: np.ndarray | int, 
     gross = hedged * (np.nan_to_num(s_bid) - np.nan_to_num(b_ask))
     fees = (fee_sell_bps * sell_q * np.nan_to_num(s_bid) + fee_buy_bps * buy_q * np.nan_to_num(b_ask)) / 1e4
 
-    # Unhedged remainder: close it on the venue where it was filled, one more latency later.
-    t_unw = t_arr + delay
+    # Unhedged remainder: once both legs have arrived, close it on the venue where it was filled,
+    # arriving one of that venue's latencies later.
+    both_in = np.maximum(t_arr_s, t_arr_b)
     short = sell_q - hedged  # sold more than bought: buy it back on the sell venue
     long = buy_q - hedged    # bought more than sold: sell it on the buy venue
-    _, s_ask_u, _, _ = sell.quote(t_unw, mode)
-    b_bid_u, _, _, _ = buy.quote(t_unw, mode)
+    _, s_ask_u, _, _ = sell.quote(both_in + d_sell, mode)
+    b_bid_u, _, _, _ = buy.quote(both_in + d_buy, mode)
     s_fill, b_fill = np.nan_to_num(s_bid), np.nan_to_num(b_ask)
     s_ask_u = np.where(np.isnan(s_ask_u), s_fill, s_ask_u)
     b_bid_u = np.where(np.isnan(b_bid_u), b_fill, b_bid_u)
@@ -103,6 +109,7 @@ def execute(sell: Leg, buy: Leg, t_dec: np.ndarray, delay_us: np.ndarray | int, 
         "qty": qty, "hedged": hedged, "notional": notional,
         "gross": gross, "fees": fees + unwind_fees, "unwind": unwind, "pnl": pnl,
         "pnl_bps": np.where(notional > 0, pnl / notional * 1e4, 0.0),
+        "mid_dec": mid0,
         # The gap the trader saw when deciding: a re-check before sending can skip a vanished gap.
         "edge_dec_bps": (s_bid0 - b_ask0) / mid0 * 1e4,
     })

@@ -18,6 +18,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 
 FAST_FEATURES = ["edge_birth_bps", "f_a_spread_bps", "f_b_spread_bps", "f_a_age_ms", "f_b_age_ms", "f_rv_1s_bps"]
+GAP_ONLY_FEATURES = ["edge_birth_bps"]  # the gap-size-only baseline every model must beat
 
 
 def slow_features(df: pd.DataFrame) -> list[str]:
@@ -26,23 +27,27 @@ def slow_features(df: pd.DataFrame) -> list[str]:
 
 
 class FastPrior:
-    """A six-feature logistic model evaluated as one dot product: microseconds per decision."""
+    """A six-feature logistic model evaluated as one dot product: microseconds per decision.
+    With features=GAP_ONLY_FEATURES it is the gap-size-only baseline."""
+
+    def __init__(self, features: list[str] | None = None):
+        self.features = list(features or FAST_FEATURES)
 
     def fit(self, X: pd.DataFrame, y: np.ndarray) -> "FastPrior":
-        X = X[FAST_FEATURES]
+        X = X[self.features]
         self.median = X.median().to_numpy()
         Z = np.where(np.isnan(X.to_numpy()), self.median, X.to_numpy())
         self.mu, self.sd = Z.mean(0), Z.std(0) + 1e-9
         y = np.asarray(y).astype(int)
         if y.min() == y.max():  # one outcome only: predict it with certainty (logit +-10)
-            self.w, self.b = np.zeros(len(FAST_FEATURES)), 10.0 if y[0] else -10.0
+            self.w, self.b = np.zeros(len(self.features)), 10.0 if y[0] else -10.0
             return self
         lr = LogisticRegression(max_iter=2000).fit((Z - self.mu) / self.sd, y)
         self.w, self.b = lr.coef_[0], lr.intercept_[0]
         return self
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
-        Z = X[FAST_FEATURES].to_numpy()
+        Z = X[self.features].to_numpy()
         Z = np.where(np.isnan(Z), self.median, Z)
         return 1 / (1 + np.exp(-(((Z - self.mu) / self.sd) @ self.w + self.b)))
 
@@ -87,6 +92,12 @@ class Calibrator:
     def transform(self, p: np.ndarray) -> np.ndarray:
         return p if self.iso is None else self.iso.predict(p)
 
+    def to_arrays(self) -> tuple[list[float], list[float]] | None:
+        """The fitted map as (x, y) points: np.interp(p, x, y) gives the same answer as transform."""
+        if self.iso is None:
+            return None
+        return self.iso.X_thresholds_.tolist(), self.iso.y_thresholds_.tolist()
+
 
 def single_decision_latency_ms(model, X: pd.DataFrame, repeats: int = 300) -> float:
     """Median wall time to score one trigger, as a live system would."""
@@ -124,10 +135,11 @@ def fit_gain(edge_bps: np.ndarray, outcomes: pd.DataFrame, min_n: int = 30) -> t
     return float(a), float(b)
 
 
-def miss_loss_bps(outcomes: pd.DataFrame) -> float:
-    """Average P&L (bps) of trades that did not fully fill: the leg-risk term."""
+def miss_loss_bps(outcomes: pd.DataFrame, col: str = "pnl_bps") -> float:
+    """Average P&L (bps) of trades that did not fully fill: the leg-risk term.
+    col="pnl_rel_bps" scores them net of the venues' usual offset (see evaluate.replay_day)."""
     miss = outcomes[~outcomes.full_fill]
-    return float(miss.pnl_bps.mean()) if len(miss) else 0.0
+    return float(miss[col].mean()) if len(miss) else 0.0
 
 
 def choose_margins(ev_fast: np.ndarray, pnl_now: np.ndarray, pnl_slow_if_taken: np.ndarray,
