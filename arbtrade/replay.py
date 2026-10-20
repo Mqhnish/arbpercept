@@ -17,6 +17,18 @@ true book is unknown. Two bounds bracket the truth:
   conservative  the order fills only if the snapshots on both sides of arrival allow it,
                 at the worse of their prices and the smaller of their sizes
 For a tick-level leg (every change recorded) both modes are the same, exact, answer.
+
+Two optional effects, both off by default (old results reproduce exactly):
+  feed delay        the trader sees each venue's book late, by that venue's feed delay. At
+                    decision time t it sees the quotes published at or before t - feed delay.
+                    This is separate from the order latency (delay_us, delay_buy_us).
+  liquidity reuse   (deplete=True) a fill uses up the displayed size it took. The size stays
+                    used up while that side's price holds, so a later order at that price only
+                    gets what is left. When the price changes, the full displayed size is back.
+Remaining limits: only level 1 exists. Orders are still sized from the displayed size, so an
+order can ask for more than is left; the leg that gets less leaves an unhedged remainder, closed
+like any one-sided fill. The closing order is neither size-limited nor counted against the
+displayed size.
 """
 
 from __future__ import annotations
@@ -61,28 +73,91 @@ class Leg:
         return bid * nan, ask * nan, bsz * nan, asz * nan
 
 
+def updated_at(leg: Leg, t: np.ndarray) -> np.ndarray:
+    """Whether the leg has an update at exactly each time t."""
+    t = np.asarray(t, dtype=np.int64)
+    if not len(leg.t):
+        return np.zeros(t.shape, bool)
+    i = np.minimum(np.searchsorted(leg.t, t, side="left"), len(leg.t) - 1)
+    return leg.t[i] == t
+
+
+def seen_after_us(sell: Leg, buy: Leg, t_birth: np.ndarray, feed_sell_us: int, feed_buy_us: int) -> np.ndarray:
+    """How long after a birth (µs) the trader first sees it, given each venue's feed delay.
+
+    A birth happens at one venue's update. The trader sees it once that update arrives, which
+    is that venue's feed delay later. When both venues (or neither) updated at that instant,
+    it is the slower feed's delay.
+    """
+    hit_s, hit_b = updated_at(sell, t_birth), updated_at(buy, t_birth)
+    slower = max(feed_sell_us, feed_buy_us)
+    return np.where(hit_s & ~hit_b, feed_sell_us, np.where(hit_b & ~hit_s, feed_buy_us, slower)).astype(np.int64)
+
+
+def price_runs(px: np.ndarray) -> np.ndarray:
+    """Run number of each update on one side of a book. It goes up whenever the price changes."""
+    if not len(px):
+        return np.zeros(0, np.int64)
+    return np.concatenate(([0], np.cumsum(px[1:] != px[:-1])))
+
+
+def fill_depleting(t_side: np.ndarray, px_side: np.ndarray, t_arr: np.ndarray, want: np.ndarray,
+                   size: np.ndarray) -> np.ndarray:
+    """Fills on one side of one venue when each fill uses up the displayed size it took.
+
+    t_side, px_side: that side's update times and prices. want: what each order would take
+    (0 if its price no longer crosses). size: the displayed size at its arrival (t_arr).
+    Orders are matched in arrival order. While the side's price holds, a later order gets the
+    displayed size minus what earlier orders took. A price change makes the full size available again.
+    """
+    want, size = np.nan_to_num(np.asarray(want, float)), np.nan_to_num(np.asarray(size, float))
+    fill = np.minimum(want, size)
+    i = np.searchsorted(t_side, t_arr, side="right") - 1
+    run = np.where(i >= 0, price_runs(px_side)[np.maximum(i, 0)], -1)
+    order = np.lexsort((np.arange(len(run)), t_arr, run))  # by price run, then arrival, then input order
+    r = run[order]
+    starts = np.flatnonzero(np.r_[True, r[1:] != r[:-1]]) if len(r) else np.zeros(0, int)
+    for a, b in zip(starts, np.r_[starts[1:], len(r)]):
+        if b - a < 2 or r[a] < 0:
+            continue  # alone in its price run, or before the first quote: nothing is shared
+        used = 0.0
+        for k in order[a:b]:
+            fill[k] = min(want[k], max(size[k] - used, 0.0))
+            used += fill[k]
+    return fill
+
+
 def execute(sell: Leg, buy: Leg, t_dec: np.ndarray, delay_us: np.ndarray | int, fee_sell_bps: float,
-            fee_buy_bps: float, notional_cap: float, mode: str, delay_buy_us: np.ndarray | int | None = None) -> pd.DataFrame:
+            fee_buy_bps: float, notional_cap: float, mode: str, delay_buy_us: np.ndarray | int | None = None,
+            feed_sell_us: int = 0, feed_buy_us: int = 0, deplete: bool = False) -> pd.DataFrame:
     """Outcome of selling on `sell` and buying on `buy` for decisions at t_dec (µs).
 
     delay_us is the sell venue's latency; delay_buy_us the buy venue's (default: the same).
+    feed_sell_us and feed_buy_us are the venues' feed delays. The orders are priced and sized
+    from the quotes published at or before t_dec minus that venue's feed delay.
+    deplete: each fill uses up the displayed size it took (fill_depleting), shared by all the
+    decisions in this call.
     Returns per decision: filled legs, hedged quantity, gross/fee/unwind P&L in quote currency,
     and pnl_bps relative to the intended notional.
     """
     t_dec = np.asarray(t_dec, dtype=np.int64)
     d_sell = np.broadcast_to(np.asarray(delay_us, dtype=np.int64), t_dec.shape)
     d_buy = d_sell if delay_buy_us is None else np.broadcast_to(np.asarray(delay_buy_us, dtype=np.int64), t_dec.shape)
-    # What the trader saw: the latest quotes at decision time (no bounds needed: this is observed).
-    s_bid0, _, s_bsz0, _ = sell.quote(t_dec, "optimistic")
-    _, b_ask0, _, b_asz0 = buy.quote(t_dec, "optimistic")
+    # What the trader saw: each venue's latest quote that had reached it (no bounds needed: this is observed).
+    s_bid0, _, s_bsz0, _ = sell.quote(t_dec - feed_sell_us, "optimistic")
+    _, b_ask0, _, b_asz0 = buy.quote(t_dec - feed_buy_us, "optimistic")
     mid0 = (s_bid0 + b_ask0) / 2
     qty = np.minimum(notional_cap / mid0, np.minimum(s_bsz0, b_asz0))
 
     t_arr_s, t_arr_b = t_dec + d_sell, t_dec + d_buy
     s_bid, _, s_bsz, _ = sell.quote(t_arr_s, mode)
     _, b_ask, _, b_asz = buy.quote(t_arr_b, mode)
-    sell_q = np.where(s_bid >= s_bid0, np.minimum(qty, s_bsz), 0.0)
-    buy_q = np.where(b_ask <= b_ask0, np.minimum(qty, b_asz), 0.0)
+    if deplete:
+        sell_q = fill_depleting(sell.t, sell.bid, t_arr_s, np.where(s_bid >= s_bid0, qty, 0.0), s_bsz)
+        buy_q = fill_depleting(buy.t, buy.ask, t_arr_b, np.where(b_ask <= b_ask0, qty, 0.0), b_asz)
+    else:
+        sell_q = np.where(s_bid >= s_bid0, np.minimum(qty, s_bsz), 0.0)
+        buy_q = np.where(b_ask <= b_ask0, np.minimum(qty, b_asz), 0.0)
     sell_q, buy_q = np.nan_to_num(sell_q), np.nan_to_num(buy_q)
     hedged = np.minimum(sell_q, buy_q)
     gross = hedged * (np.nan_to_num(s_bid) - np.nan_to_num(b_ask))
