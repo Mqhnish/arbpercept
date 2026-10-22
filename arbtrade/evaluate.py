@@ -29,9 +29,13 @@ optimistic and conservative fill bounds (see replay.py).
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
+import shutil
+import tempfile
 import time
 import warnings
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -253,6 +257,31 @@ def measure_latencies(fast: FastPrior, slow: SlowModel, X: pd.DataFrame, repeats
 DUMP_TAUS_MS = [1, 10, 50]  # latencies whose individual trades are written out (--dump-trades)
 
 
+def spill_legs(legs: dict, folder: Path) -> dict:
+    """Write one day's price arrays to disk and map them back read-only.
+
+    A month of BTC prices takes about 1.5 GB in memory, so holding every development day at
+    once does not fit on a laptop. Mapped arrays behave exactly like the originals in the
+    replay, but the operating system loads them only while a replay reads them. Replays never
+    modify them. A convergence pair's context stays in memory (small, and its own structure)."""
+    folder.mkdir(parents=True, exist_ok=True)
+
+    def mapped(name: str, a: np.ndarray) -> np.ndarray:
+        path = folder / f"{name}.npy"
+        np.save(path, np.ascontiguousarray(a))
+        return np.load(path, mmap_mode="r")
+
+    out = {}
+    for k, v in legs.items():
+        if isinstance(v, Leg):
+            out[k] = Leg(*(mapped(f"{k}_{f}", getattr(v, f)) for f in ("t", "bid", "ask", "bid_sz", "ask_sz")), v.sampled)
+        elif k == "offset":
+            out[k] = tuple(mapped(f"offset_{i}", a) for i, a in enumerate(v))
+        else:
+            out[k] = v
+    return out
+
+
 def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None, dump_trades: bool = False,
         offset_aware: bool = False, leg_latency_ms: tuple[float, float] | None = None,
         venue_fees: tuple[float, float] | None = None, feed_delay_ms: tuple[float, float] | None = None,
@@ -293,12 +322,14 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
         rp = lambda e, legs, tau, mode, after=0.0: replay_day(e, legs, lat_of[tau][0], fee_a, mode, after,
                                                                lat_of[tau][1], fee_b, feed, deplete_liquidity)
         days, quiet = {}, set()
+        spill = Path(tempfile.mkdtemp(prefix="eval_prices_", dir=cfg.data_root))
+        atexit.register(shutil.rmtree, spill, True)
         for d in dev_dates:
             got = load_day(cfg, pair, d, trigger, OFFSET_WINDOW_S if offset_aware else None)
             if got is None:
                 continue
             if len(got[0]):
-                days[d] = got
+                days[d] = (got[0], spill_legs(got[1], spill / d))
             else:
                 quiet.add(d)  # a valid day without a single trigger: a $0 day, not a missing one
         print(f"  fees {fee_a}/{fee_b} bps: {sum(len(e) for e, _ in days.values()):,} triggers over {len(days)} days "
