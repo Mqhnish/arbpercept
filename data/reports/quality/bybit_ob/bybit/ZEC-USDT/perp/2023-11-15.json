@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/ZEC-USDT/perp",
+ "date": "2023-11-15",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 165245,
+ "raw_updates": 165245,
+ "coverage": 0.8613066435185185,
+ "n_outages": 3077,
+ "max_raw_silence_s": 11.6,
+ "resyncs": 0,
+ "price_change_step_ms_median": 201.0,
+ "feed_lag_ms_median": 0.0,
+ "feed_lag_ms_p99": 0.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 16.59751037344304,
+ "daily_rv_bps": 454.04861151558345,
+ "first_raw_ts": 1700006400602000,
+ "last_raw_ts": 1700092800603000,
+ "mid_first": 29.424999999999997,
+ "mid_last": 30.375,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 9573,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.0006954102920723226,
+  "longest_anomaly_run_min": 1,
+  "in_band_share": 0.9889271910581845,
+  "sweep_share": 0.011072808941815523,
+  "wrong_side_share": 0.0,
+  "far_share": 0.011072808941815523,
+  "best_shift_ms": 0
+ },
+ "passes": false
+}

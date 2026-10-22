@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/DOGE-USDT/perp",
+ "date": "2023-12-04",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 1
+ },
+ "rows": 203994,
+ "raw_updates": 3958410,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 2.627,
+ "resyncs": 0,
+ "price_change_step_ms_median": 4.0,
+ "feed_lag_ms_median": 6.0,
+ "feed_lag_ms_p99": 36.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 2.1829294913780966,
+ "daily_rv_bps": 582.1418733124661,
+ "first_raw_ts": 1701648000098000,
+ "last_raw_ts": 1701734399928000,
+ "mid_first": 0.085745,
+ "mid_last": 0.091975,
+ "raw_out_of_order": 0,
+ "passes": true
+}

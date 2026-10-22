@@ -1,0 +1,73 @@
+{
+ "pair": "eth_perp_binance_bybit",
+ "date": "2023-09-09",
+ "status": "ok",
+ "events": 847363,
+ "valid_share": 0.9999775774963032,
+ "episodes": 2427,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 576,
+   "died_share": 0.9965277777777778,
+   "median_obs_ms": 33369.5,
+   "sub_resolution_share": 0.06076388888888889,
+   "resolved_median_obs_ms": 38708.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.24131944444444445
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 527,
+   "died_share": 1.0,
+   "median_obs_ms": 4447.0,
+   "sub_resolution_share": 0.20683111954459202,
+   "resolved_median_obs_ms": 10762.5,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.40227703984819735
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 730,
+   "died_share": 0.9986301369863013,
+   "median_obs_ms": 8174.0,
+   "sub_resolution_share": 0.11643835616438356,
+   "resolved_median_obs_ms": 12051.0,
+   "stale_share": 0.0027397260273972603,
+   "stale_partner_share": 0.3698630136986301
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 213,
+   "died_share": 1.0,
+   "median_obs_ms": 122.0,
+   "sub_resolution_share": 0.431924882629108,
+   "resolved_median_obs_ms": 4061.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.5586854460093896
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 330,
+   "died_share": 1.0,
+   "median_obs_ms": 459.0,
+   "sub_resolution_share": 0.296969696969697,
+   "resolved_median_obs_ms": 4628.0,
+   "stale_share": 0.0030303030303030303,
+   "stale_partner_share": 0.503030303030303
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 48,
+   "died_share": 1.0,
+   "median_obs_ms": 76.5,
+   "sub_resolution_share": 0.6041666666666666,
+   "resolved_median_obs_ms": 124.0,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.5208333333333334
+  },
+  "gross>5bps|sell_a_buy_b": {
+   "n": 3,
+   "died_share": 1.0,
+   "median_obs_ms": 16.0,
+   "sub_resolution_share": 1.0,
+   "resolved_median_obs_ms": NaN,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.6666666666666666
+  }
+ }
+}

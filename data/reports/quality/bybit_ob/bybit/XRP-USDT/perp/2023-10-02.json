@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/XRP-USDT/perp",
+ "date": "2023-10-02",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 628819,
+ "raw_updates": 628819,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 2.0,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 0.0,
+ "feed_lag_ms_p99": 0.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.9177294083802665,
+ "daily_rv_bps": 417.4775953453416,
+ "first_raw_ts": 1696204801102000,
+ "last_raw_ts": 1696291201099000,
+ "mid_first": 0.52385,
+ "mid_last": 0.51185,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 261103,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.0,
+  "longest_anomaly_run_min": 0,
+  "in_band_share": 0.9538680730297703,
+  "sweep_share": 0.044293543828203094,
+  "wrong_side_share": 0.0018383831420265876,
+  "far_share": 0.018946836257511517,
+  "best_shift_ms": 20
+ },
+ "passes": true
+}

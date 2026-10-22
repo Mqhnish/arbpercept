@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/TIA-USDT/perp",
+ "date": "2023-12-25",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 848401,
+ "raw_updates": 848401,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 0.701,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 8.0,
+ "feed_lag_ms_p99": 68.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.376462491397569,
+ "daily_rv_bps": 833.4191778629549,
+ "first_raw_ts": 1703462400377000,
+ "last_raw_ts": 1703548800378000,
+ "mid_first": 14.1585,
+ "mid_last": 13.750499999999999,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 565762,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.003472222222222222,
+  "longest_anomaly_run_min": 1,
+  "in_band_share": 0.8180595374026534,
+  "sweep_share": 0.17156684259458924,
+  "wrong_side_share": 0.010373620002757343,
+  "far_share": 0.033360317589375035,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}

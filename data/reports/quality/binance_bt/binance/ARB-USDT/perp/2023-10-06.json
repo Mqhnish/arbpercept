@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/ARB-USDT/perp",
+ "date": "2023-10-06",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 46923,
+ "raw_updates": 1038815,
+ "coverage": 0.9994034490740741,
+ "n_outages": 9,
+ "max_raw_silence_s": 7.114,
+ "resyncs": 0,
+ "price_change_step_ms_median": 87.0,
+ "feed_lag_ms_median": 5.0,
+ "feed_lag_ms_p99": 15.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.1463288817560495,
+ "daily_rv_bps": 294.3868995681904,
+ "first_raw_ts": 1696550404533000,
+ "last_raw_ts": 1696636799885000,
+ "mid_first": 0.85675,
+ "mid_last": 0.88915,
+ "raw_out_of_order": 0,
+ "passes": true
+}

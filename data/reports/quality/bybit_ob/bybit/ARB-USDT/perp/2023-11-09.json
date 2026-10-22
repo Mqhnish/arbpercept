@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/ARB-USDT/perp",
+ "date": "2023-11-09",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 2
+ },
+ "rows": 829205,
+ "raw_updates": 829207,
+ "coverage": 0.9997773958333334,
+ "n_outages": 2,
+ "max_raw_silence_s": 9.831,
+ "resyncs": 2,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 0.0,
+ "feed_lag_ms_p99": 0.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.9044453488896939,
+ "daily_rv_bps": 1821.8288823214234,
+ "first_raw_ts": 1699488000771000,
+ "last_raw_ts": 1699574400602000,
+ "mid_first": 1.0936499999999998,
+ "mid_last": 1.20905,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 584538,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.003472222222222222,
+  "longest_anomaly_run_min": 1,
+  "in_band_share": 0.8431581864652085,
+  "sweep_share": 0.14800748625410154,
+  "wrong_side_share": 0.008834327280690049,
+  "far_share": 0.05492371753418939,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}

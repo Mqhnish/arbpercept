@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/TIA-USDT/perp",
+ "date": "2023-11-04",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 641545,
+ "raw_updates": 977385,
+ "coverage": 0.9943247569444444,
+ "n_outages": 82,
+ "max_raw_silence_s": 8.559,
+ "resyncs": 0,
+ "price_change_step_ms_median": 6.0,
+ "feed_lag_ms_median": 5.0,
+ "feed_lag_ms_p99": 8.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 2.4446889133355088,
+ "daily_rv_bps": 717.5612480483236,
+ "first_raw_ts": 1699056005295000,
+ "last_raw_ts": 1699142399938000,
+ "mid_first": 2.3909000000000002,
+ "mid_last": 2.4348,
+ "raw_out_of_order": 0,
+ "passes": true
+}

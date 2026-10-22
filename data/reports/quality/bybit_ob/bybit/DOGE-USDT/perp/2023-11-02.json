@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/DOGE-USDT/perp",
+ "date": "2023-11-02",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 691484,
+ "raw_updates": 691484,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 2.501,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 0.0,
+ "feed_lag_ms_p99": 0.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.4493803898847744,
+ "daily_rv_bps": 412.85384932791976,
+ "first_raw_ts": 1698883200772000,
+ "last_raw_ts": 1698969600771000,
+ "mid_first": 0.06900500000000001,
+ "mid_last": 0.067945,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 262652,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.001388888888888889,
+  "longest_anomaly_run_min": 1,
+  "in_band_share": 0.955384304931028,
+  "sweep_share": 0.04302037366310924,
+  "wrong_side_share": 0.001595321405862711,
+  "far_share": 0.006160453543403022,
+  "best_shift_ms": 20
+ },
+ "passes": true
+}

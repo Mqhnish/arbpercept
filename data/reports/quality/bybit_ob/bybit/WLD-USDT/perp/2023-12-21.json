@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/WLD-USDT/perp",
+ "date": "2023-12-21",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 699464,
+ "raw_updates": 699464,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 2.9,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 17.0,
+ "feed_lag_ms_p99": 98.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 2.757479663587177,
+ "daily_rv_bps": 887.7576259685981,
+ "first_raw_ts": 1703116800947000,
+ "last_raw_ts": 1703203200948000,
+ "mid_first": 3.4985,
+ "mid_last": 3.5335,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 310375,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.0006944444444444445,
+  "longest_anomaly_run_min": 1,
+  "in_band_share": 0.9092449754167553,
+  "sweep_share": 0.08845779607827975,
+  "wrong_side_share": 0.002297228504964978,
+  "far_share": 0.032373845747388635,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}

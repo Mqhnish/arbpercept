@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/AAVE-USDT/perp",
+ "date": "2023-11-14",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 5
+ },
+ "rows": 303065,
+ "raw_updates": 1202729,
+ "coverage": 0.9974650694444445,
+ "n_outages": 38,
+ "max_raw_silence_s": 7.796,
+ "resyncs": 0,
+ "price_change_step_ms_median": 10.0,
+ "feed_lag_ms_median": 6.0,
+ "feed_lag_ms_p99": 40.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 2.1401819154623887,
+ "daily_rv_bps": 603.1736674140964,
+ "first_raw_ts": 1699920007537000,
+ "last_raw_ts": 1700006399809000,
+ "mid_first": 92.925,
+ "mid_last": 90.805,
+ "raw_out_of_order": 0,
+ "passes": true
+}

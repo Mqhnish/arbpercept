@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/WLD-USDT/perp",
+ "date": "2023-11-12",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 403038,
+ "raw_updates": 955107,
+ "coverage": 0.9954561805555555,
+ "n_outages": 65,
+ "max_raw_silence_s": 9.207,
+ "resyncs": 0,
+ "price_change_step_ms_median": 12.0,
+ "feed_lag_ms_median": 6.0,
+ "feed_lag_ms_p99": 9.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.5795708832432116,
+ "daily_rv_bps": 592.0877504384198,
+ "first_raw_ts": 1699747200076000,
+ "last_raw_ts": 1699833599206000,
+ "mid_first": 1.93905,
+ "mid_last": 1.949,
+ "raw_out_of_order": 0,
+ "passes": true
+}

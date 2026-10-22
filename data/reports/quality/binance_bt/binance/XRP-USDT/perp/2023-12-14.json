@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/XRP-USDT/perp",
+ "date": "2023-12-14",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 2
+ },
+ "rows": 46644,
+ "raw_updates": 2875774,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 1.827,
+ "resyncs": 0,
+ "price_change_step_ms_median": 11.0,
+ "feed_lag_ms_median": 7.0,
+ "feed_lag_ms_p99": 35.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.623244866487931,
+ "daily_rv_bps": 285.2126834096841,
+ "first_raw_ts": 1702512000070000,
+ "last_raw_ts": 1702598399960000,
+ "mid_first": 0.62775,
+ "mid_last": 0.63215,
+ "raw_out_of_order": 0,
+ "passes": true
+}

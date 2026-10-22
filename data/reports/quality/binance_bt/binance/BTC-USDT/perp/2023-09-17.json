@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/BTC-USDT/perp",
+ "date": "2023-09-17",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 33595,
+ "raw_updates": 6456304,
+ "coverage": 0.999927337962963,
+ "n_outages": 1,
+ "max_raw_silence_s": 6.278,
+ "resyncs": 0,
+ "price_change_step_ms_median": 13.0,
+ "feed_lag_ms_median": 7.0,
+ "feed_lag_ms_p99": 69.05999999999767,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.03776656110857879,
+ "daily_rv_bps": 71.76154974791258,
+ "first_raw_ts": 1694908800019000,
+ "last_raw_ts": 1694995199974000,
+ "mid_first": 26546.95,
+ "mid_last": 26514.25,
+ "raw_out_of_order": 0,
+ "passes": true
+}

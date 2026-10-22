@@ -1,0 +1,27 @@
+{
+ "stream": "binance_bt/binance/ZEC-USDT/perp",
+ "date": "2023-10-23",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 1
+ },
+ "rows": 18226,
+ "raw_updates": 452153,
+ "coverage": 0.9320745601851852,
+ "n_outages": 867,
+ "max_raw_silence_s": 26.546,
+ "resyncs": 0,
+ "price_change_step_ms_median": 236.0,
+ "feed_lag_ms_median": 6.0,
+ "feed_lag_ms_p99": 18.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 3.8189803322518854,
+ "daily_rv_bps": 399.9203897717547,
+ "first_raw_ts": 1698019200045000,
+ "last_raw_ts": 1698105599327000,
+ "mid_first": 25.875,
+ "mid_last": 27.275,
+ "raw_out_of_order": 0,
+ "passes": false
+}

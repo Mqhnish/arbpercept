@@ -1,0 +1,100 @@
+{
+ "pair": "eth_perp_binance_bybit",
+ "date": "2023-11-17",
+ "status": "ok",
+ "events": 1142366,
+ "valid_share": 0.999978115595177,
+ "episodes": 39900,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 7915,
+   "died_share": 0.9998736576121289,
+   "median_obs_ms": 978.0,
+   "sub_resolution_share": 0.21490840176879342,
+   "resolved_median_obs_ms": 1844.0,
+   "stale_share": 0.002653190145293746,
+   "stale_partner_share": 0.23992419456727732
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 6694,
+   "died_share": 0.9998506124887959,
+   "median_obs_ms": 173.5,
+   "sub_resolution_share": 0.3752614281446071,
+   "resolved_median_obs_ms": 779.5,
+   "stale_share": 0.0019420376456528235,
+   "stale_partner_share": 0.3494173887063042
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 9374,
+   "died_share": 0.9998933219543418,
+   "median_obs_ms": 493.0,
+   "sub_resolution_share": 0.26925538724130577,
+   "resolved_median_obs_ms": 1240.5,
+   "stale_share": 0.0024535950501386817,
+   "stale_partner_share": 0.27181566033710264
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 2072,
+   "died_share": 1.0,
+   "median_obs_ms": 92.0,
+   "sub_resolution_share": 0.5294401544401545,
+   "resolved_median_obs_ms": 415.0,
+   "stale_share": 0.005791505791505791,
+   "stale_partner_share": 0.39285714285714285
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 10619,
+   "died_share": 0.9999058291741219,
+   "median_obs_ms": 485.0,
+   "sub_resolution_share": 0.2589697711648931,
+   "resolved_median_obs_ms": 1099.0,
+   "stale_share": 0.0015067332140502872,
+   "stale_partner_share": 0.2589697711648931
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 579,
+   "died_share": 1.0,
+   "median_obs_ms": 62.0,
+   "sub_resolution_share": 0.7029360967184801,
+   "resolved_median_obs_ms": 197.5,
+   "stale_share": 0.010362694300518135,
+   "stale_partner_share": 0.39378238341968913
+  },
+  "gross>5bps|sell_a_buy_b": {
+   "n": 2488,
+   "died_share": 1.0,
+   "median_obs_ms": 76.0,
+   "sub_resolution_share": 0.6093247588424437,
+   "resolved_median_obs_ms": 249.5,
+   "stale_share": 0.008842443729903537,
+   "stale_partner_share": 0.41237942122186494
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 96,
+   "died_share": 1.0,
+   "median_obs_ms": 25.5,
+   "sub_resolution_share": 0.875,
+   "resolved_median_obs_ms": 155.0,
+   "stale_share": 0.020833333333333332,
+   "stale_partner_share": 0.2916666666666667
+  },
+  "retail_taker|sell_a_buy_b": {
+   "n": 49,
+   "died_share": 1.0,
+   "median_obs_ms": 21.0,
+   "sub_resolution_share": 0.8367346938775511,
+   "resolved_median_obs_ms": 141.5,
+   "stale_share": 0.02040816326530612,
+   "stale_partner_share": 0.22448979591836735
+  },
+  "retail_taker|sell_b_buy_a": {
+   "n": 14,
+   "died_share": 1.0,
+   "median_obs_ms": 26.5,
+   "sub_resolution_share": 0.8571428571428571,
+   "resolved_median_obs_ms": 449.5,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.21428571428571427
+  }
+ }
+}

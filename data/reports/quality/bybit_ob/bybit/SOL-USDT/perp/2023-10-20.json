@@ -1,0 +1,38 @@
+{
+ "stream": "bybit_ob/bybit/SOL-USDT/perp",
+ "date": "2023-10-20",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 828428,
+ "raw_updates": 828428,
+ "coverage": 1.0,
+ "n_outages": 0,
+ "max_raw_silence_s": 1.85,
+ "resyncs": 0,
+ "price_change_step_ms_median": 100.0,
+ "feed_lag_ms_median": 0.0,
+ "feed_lag_ms_p99": 0.0,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.37374096014098335,
+ "daily_rv_bps": 540.611063904238,
+ "first_raw_ts": 1697760001850000,
+ "last_raw_ts": 1697846401850000,
+ "mid_first": 24.9065,
+ "mid_last": 27.0015,
+ "raw_out_of_order": 0,
+ "trades": {
+  "n_trades": 847093,
+  "rpi_share": 0.0,
+  "anomalous_minute_share": 0.0,
+  "longest_anomaly_run_min": 0,
+  "in_band_share": 0.9179391588388969,
+  "sweep_share": 0.07256481298939547,
+  "wrong_side_share": 0.009496028171707645,
+  "far_share": 0.012872288809584803,
+  "best_shift_ms": 0
+ },
+ "passes": true
+}
