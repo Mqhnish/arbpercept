@@ -137,7 +137,7 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 ## Evaluation rules
 
 - **Holdout:** 10–18 Oct 2026 is frozen and locked behind `ARBDATA_UNLOCK_HOLDOUT=1`. Open it once, at the end.
-- **Results so far:** everything reported here comes from development days, with walk-forward folds (training always before validation, one embargo day).
+- **Results so far:** everything reported here comes from development days (289 dates: May 2023 to January 2024 and September to early October 2026), with walk-forward folds (training always before validation, one embargo day). February and March 2024 have not been downloaded, so they can still become a clean cross-venue holdout.
 - **Two fill bounds:** the Bybit archive is sampled every 100 ms, so simulated fills on that leg are reported as an optimistic and a conservative bound. The 10 ms recorder narrows them.
 - **The holdout has no cross-venue data.** All Binance vs Bybit data (January 2024) is in development, and the holdout window holds Bybit archive days only. So the taker and maker-taker strategies below cannot be scored on it. A separate cross-venue holdout (for example February–March 2024, which Binance's archive still covers) has to be frozen before anyone looks at it.
 
@@ -145,18 +145,33 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 
 All numbers below were re-run after the review fixes (offset-relative labelling, per-venue fees and latency, a depth-limited close, the cap at each trade's price, and $0 days for days without trades).
 
-**Profit, with inventory accounted.** Binance vs Bybit BTC perpetual, January 2024, 24 walk-forward validation days, $10k per trade. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Net P&L per validation day, with day-bootstrap 95% intervals.
+**Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals (`data/reports/pnl/<pair>_v7_real/inventory.md`).
 
-*Realistic setup* (`data/reports/pnl/btc_perp_binance_bybit_v5_real/inventory.md`): top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps) and the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms).
+*BTC and ETH, May 2023 to January 2024:*
 
-| Fill bound | Naive fast path | Gap size only | Fast + decay prior | Slow model always | Cascade |
+| Pair | Validation days | Naive fast path | Gap size only | Cascade, optimistic fills | Cascade, conservative fills | Cascade − gap size only | Cascade − naive |
+|---|---|---|---|---|---|---|---|
+| BTC | 205 | −$240 [−309, −180] | $6 [2, 11] | **$18 [11, 25]** | −$1 [−2, −1] | +$11 [+8, +15] | +$258 [+194, +330] |
+| ETH | 180 | −$173 [−242, −122] | $6 [3, 9] | **$14 [9, 19]** | $0 [−1, 1] | +$8 [+5, +11] | +$187 [+133, +259] |
+
+*Eight mid-cap perpetuals, October to December 2023* (ZEC is left out: only 8 days pass the quality checks):
+
+| Coin | Validation days | Naive fast path | Cascade, optimistic fills | Cascade, conservative fills | Cascade − gap size only |
 |---|---|---|---|---|---|
-| Optimistic | −$567 [−961, −263] | $34 [8, 69] | $61 [17, 122] | $73 [23, 141] | **$69 [20, 135]** |
-| Conservative | −$730 [−1,257, −329] | −$5 [−12, −0] | −$4 [−8, −0] | −$1 [−4, 1] | $0 [−1, 1] |
+| SOL | 68 | −$759 [−919, −614] | **$26 [15, 39]** | $0 [−1, 1] | +$11 [+6, +18] |
+| TIA | 42 | −$669 [−890, −484] | **$10 [4, 16]** | −$1 [−3, 0] | +$3 [−1, +7] |
+| XRP | 73 | −$417 [−536, −314] | **$8 [2, 15]** | −$1 [−1, 0] | +$15 [+3, +32] |
+| WLD | 71 | −$417 [−528, −324] | $4 [0, 10] | $0 [−1, 0] | +$1 [−3, +5] |
+| ARB | 73 | −$208 [−248, −171] | $2 [0, 4] | $0 | +$1 [−1, +4] |
+| AAVE | 64 | −$80 [−98, −63] | $2 [−1, 6] | $0 | $0 [−2, +3] |
+| DOGE | 73 | −$418 [−555, −305] | −$2 [−7, 3] | −$1 [−2, 0] | −$5 [−8, −1] |
 
-Paired differences (same days resampled): cascade minus naive is +$636 a day [+284, +1,093] with optimistic fills and +$730 [+329, +1,256] with conservative ones. Cascade minus the gap-size-only rule is +$35 [+10, +66] and +$5 [+0, +12].
+- **Every coin, every period:** naive gap-chasing loses $80–760 a day, and the cascade avoids those losses. With optimistic fills it earns small positive amounts on most coins; with conservative fills it is close to break-even everywhere.
+- **Against a simple rule:** the decay model beats trading every gap above the fee threshold on BTC, ETH, SOL and XRP, ties on most other coins, and loses slightly on DOGE.
+- **January 2024 was unusual.** On January alone (the US spot-ETF approval month) the BTC cascade made $57 a day [17, 116] (`..._v6_real/`); the eight-month average is $18. The longer sample is the one to trust.
+- **Many gaps, little profit on mid-caps.** They produce 66,000 to 874,000 opportunities each over three months, far more than BTC, but most are drifts of the offset or too short-lived to reach at 50 ms.
 
-*Fee sweep at 1 bps per leg, equal latency on both legs* (`data/reports/pnl/btc_perp_binance_bybit_v5/inventory.md`), for comparison with earlier runs:
+*Fee sweep at 1 bps per leg, equal latency on both legs, BTC January 2024 only* (`data/reports/pnl/btc_perp_binance_bybit_v5/inventory.md`), for comparison with earlier runs:
 
 | Latency, fill bound | Naive fast path | Gap size only | Cascade | Cascade − gap size only |
 |---|---|---|---|---|
