@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>arbpercept</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230f6e6e'/%3E%3Cpath d='M3 11 L7 6 L10 9 L13 4' stroke='white' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="mark">arbpercept</span><span class="sub">latency-aware cross-venue arbitrage</span></div>
+  <nav class="tabs" id="tabs">
+    <a href="#results" data-tab="results">Results</a>
+    <a href="#coins" data-tab="coins">Coins</a>
+    <a href="#decay" data-tab="decay">Decay models</a>
+    <a href="#paper" data-tab="paper">Paper trader</a>
+    <a href="#reports" data-tab="reports">Reports</a>
+  </nav>
+  <div class="meta" id="meta"></div>
+</header>
+
+<!-- Results: one run, one setting -->
+<section class="view" id="view-results">
+  <div class="bar">
+    <label>Run <select id="r-run"></select></label>
+    <div class="seg" id="r-mode" data-value="optimistic">
+      <button data-v="optimistic">Optimistic fills</button><button data-v="conservative">Conservative fills</button>
+    </div>
+    <div class="seg" id="r-cap" data-value="capped">
+      <button data-v="capped">$50k cap</button><button data-v="uncapped">No cap</button>
+    </div>
+    <label id="r-tau-wrap">Latency <select id="r-tau"></select></label>
+    <label id="r-fee-wrap">Fee <select id="r-fee"></select></label>
+    <span class="setup" id="r-setup"></span>
+  </div>
+  <div class="grid">
+    <div class="panel span-12 kpis" id="r-kpis"></div>
+    <div class="panel span-8">
+      <div class="ph"><h2>Cumulative realised P&amp;L</h2><span class="hint">USD, $10k clips, inventory accounted. Dashed lines: fold boundaries. Click a name to hide it.</span></div>
+      <div class="legend" id="r-legend"></div>
+      <div class="chart" id="r-cum" style="height:290px"></div>
+    </div>
+    <div class="panel span-4">
+      <div class="ph"><h2>Per validation day</h2><span class="hint">mean [95% CI]</span></div>
+      <table class="t" id="r-table"></table>
+      <p class="foot" id="r-table-foot"></p>
+      <dl class="kv" id="r-setup-list"></dl>
+    </div>
+    <div class="panel span-6">
+      <div class="ph"><h2>Daily P&amp;L: <span id="r-sel-name"></span></h2><span class="hint" id="r-daily-hint"></span></div>
+      <div class="chart" id="r-daily" style="height:170px"></div>
+    </div>
+    <div class="panel span-3">
+      <div class="ph"><h2>Paired differences</h2><span class="hint">same days, $/day</span></div>
+      <div class="chart" id="r-pairs" style="height:170px"></div>
+    </div>
+    <div class="panel span-3">
+      <div class="ph"><h2>Where it comes from</h2><span class="hint" id="r-parts-hint"></span></div>
+      <div class="chart" id="r-parts" style="height:170px"></div>
+    </div>
+    <div class="panel span-12" id="r-tau-panel" hidden>
+      <div class="ph"><h2>Realised P&amp;L against latency</h2><span class="hint">mean per day with 95% CI</span></div>
+      <div class="chart" id="r-bytau" style="height:220px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Coins: one tag across pairs -->
+<section class="view" id="view-coins" hidden>
+  <div class="bar">
+    <label>Setup <select id="c-tag"></select></label>
+    <div class="seg" id="c-mode" data-value="optimistic">
+      <button data-v="optimistic">Optimistic fills</button><button data-v="conservative">Conservative fills</button>
+    </div>
+    <div class="seg" id="c-cap" data-value="capped">
+      <button data-v="capped">$50k cap</button><button data-v="uncapped">No cap</button>
+    </div>
+    <span class="setup">Click a coin to open its run.</span>
+  </div>
+  <div class="grid">
+    <div class="panel span-4">
+      <div class="ph"><h2>Cascade, realised $/day</h2><span class="hint">filled: cascade · hollow: gap-size rule</span></div>
+      <div class="chart" id="c-forest" style="height:330px"></div>
+    </div>
+    <div class="panel span-8">
+      <div class="ph"><h2>By coin</h2><span class="hint">mean per validation day [95% CI]</span></div>
+      <table class="t clickable" id="c-table"></table>
+      <p class="foot" id="c-foot"></p>
+    </div>
+    <div class="panel span-12">
+      <div class="ph"><h2>Cumulative realised P&amp;L per coin</h2><span class="hint">cascade (teal) and gap-size rule (grey), each coin on its own scale; click to open the run</span></div>
+      <div class="minis" id="c-minis"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Decay models -->
+<section class="view" id="view-decay" hidden>
+  <div class="bar">
+    <label>Pair <select id="d-pair"></select></label>
+    <div class="seg" id="d-births" data-value="clean">
+      <button data-v="clean">Clean births</button><button data-v="all">All births</button>
+    </div>
+    <label>Hurdle <select id="d-hurdle"></select></label>
+    <span class="setup" id="d-source"></span>
+  </div>
+  <div class="grid">
+    <div class="panel span-7">
+      <div class="ph"><h2>Walk-forward AUC by latency budget</h2><span class="hint">P(gap still open after τ); 0.5 = no skill</span></div>
+      <div class="legend" id="d-legend"></div>
+      <div class="chart" id="d-auc" style="height:300px"></div>
+    </div>
+    <div class="panel span-5">
+      <div class="ph"><h2>Calibration and skill</h2><span class="hint">mean over folds</span></div>
+      <table class="t" id="d-table"></table>
+    </div>
+    <div class="panel span-12" id="d-surv-panel">
+      <div class="ph"><h2>How long gaps stay open</h2><span class="hint" id="d-surv-hint"></span></div>
+      <div class="legend" id="d-surv-legend"></div>
+      <div class="chart" id="d-surv" style="height:230px"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Paper trader -->
+<section class="view" id="view-paper" hidden>
+  <div class="grid">
+    <div class="panel span-3 form" id="p-form">
+      <div class="ph"><h2>Session</h2><span class="hint" id="p-status"></span></div>
+      <div class="seg full" id="p-source" data-value="live">
+        <button data-v="live">Live feeds</button><button data-v="replay">Recorded day</button>
+      </div>
+      <div class="row2">
+        <label>Asset <select id="p-asset"><option>BTC</option><option>ETH</option></select></label>
+        <label class="only-live">Minutes <input id="p-minutes" type="number" value="10" min="1" max="240"></label>
+        <label class="only-replay" hidden>Speed <select id="p-speed"><option value="1">1×</option><option value="10" selected>10×</option><option value="100">100×</option><option value="max">max</option></select></label>
+      </div>
+      <label class="only-replay" hidden>Date <input id="p-date" type="date" value="2026-10-20"></label>
+      <div class="row2">
+        <label>Fee, bps/leg <input id="p-fee" type="number" value="1.0" step="0.1" min="0"></label>
+        <label>Offset window, s <input id="p-window" type="number" value="300" step="30" min="0"></label>
+      </div>
+      <div class="row2">
+        <label>Binance, ms <input id="p-lat-bn" type="number" value="50" min="0"></label>
+        <label>Bybit, ms <input id="p-lat-by" type="number" value="8" min="0"></label>
+      </div>
+      <div class="buttons"><button class="primary" id="p-start">Start</button><button id="p-stop">Stop</button></div>
+      <p class="foot" id="p-note">Paper only: no orders are sent. Fills are simulated against the books as they stand when each order would arrive.</p>
+    </div>
+    <div class="panel span-9 p-top">
+      <div class="books" id="p-books"></div>
+    </div>
+    <div class="panel span-9">
+      <div class="ph"><h2>Gap against the usual offset</h2><span class="hint">bps, both directions; dashed: trigger</span></div>
+      <div class="chart" id="p-gap" style="height:250px"></div>
+    </div>
+    <div class="panel span-5">
+      <div class="ph"><h2>Policies</h2><span class="hint">settled paper trades</span></div>
+      <table class="t" id="p-policies"></table>
+      <dl class="kv">
+        <dt>naive</dt><dd>trades every gap that clears the trigger</dd>
+        <dt>prior</dt><dd>trades when the decay prior's expected value is above 0 (needs a prior trained on gaps against the offset)</dd>
+        <dt>checks</dt><dd>stale book (5 s), thin book ($100), position cap ($50k), in that order</dd>
+        <dt>fills</dt><dd>each leg fills against that venue's book when its order would arrive; a one-sided fill is closed one latency later</dd>
+      </dl>
+    </div>
+    <div class="panel span-7">
+      <div class="ph"><h2>Decisions</h2><span class="hint">newest first, with the reason for each</span></div>
+      <div class="scroll"><table class="t small" id="p-decisions"></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- Reports: the markdown files in data/reports -->
+<section class="view" id="view-reports" hidden>
+  <div class="grid">
+    <div class="panel span-3"><div class="ph"><h2>Files</h2><span class="hint">data/reports</span></div><ul class="files" id="n-list"></ul></div>
+    <div class="panel span-9"><article class="md" id="n-body"></article></div>
+  </div>
+</section>
+
+<div class="tip" id="tip" hidden></div>
+<script src="/static/charts.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

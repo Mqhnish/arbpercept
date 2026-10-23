@@ -55,6 +55,21 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev,models,live]"
 
 For the exact versions the tests last passed with, install `requirements-lock.txt` first, then `pip install -e . --no-deps`. On Windows, use `.venv\Scripts\python` wherever these commands say `.venv/bin/python`.
 
+### Dashboard
+
+```bash
+.venv/bin/python -m arbtrade.dashboard --open
+```
+
+It opens a local page at http://127.0.0.1:8050. It reads only `data/reports/`, so it works on a fresh checkout without the data folders. It has five tabs:
+- **Results:** one run at a time. The page shows cumulative and daily realised P&L per strategy, the paired differences, and where the P&L comes from (trades, funding, closing). You can switch the fill bound, the position cap and the latency. Every number is the inventory-accounted one, with day-bootstrap 95% intervals.
+- **Coins:** every pair in one setup side by side. Click a coin to open its run.
+- **Decay models:** walk-forward AUC by latency budget, calibration, and how long gaps stay open.
+- **Paper trader:** runs `arbtrade.live` on live Binance and Bybit feeds (needs the `live` extra), or replays a recorded day at 1–100× speed (needs `data/raw/`). It shows the books, the gap against the usual offset, each policy's paper P&L, and every decision with its reason. No orders are sent.
+- **Reports:** the markdown reports in `data/reports/`.
+
+It uses the Python standard library only, with no JavaScript packages, and listens on 127.0.0.1 only.
+
 ```bash
 .venv/bin/python -m arbdata download --start 2026-09-07 --end 2026-10-18 --source bybit_ob
 ```
@@ -236,6 +251,6 @@ We compared our system with three public arbitrage projects and adopted what was
 1. **Record continuously on a VM** ([DEPLOY.md](DEPLOY.md)) and retrain the prior, decay and slow models on weeks of 10 ms data. January 2024 and October 2026 behave very differently: about 450 triggers an hour at 2 bps then, almost none now.
 2. **Maker-taker, version 2:** estimate queue cancellations from book size changes, requote when the price moves, add inventory limits, and gate quotes with the decay model so we quote only when the Binance side is likely to hold until the hedge.
 3. **Run the resolution check on more days** as Bybit publishes them, to firm up how many archive episodes are stale-quote artifacts.
-4. **Web dashboard for the live demo**, on top of `arbtrade/live.py`.
+4. **Web dashboard for the live demo:** done (`python -m arbtrade.dashboard`). Next: a button to retrain the prior on gaps against the offset, so the prior policy runs live too.
 5. **A slow model for the live trader.** Train it on recorded days, on the 24 inputs the live engine computes (`SlowFeatures.names()` plus the gap). Then add a `--slow` flag to `arbtrade.live` that loads it. `PaperEngine` can already run one.
 6. **Open the holdout once, at the end** (`ARBDATA_UNLOCK_HOLDOUT=1`), and report it as it comes out.
