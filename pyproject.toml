@@ -30,7 +30,10 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["arbdata", "arbtrade"]
+packages = ["arbdata", "arbtrade", "arbtrade.dashboard"]
+
+[tool.setuptools.package-data]
+"arbtrade.dashboard" = ["static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
