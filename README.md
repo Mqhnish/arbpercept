@@ -1,4 +1,4 @@
-# Latency-aware cross-asset arbitrage (Perceptron 2026, Problem 6)
+# Latency-aware cross-asset arbitrage (Optiver - Perceptron 2026, Problem 6)
 
 An arbitrage opportunity is worth acting on only if it will still be there when the order arrives. This project measures how fast crypto mispricings close, predicts whether each one will survive a given latency, and uses that prediction to decide how much thinking each opportunity can afford: act on a fast check, wait for a slower and better model, or skip.
 
