@@ -152,9 +152,9 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 ## Evaluation rules
 
 - **Holdout:** 10–18 Oct 2026 is frozen and locked behind `ARBDATA_UNLOCK_HOLDOUT=1`. Open it once, at the end.
-- **Results so far:** everything reported here comes from development days (289 dates: May 2023 to January 2024 and September to early October 2026), with walk-forward folds (training always before validation, one embargo day). February and March 2024 have not been downloaded, so they can still become a clean cross-venue holdout.
+- **Results so far:** everything reported here comes from development days (289 dates: May 2023 to January 2024 and September to early October 2026), with walk-forward folds (training always before validation, one embargo day). February and March 2024 are frozen as a separate cross-venue final test (see below).
 - **Two fill bounds:** the Bybit archive is sampled every 100 ms, so simulated fills on that leg are reported as an optimistic and a conservative bound. The 10 ms recorder narrows them.
-- **The holdout has no cross-venue data.** All Binance vs Bybit data (January 2024) is in development, and the holdout window holds Bybit archive days only. So the taker and maker-taker strategies below cannot be scored on it. A separate cross-venue holdout (for example February–March 2024, which Binance's archive still covers) has to be frozen before anyone looks at it.
+- **Cross-venue final test:** the main holdout holds Bybit archive days only, so a second window is frozen for the Binance vs Bybit strategies: 2 February to 31 March 2024, with 1 February as an embargo day (`CROSS_VENUE_WINDOW` in `arbdata/splits.py`, recorded with its hash in `data/splits.json`). It was frozen before any of that data was downloaded; those dates never join development, and reading them needs the same `ARBDATA_UNLOCK_HOLDOUT=1`. It has not been evaluated.
 
 ## Results so far (development data only)
 
