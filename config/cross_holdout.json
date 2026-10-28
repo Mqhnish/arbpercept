@@ -1,0 +1,17 @@
+{
+ "name": "cross-venue holdout",
+ "frozen_utc": "2026-10-29",
+ "why": "The main holdout (10-18 Oct 2026) holds Bybit archive days only, so no Binance vs Bybit strategy can be scored on it. This window is frozen before any of its data was downloaded or looked at.",
+ "window": {"embargo_start": "2024-02-01", "holdout_start": "2024-02-02", "holdout_end": "2024-03-31"},
+ "pairs": ["btc_perp_binance_bybit", "eth_perp_binance_bybit", "sol_perp_binance_bybit", "xrp_perp_binance_bybit",
+           "doge_perp_binance_bybit", "wld_perp_binance_bybit", "zec_perp_binance_bybit", "tia_perp_binance_bybit",
+           "aave_perp_binance_bybit", "arb_perp_binance_bybit"],
+ "protocol": [
+  "Dates in the window never join development, whenever they are downloaded (arbdata/splits.py).",
+  "Reading them needs ARBDATA_UNLOCK_CROSS_HOLDOUT=1, separate from the main holdout's lock.",
+  "Before unlocking, fix the setup in writing: fees 1.7/3.0 bps, latency 50/8 ms, Bybit feed delay 45 ms, liquidity used up, offset-aware, $50k cap, 60 s closing window.",
+  "Train every model and choose every margin on all development days only. Nothing is refitted on the window.",
+  "Score each strategy once, through the inventory-accounted path, with day-bootstrap 95% intervals and paired differences against naive and gap-size-only.",
+  "Report every result as it comes out, including losses. Open the window once."
+ ]
+}

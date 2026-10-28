@@ -21,6 +21,11 @@ back. Here the position is tracked through each day:
             Anything still open at the end is closed at the last quotes and reported as
             close_unfilled (base units), since its true cost is unknown
 
+The closing result is split in two: close_executed is what was really traded within the
+displayed size, close_assumed is what is booked for the rest at the last quotes (an
+assumed liquidation, not a fill). residual_usd is the notional of that rest, at the mid.
+with_residual_cost charges an extra cost on it, to show how much the result leans on it.
+
 Each day starts flat, so days stay independent for the day-bootstrap intervals.
 Venue a and venue b are the pair's two legs; dq_a is the change of the position on venue a
 (base units), and the position on venue b is always its negative.
@@ -40,6 +45,12 @@ def _mid(leg: Leg, t: np.ndarray) -> np.ndarray:
 
 
 CLOSE_WINDOW_S = 60.0  # what the analysis scripts use: stop trading and work the close over the last minute
+RESIDUAL_COST_BPS = (5.0, 10.0, 25.0)  # extra costs the reports charge on what was left for the last quotes
+
+
+def with_residual_cost(realised, residual_usd, cost_bps: float):
+    """Realised P&L if closing what was left at the end cost cost_bps more than the last quotes."""
+    return realised - np.abs(residual_usd) * cost_bps / 1e4
 
 
 def _work_close(pos: float, leg_a: Leg, leg_b: Leg, t_from: int, t_to: int, fee_a_bps: float,
@@ -127,13 +138,17 @@ def account_day(t: np.ndarray, dq_a: np.ndarray, pnl: np.ndarray, leg_a: Leg, le
         worked_cash, worked_fees, left = _work_close(pos, leg_a, leg_b, t_close, day_end, fee_a_bps, fee_b_bps)
     rest = np.sign(pos) * left  # what is still open: closed at the last quotes, whatever their size
     px_a, px_b = (bid_a, ask_b) if rest > 0 else (ask_a, bid_b)  # sell longs at the bid, buy back shorts at the ask
-    flatten_cash = worked_cash + (rest * (px_a - px_b) if rest != 0 else 0.0)
-    flatten_fees = worked_fees + (abs(rest) * (px_a * fee_a_bps + px_b * fee_b_bps) / 1e4 if rest != 0 else 0.0)
+    assumed_cash = rest * (px_a - px_b) if rest != 0 else 0.0
+    assumed_fees = abs(rest) * (px_a * fee_a_bps + px_b * fee_b_bps) / 1e4 if rest != 0 else 0.0
+    flatten_cash, flatten_fees = worked_cash + assumed_cash, worked_fees + assumed_fees
+    residual_usd = abs(rest) * (bid_a + ask_a) / 2 if rest != 0 else 0.0
     trade_pnl = float(pnl[keep].sum())
     closing = (t >= t_close) if close_window_s > 0 else np.zeros(len(t), bool)
     return {"keep": keep, "trades": int(keep.sum()), "skipped_by_cap": int((~keep & ~closing).sum()),
             "skipped_closing": int(closing.sum()), "trade_pnl": trade_pnl, "funding": funding, "flatten": float(flatten_cash - flatten_fees),
             "close_unfilled": float(left) if close_window_s > 0 else 0.0,
+            "close_executed": float(worked_cash - worked_fees), "close_assumed": float(assumed_cash - assumed_fees),
+            "residual_usd": float(residual_usd),
             "mark": float(mark), "end_position": float(pos), "peak_position": float(peak),
             "realised": trade_pnl + funding + float(flatten_cash - flatten_fees),
             "marked": trade_pnl + funding + float(mark),

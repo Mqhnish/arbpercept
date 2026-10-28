@@ -358,6 +358,7 @@ def train_prior(cfg, out: Path, fee_bps: float = 1.0, lat_a_ms: float = 50.0, la
     prior = {"features": fp.features, "median": fp.median.tolist(), "mu": fp.mu.tolist(), "sd": fp.sd.tolist(),
              "w": fp.w.tolist(), "b": float(fp.b), "cal_x": cal[0] if cal else None, "cal_y": cal[1] if cal else None,
              "loss_bps": miss_loss_bps(o, "pnl_rel_bps"), "offset_window_s": offset_window_s,
+             "asset": pair.split("_")[0].upper(),
              "trained_on": f"{pair}, {len(X):,} triggers on {cut} days, calibrated on {len(days) - cut} days",
              "latency_ms": {"a": lat_a_ms, "b": lat_b_ms}, "fee_bps": fee_bps,
              "full_fill_rate": float(o.full_fill.mean())}
@@ -374,6 +375,38 @@ def load_prior(path: Path) -> dict:
 def prior_matches(prior: dict, offset_window_s: float | None) -> bool:
     """A prior is only valid for the gaps it was trained on: raw gaps, or gaps against the same offset window."""
     return (prior.get("offset_window_s") or None) == (offset_window_s or None)
+
+
+def prior_is_for(prior: dict, asset: str) -> bool:
+    """Whether a saved prior was trained on this asset (its "asset" field, or its trained_on text for older files)."""
+    if prior.get("asset"):
+        return str(prior["asset"]).upper() == asset.upper()
+    text = str(prior.get("trained_on", ""))
+    return text.lower().startswith(f"{asset.lower()}_") or f" {asset.upper()} " in f" {text} "
+
+
+def prior_file(asset: str, offset_window_s: float | None) -> str:
+    """Where --train-prior saves a prior, so find_prior can tell priors apart by name too."""
+    return f"prior_{asset.upper()}_" + (f"offset{offset_window_s:g}s" if offset_window_s else "raw") + ".json"
+
+
+def find_prior(folder: Path, asset: str, offset_window_s: float | None) -> tuple[Path | None, str]:
+    """The saved prior in folder for this asset, trained on the same gaps as this run, and a note saying
+    which one was picked, or why none was. Newest file first when several fit."""
+    gaps = lambda w: f"gaps against a {w:g} s offset" if w else "raw gaps"
+    files = sorted(folder.glob("prior*.json"), key=lambda p: p.stat().st_mtime, reverse=True) if folder.is_dir() else []
+    mine = [(p, load_prior(p)) for p in files]
+    mine = [(p, pr) for p, pr in mine if prior_is_for(pr, asset)]
+    for p, pr in mine:
+        if prior_matches(pr, offset_window_s):
+            return p, f"Prior {p.name}: {pr.get('trained_on', '')}."
+    train = (f"python -m arbtrade.live --train-prior --asset {asset}"
+             + (f" --offset-window-s {offset_window_s:g}" if offset_window_s else " --offset-window-s 0"))
+    if mine:
+        other = sorted({gaps(pr.get("offset_window_s")) for _, pr in mine})
+        return None, (f"The saved {asset} priors were trained on {', '.join(other)}, not {gaps(offset_window_s)}, "
+                      f"so only the naive policy runs. Train a matching one with: {train}")
+    return None, f"No saved {asset} prior: only the naive policy runs. Train one with: {train}"
 
 
 # ---- inputs ---------------------------------------------------------------------------
@@ -461,7 +494,8 @@ def main() -> None:
                     help="one-way order latency to Bybit (ms); default from config/sources.yaml")
     ap.add_argument("--offset-window-s", type=float, default=300.0,
                     help="measure gaps against the venues' trailing offset over this window; 0 = against zero")
-    ap.add_argument("--prior", default="data/reports/live/prior.json")
+    ap.add_argument("--prior", default=None,
+                    help="a saved prior; default: the newest one in data/reports/live for this asset and gap definition")
     ap.add_argument("--stale-ms", type=float, default=5_000.0, help="skip triggers when a book is older than this")
     ap.add_argument("--cap-usd", type=float, default=50_000.0, help="cap on each policy's net position")
     ap.add_argument("--decisions", default=None, help="write every decision and its reason to this JSONL file")
@@ -471,18 +505,26 @@ def main() -> None:
     lat_bn = args.lat_binance if args.lat_binance is not None else cfg.latency_ms.get("binance", 50.0)
     lat_by = args.lat_bybit if args.lat_bybit is not None else cfg.latency_ms.get("bybit", 8.0)
     window = args.offset_window_s or None
+    live_dir = cfg.reports_dir / "live"
     if args.train_prior:
-        # btc_perp_binance_bybit: leg a is Binance, leg b is Bybit
-        p = train_prior(cfg, Path(args.prior), args.fee, lat_bn, lat_by, offset_window_s=window)
-        print(f"saved {args.prior}: {p['trained_on']}, full-fill rate {p['full_fill_rate']:.1%}, loss if missed {p['loss_bps']:.2f} bps")
+        # <asset>_perp_binance_bybit: leg a is Binance, leg b is Bybit
+        out = Path(args.prior) if args.prior else live_dir / prior_file(args.asset, window)
+        p = train_prior(cfg, out, args.fee, lat_bn, lat_by, pair=f"{args.asset.lower()}_perp_binance_bybit",
+                        offset_window_s=window)
+        print(f"saved {out}: {p['trained_on']}, full-fill rate {p['full_fill_rate']:.1%}, loss if missed {p['loss_bps']:.2f} bps")
         return
-    prior_path = Path(args.prior)
-    prior = load_prior(prior_path) if prior_path.exists() else None
-    if prior is not None and not prior_matches(prior, window):
-        gaps = lambda w: f"gaps against a {w:g} s offset" if w else "raw gaps"
-        print(f"{prior_path} was trained on {gaps(prior.get('offset_window_s'))}, but this run measures {gaps(window)}. "
-              "Running the naive policy only; retrain with --train-prior.", flush=True)
-        prior = None
+    if args.prior:
+        prior_path = Path(args.prior)
+        prior = load_prior(prior_path) if prior_path.exists() else None
+        if prior is not None and not prior_matches(prior, window):
+            gaps = lambda w: f"gaps against a {w:g} s offset" if w else "raw gaps"
+            print(f"{prior_path} was trained on {gaps(prior.get('offset_window_s'))}, but this run measures {gaps(window)}. "
+                  "Running the naive policy only; retrain with --train-prior.", flush=True)
+            prior = None
+    else:
+        prior_path, note = find_prior(live_dir, args.asset, window)
+        prior = load_prior(prior_path) if prior_path else None
+        print(note, flush=True)
     trigger = args.trigger if args.trigger is not None else 2 * args.fee
     eng = PaperEngine(("binance", "bybit"), trigger, args.fee,
                       {"binance": lat_bn, "bybit": lat_by},

@@ -149,3 +149,18 @@ def test_paper_session_replays_and_reports(monkeypatch, tmp_path):
         s.thread = threading.Thread(target=time.sleep, args=(0.5,))
         s.thread.start()
         s.start({"source": "replay"})                                  # one session at a time
+
+
+def test_paper_session_picks_the_saved_prior_for_the_asset_and_gaps(monkeypatch, tmp_path):
+    prior = {"features": ["edge_birth_bps"], "median": [0.0], "mu": [0.0], "sd": [1.0], "w": [1.0], "b": 0.0,
+             "loss_bps": -1.0, "asset": "BTC", "offset_window_s": 300.0, "trained_on": "btc test prior"}
+    (tmp_path / "prior_BTC_offset300s.json").write_text(json.dumps(prior))
+    monkeypatch.setattr(Pmod, "replay_events", lambda cfg, date, asset: iter([]))
+    cfg = type("Cfg", (), {"latency_ms": {"binance": 50.0, "bybit": 8.0}})()
+    s = Pmod.PaperSession(cfg, tmp_path)
+    s.start({"source": "replay", "date": "2024-01-01", "asset": "BTC", "offset_window_s": 300})
+    s.thread.join(5)
+    assert s.engine.prior is not None and "prior_BTC_offset300s.json" in s.snapshot()["note"]
+    s.start({"source": "replay", "date": "2024-01-01", "asset": "ETH", "offset_window_s": 300})
+    s.thread.join(5)
+    assert s.engine.prior is None and "No saved ETH prior" in s.snapshot()["note"]

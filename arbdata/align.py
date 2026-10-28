@@ -31,6 +31,21 @@ def _with_credit(leg: pd.DataFrame) -> pd.DataFrame:
     return leg.assign(credit=credit)
 
 
+def delayed_view(l1: pd.DataFrame, down: np.ndarray, trades: pd.DataFrame | None, feed_ms: float):
+    """One venue's data as a trader receives it through a feed that is feed_ms late.
+
+    Every quote, outage and trade reaches the trader feed_ms after it was published. Births
+    and features built on this view use only what the trader could have seen by then.
+    """
+    us = int(round(feed_ms * 1000))
+    if us == 0:
+        return l1, down, trades
+    end = np.iinfo(np.int64).max
+    down = np.where(down == end, end, down + us) if len(down) else down  # "down until the end of day" stays so
+    return (l1.assign(avail_ts=l1.avail_ts + us), down,
+            None if trades is None else trades.assign(ts=trades.ts + us))
+
+
 def align(a: pd.DataFrame, b: pd.DataFrame, down_a: np.ndarray, down_b: np.ndarray) -> pd.DataFrame:
     t = np.union1d(a.avail_ts.to_numpy(), b.avail_ts.to_numpy())
     out = pd.DataFrame({"t": t})
