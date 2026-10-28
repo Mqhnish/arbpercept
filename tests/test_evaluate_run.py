@@ -51,10 +51,11 @@ def _setup(monkeypatch, tmp_path):
     cfg = SimpleNamespace(splits_path=tmp_path / "splits.json", data_root=tmp_path,
                           pairs={PAIR: SimpleNamespace(type="cross")})
     monkeypatch.setattr(ev, "load_config", lambda: cfg)
-    seen = []
+    seen, feeds = [], []
 
-    def fake_load_day(cfg, pair, date, trigger, offset_window_s=None):
+    def fake_load_day(cfg, pair, date, trigger, offset_window_s=None, feed_delay_ms=None):
         seen.append(offset_window_s)
+        feeds.append(feed_delay_ms)
         if date == BROKEN:
             return None
         if date == QUIET:
@@ -64,15 +65,16 @@ def _setup(monkeypatch, tmp_path):
             legs.pop("offset")
         return eps, legs
     monkeypatch.setattr(ev, "load_day", fake_load_day)
-    return seen
+    return seen, feeds
 
 
 def test_run_end_to_end_offset_aware_with_venue_latency_and_fees(monkeypatch, tmp_path):
-    seen = _setup(monkeypatch, tmp_path)
+    seen, feeds = _setup(monkeypatch, tmp_path)
     out = tmp_path / "out"
     agg = ev.run(PAIR, [1.0], out, slow_wait_ms=0.01, dump_trades=True, offset_aware=True,
                  leg_latency_ms=(50.0, 8.0), venue_fees=(1.7, 3.0))
     assert set(seen) == {ev.OFFSET_WINDOW_S}                       # births labelled against the offset
+    assert set(feeds) == {None}                                    # no feed delay: births from the raw books
     assert set(agg.strategy) == set(ev.STRATEGIES) | {"hindsight ceiling"}
     assert set(agg.tau_ms) == {50.0}
     folds = pd.read_csv(out / "pnl_vs_latency_folds.csv")
@@ -118,12 +120,13 @@ def test_run_zero_feed_delay_and_no_depletion_match_the_default(monkeypatch, tmp
 
 
 def test_run_with_feed_delay_trades_only_gaps_the_trader_can_see(monkeypatch, tmp_path):
-    _setup(monkeypatch, tmp_path)
+    _, feeds = _setup(monkeypatch, tmp_path)
     monkeypatch.setattr(ev, "TAUS_MS", [10])
     out = tmp_path / "feed"
     ev.run(PAIR, [1.0], out, slow_wait_ms=0.01, feed_delay_ms=(2.0, 30.0))
     meta = json.loads((out / "meta.json").read_text())
-    assert meta["feed_delay_ms"] == [2.0, 30.0]
+    assert meta["feed_delay_ms"] == [2.0, 30.0] and meta["births_from_delayed_view"]
+    assert set(feeds) == {(2.0, 30.0)}                             # births built from the delayed books
     folds = pd.read_csv(out / "pnl_vs_latency_folds.csv")
     naive = folds[folds.strategy == "naive fast path"]
     assert len(naive) and (naive.trades < naive.triggers).all()

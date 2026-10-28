@@ -10,6 +10,9 @@ without taking more than the books show (0 = close at the last quotes, as before
 optionally a cap on the position ($50k = five $10k clips, converted at the price of each trade).
 
 Validation days without a trade count as $0 days (the day list comes from meta.json).
+The closing is reported in two parts: what was really traded within the displayed size, and
+what was booked for the rest at the last quotes (an assumption). The capped result is also
+shown with an extra 5, 10 and 25 bps charged on that rest, to show how much it leans on it.
 Day-bootstrap 95% intervals, with paired differences against the naive and gap-size-only
 baselines, and against an earlier run when --baseline-tag is given.
 """
@@ -25,7 +28,7 @@ import pandas as pd
 from arbdata import pipeline as P
 from arbdata.config import load_config
 from arbdata.funding import load_funding
-from arbtrade.inventory import CLOSE_WINDOW_S, account_day
+from arbtrade.inventory import CLOSE_WINDOW_S, RESIDUAL_COST_BPS, account_day, with_residual_cost
 from arbtrade.replay import Leg
 from arbtrade.stats import boot_ci, paired_diff
 
@@ -86,7 +89,9 @@ def main() -> None:
                 rows.append({"date": date, "fee": fee, "mode": mode, "tau_ms": tau, "strategy": strat, "cap": cap_name,
                              "trades": len(g), "one_way_share": max((g.dq_a > 0).mean(), (g.dq_a < 0).mean()),
                              "old": acc["raw"], "funding": acc["funding"], "flatten": acc["flatten"],
-                             "close_unfilled": acc["close_unfilled"], "realised": acc["realised"], "kept": acc["trades"]})
+                             "close_unfilled": acc["close_unfilled"], "close_executed": acc["close_executed"],
+                             "close_assumed": acc["close_assumed"], "residual_usd": acc["residual_usd"],
+                             "realised": acc["realised"], "kept": acc["trades"]})
         print(date, "done", flush=True)
     df = pd.DataFrame(rows)
     df.to_csv(d / "inventory_by_day.csv", index=False)
@@ -100,7 +105,8 @@ def main() -> None:
              "Mean net P&L per validation day (USD) with day-bootstrap 95% intervals, $10k per trade. "
              "Old: each hedged trade credited with the whole gap. Realised: positions tracked, funding paid or received, "
              f"{close}. Capped: no trade that takes the position past ${CAP_USD:,.0f} at the price of that trade. "
-             "Validation days without a trade count as $0.", ""]
+             "Validation days without a trade count as $0. Optimistic and conservative are two simulation assumptions "
+             "about the sampled Bybit book between snapshots, not guaranteed bounds on the truth.", ""]
     for fee in sorted(df.fee.unique()):
         all_days = validation_days(d, tr, fee)
         realised = lambda g, cap="$50k cap": g[g.cap == cap].set_index("date")["realised"]
@@ -109,6 +115,11 @@ def main() -> None:
                   "|---|---|---|---|---|---|---|"]
         diff_lines = ["", "Paired differences, realised and capped (same days resampled for both):", "",
                       "| Fill bound | Latency | Comparison | Difference per day |", "|---|---|---|---|"]
+        stress = " | ".join(f"+{c:g} bps" for c in RESIDUAL_COST_BPS)
+        close_lines = ["", "Closing, capped. Executed: really traded within the displayed size. Assumed: the rest, "
+                       "booked at the last quotes whatever their size. The last columns charge an extra cost on that rest.", "",
+                       f"| Fill bound | Latency | Strategy | Days with a rest | Rest, mean USD | Executed | Assumed | {stress} |",
+                       "|---|---|---|---|---|---|---|" + "---|" * len(RESIDUAL_COST_BPS)]
         base_lines = ["", f"Against the earlier run `{args.baseline_tag}`, realised and capped:", "",
                       "| Fill bound | Latency | Strategy | This run − earlier run |", "|---|---|---|---|"]
         for mode in ("optimistic", "conservative"):
@@ -124,6 +135,11 @@ def main() -> None:
                         cells.append(fmt(x.mean(), *boot_ci(x)))
                     share = np.average(g[g.cap == "no cap"].one_way_share, weights=g[g.cap == "no cap"].trades)
                     lines.append(f"| {mode} | {tau} ms | {short} | {share:.0%} | " + " | ".join(cells) + " |")
+                    c = g[g.cap == "$50k cap"].set_index("date").reindex(all_days, fill_value=0.0)
+                    stressed = [with_residual_cost(c.realised, c.residual_usd, k).to_numpy() for k in RESIDUAL_COST_BPS]
+                    close_lines.append(f"| {mode} | {tau} ms | {short} | {int((c.residual_usd > 0).sum())} of {len(c)} | "
+                                       f"{c.residual_usd.mean():,.0f} | {c.close_executed.mean():+,.0f} | {c.close_assumed.mean():+,.0f} | "
+                                       + " | ".join(fmt(x.mean(), *boot_ci(x)) for x in stressed) + " |")
                     if base is not None:
                         b = base[(base.fee == fee) & (base["mode"] == mode) & (base.tau_ms == tau) & (base.strategy == strat)]
                         if not b.empty:
@@ -135,8 +151,8 @@ def main() -> None:
                         continue
                     diff_lines.append(f"| {mode} | {tau} ms | {NAMES[s]} − {NAMES[o]} | "
                                       f"{fmt(*paired_diff(realised(gs), realised(go), all_days), signed=True)} |")
-        lines += diff_lines + (base_lines if base is not None else []) + [""]
-    (d / "inventory.md").write_text("\n".join(lines) + "\n")
+        lines += diff_lines + close_lines + (base_lines if base is not None else []) + [""]
+    (d / "inventory.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
 

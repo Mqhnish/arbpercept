@@ -47,6 +47,22 @@ With the slow model at microseconds, model compute no longer costs edge; network
 - The live engine computes 23 of the slow model's features, plus the gap itself. The rest need inputs it does not have yet: book depth, feed lag (needs exchange timestamps), trade flow (needs the trade feeds), and the gap's 1 s change and recent births (need more state in the engine). So a slow model trained on every feature cannot run live yet; the engine refuses it. One trained on these 24 inputs can (`PaperEngine(slow=...)`).
 - `arbtrade.evaluate` still waits only for inference (rounded up to 0.01 ms) before its slow path re-reads the book. Running it with `--slow-wait-ms 0.03` would include the feature cost. That run has not been done yet.
 
+## What is built and what is planned
+
+| Piece | Status | Where |
+|---|---|---|
+| Data pipeline, book rebuild, causal features, frozen splits | Built, tested | `arbdata/` |
+| Decay prior (fast) and slow model, calibrated | Built, tested | `arbtrade/policies.py`, `compiled.py` |
+| Cascade policy in the replay (act, wait for the slow model, or skip) | Built, tested | `arbtrade/evaluate.py` |
+| Births and features from the delayed books when a feed delay is set | Built, tested | `arbdata/align.py` (`delayed_view`), `evaluate.load_day` |
+| Inventory-accounted P&L, closing split into executed and assumed parts | Built, tested | `arbtrade/inventory.py`, `analysis/inventory_check.py` |
+| Live paper trader: naive and prior policies | Built, tested | `arbtrade/live.py`, dashboard Paper tab |
+| Live paper trader: slow model and full cascade | Engine supports it; no trained live slow model yet | `PaperEngine(slow=...)` |
+| Prior trained on gaps against the usual offset | Command exists; needs the data folders to train | `python -m arbtrade.live --train-prior` |
+| Execution stream that keeps size-only updates | Planned | `arbdata/normalize.py` keeps price changes only |
+| Cross-venue holdout (Feb–Mar 2024) | Frozen, not downloaded, not opened | `config/cross_holdout.json` |
+| Re-run of the results with the delayed-view births and the closing split | Planned: needs the data folders | see Results |
+
 ## Running it
 
 ```bash
@@ -70,6 +86,28 @@ It opens a local page at http://127.0.0.1:8050. It reads only `data/reports/`, s
 
 It uses the Python standard library only, with no JavaScript packages, and listens on 127.0.0.1 only.
 
+The Paper trader picks the saved prior for the coin and the gap definition by itself (`data/reports/live/prior*.json`). The priors in the repository were trained on raw gaps. With the default 300 s offset window, only the naive policy runs until a matching prior is trained, and the page says so.
+
+### Demo of the paper trader
+
+The prior policy on live feeds today, with the shipped prior (raw gaps, no data folders needed):
+
+```bash
+.venv/bin/python -m arbtrade.live --minutes 10 --asset BTC --offset-window-s 0
+```
+
+The same against the usual offset, which is the setup the results use. First train the matching prior (needs the data folders), then run:
+
+```bash
+.venv/bin/python -m arbtrade.live --train-prior --asset BTC --fee 1.0
+```
+
+```bash
+.venv/bin/python -m arbtrade.live --minutes 10 --asset BTC
+```
+
+Each run prints which prior it picked, or why it runs the naive policy only.
+
 ```bash
 .venv/bin/python -m arbdata download --start 2026-09-07 --end 2026-10-18 --source bybit_ob
 ```
@@ -89,11 +127,11 @@ It uses the Python standard library only, with no JavaScript packages, and liste
 Useful `arbtrade.evaluate` options:
 - `--venue-fees A B`: one taker fee per venue (leg a, leg b), for example `--venue-fees 1.7 3.0`.
 - `--leg-latency-ms A B`: one order latency per venue instead of the equal-latency sweep, for example `--leg-latency-ms 50 8`.
-- `--feed-delay-ms A B`: one market-data delay per venue (leg a, leg b). The trader sees each book that late. It reacts later and prices from older quotes. A trigger is traded only if the delayed books still show a gap above the trigger. This is separate from the order latency. For example, `--feed-delay-ms 0 45` adds the 45 ms median feed delay measured to Bybit (leg b) and none to Binance. Cross pairs only.
+- `--feed-delay-ms A B`: one market-data delay per venue (leg a, leg b). The trader sees each book that late. Births and every feature are then built from the delayed books, so a model never sees a quote the trader has not received. Orders are priced from those delayed quotes and meet the real books. A trigger is traded only if the delayed books still show a gap above the trigger. This is separate from the order latency. For example, `--feed-delay-ms 0 45` adds the 45 ms median feed delay measured to Bybit (leg b) and none to Binance. Cross pairs only.
 - `--deplete-liquidity`: a simulated fill uses up the displayed size it took. A second trigger at the same price only gets what is left. The size comes back when that side's price changes. Each strategy is scored on a replay of only its own trades. Cross pairs only.
 - Both are off by default. Without them, results are the same as before they existed.
 
-`inventory_check.py` stops trading in each day's last 60 s and works the position down without taking more than the books show (`--close-window-s 0` gives the old close at the last quotes). It reports paired day-bootstrap differences against the naive and gap-size-only baselines, and against an earlier run with `--baseline-tag`.
+`inventory_check.py` stops trading in each day's last 60 s and works the position down without taking more than the books show (`--close-window-s 0` gives the old close at the last quotes). Whatever is still open at the end is booked at the last quotes. That part is an assumption, so the report shows it apart: what was really closed, what was assumed, how much was left, and the capped result with an extra 5, 10 and 25 bps charged on the rest. It also reports paired day-bootstrap differences against the naive and gap-size-only baselines, and against an earlier run with `--baseline-tag`.
 
 ```bash
 .venv/bin/python -m arbdata record
@@ -152,13 +190,16 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 ## Evaluation rules
 
 - **Holdout:** 10–18 Oct 2026 is frozen and locked behind `ARBDATA_UNLOCK_HOLDOUT=1`. Open it once, at the end.
-- **Results so far:** everything reported here comes from development days (289 dates: May 2023 to January 2024 and September to early October 2026), with walk-forward folds (training always before validation, one embargo day). February and March 2024 are frozen as a separate cross-venue final test (see below).
-- **Two fill bounds:** the Bybit archive is sampled every 100 ms, so simulated fills on that leg are reported as an optimistic and a conservative bound. The 10 ms recorder narrows them.
-- **Cross-venue final test:** the main holdout holds Bybit archive days only, so a second window is frozen for the Binance vs Bybit strategies: 2 February to 31 March 2024, with 1 February as an embargo day (`CROSS_VENUE_WINDOW` in `arbdata/splits.py`, recorded with its hash in `data/splits.json`). It was frozen before any of that data was downloaded; those dates never join development, and reading them needs the same `ARBDATA_UNLOCK_HOLDOUT=1`. It has not been evaluated.
+- **Cross-venue holdout:** 2 Feb – 31 Mar 2024 (embargo 1 Feb), frozen on 29 Oct 2026 before any of it was downloaded. Its manifest and protocol are in `config/cross_holdout.json`. Its dates never join development, and reading them needs `ARBDATA_UNLOCK_CROSS_HOLDOUT=1`, a separate lock.
+- **Results so far:** everything reported here comes from development days (289 dates: May 2023 to January 2024 and September to early October 2026), with walk-forward folds (training always before validation, one embargo day). Every number is from the folds' validation days.
+- **Two fill assumptions:** the Bybit archive is sampled every 100 ms, so simulated fills on that leg are reported under an optimistic and a conservative assumption. Neither is a guaranteed bound: the book can move between two snapshots in ways neither sees. The 10 ms recorder narrows the gap between them.
+- **The main holdout has no cross-venue data.** It holds Bybit archive days only, so the taker and maker-taker strategies are to be scored on the cross-venue holdout above instead.
 
 ## Results so far (development data only)
 
 All numbers below were re-run after the review fixes (offset-relative labelling, per-venue fees and latency, a depth-limited close, the cap at each trade's price, and $0 days for days without trades).
+
+**Read these as simulation results.** They were produced before two later fixes. First, with a feed delay, births and features are now built from the delayed books; before, the model could see a Bybit quote up to 45 ms before the trader had it. Second, the closing is now split into what was really traded and what was assumed at the last quotes. Size-only book updates are also still dropped, which can overstate the size available to fills. The re-run needs the data folders and has not been done yet. The numbers may get worse, and they will be reported either way.
 
 **Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals (`data/reports/pnl/<pair>_v7_real/inventory.md`).
 
@@ -200,7 +241,7 @@ All numbers below were re-run after the review fixes (offset-relative labelling,
 - **With conservative fills** every gated policy is close to break-even, and naive trading loses $600–4,700 a day.
 - **Cascade vs slow-always:** statistically the same. The slow model's 6.4 µs is inference only; computing its features live has not been timed yet.
 - **Why earlier numbers were higher.** Versions before the inventory accounting credited each trade with the whole gap measured from zero. In January 2024 Binance's BTC perpetual traded 0.5–3 bps below Bybit's, so most trades went the same way and mainly harvested that offset, which closing the positions pays back (`..._v3/inventory.md`).
-- **Not yet modelled:** the delay before the trader sees each venue's quotes, the same displayed size being reused by trades close together, and a cross-venue holdout (see Evaluation rules).
+- **Not yet modelled:** size-only book updates (only price changes are kept, so displayed size can be stale), queue position and market impact.
 
 Fills are limited to displayed top-of-book size, with no queue position or market impact.
 
@@ -251,6 +292,8 @@ We compared our system with three public arbitrage projects and adopted what was
 1. **Record continuously on a VM** ([DEPLOY.md](DEPLOY.md)) and retrain the prior, decay and slow models on weeks of 10 ms data. January 2024 and October 2026 behave very differently: about 450 triggers an hour at 2 bps then, almost none now.
 2. **Maker-taker, version 2:** estimate queue cancellations from book size changes, requote when the price moves, add inventory limits, and gate quotes with the decay model so we quote only when the Binance side is likely to hold until the hedge.
 3. **Run the resolution check on more days** as Bybit publishes them, to firm up how many archive episodes are stale-quote artifacts.
-4. **Web dashboard for the live demo:** done (`python -m arbtrade.dashboard`). Next: a button to retrain the prior on gaps against the offset, so the prior policy runs live too.
-5. **A slow model for the live trader.** Train it on recorded days, on the 24 inputs the live engine computes (`SlowFeatures.names()` plus the gap). Then add a `--slow` flag to `arbtrade.live` that loads it. `PaperEngine` can already run one.
-6. **Open the holdout once, at the end** (`ARBDATA_UNLOCK_HOLDOUT=1`), and report it as it comes out.
+4. **Re-run every result** with births from the delayed books and the closing split, and report what changed, including anything that got worse.
+5. **Keep size-only updates for execution:** a second L1 stream with every size change, used by the replay's fills (needs a data rebuild).
+6. **Train the prior on gaps against the offset** (`--train-prior`), so the prior policy runs in the default live setup.
+7. **A slow model for the live trader.** Train it on recorded days, on the 24 inputs the live engine computes (`SlowFeatures.names()` plus the gap). Then add a `--slow` flag to `arbtrade.live` that loads it. `PaperEngine` can already run one.
+8. **Open each holdout once, at the end** (`ARBDATA_UNLOCK_HOLDOUT=1`, `ARBDATA_UNLOCK_CROSS_HOLDOUT=1`), following its protocol, and report it as it comes out.

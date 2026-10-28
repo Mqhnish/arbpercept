@@ -152,5 +152,5 @@ def episode_dates(cfg: Config) -> list[str]:
 def build_splits(cfg: Config, force: bool = False) -> dict:
     s = cfg.splits
     proposed = splits_mod.make_splits(episode_dates(cfg), s["holdout_fraction"], s["min_holdout_days"],
-                                      s["embargo_days"], s["n_folds"])
+                                      s["embargo_days"], s["n_folds"], splits_mod.cross_window())
     return splits_mod.save_frozen(proposed, cfg.splits_path, force=force)

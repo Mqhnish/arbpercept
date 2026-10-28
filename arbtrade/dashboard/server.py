@@ -110,7 +110,7 @@ def make_handler(app: App):
 
 def serve(port: int = 8050, open_browser: bool = False) -> None:
     cfg = load_config()
-    app = App(cfg.reports_dir, PaperSession(cfg, cfg.reports_dir / "live" / "prior.json"))
+    app = App(cfg.reports_dir, PaperSession(cfg, cfg.reports_dir / "live"))
     httpd = ThreadingHTTPServer(("127.0.0.1", port), make_handler(app))
     url = f"http://127.0.0.1:{port}/"
     print(f"arbpercept dashboard on {url} (Ctrl+C to stop)", flush=True)

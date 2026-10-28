@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from arbdata.align import delayed_view
 from arbtrade.evaluate import replay_day
 from arbtrade.replay import Leg, execute, fill_depleting, price_runs, seen_after_us, updated_at
 
@@ -53,6 +54,32 @@ def test_trader_sees_a_birth_once_the_update_that_opened_it_arrives():
     # Only a's feed is late: b's update is seen at once, and a's view (as of 5 ms) still shows 101.0.
     late_a = replay_day(eps, legs, 0, 0.0, "optimistic", feed_delay_ms=(5, 0)).iloc[0]
     assert late_a.seen_after_us == 0 and late_a.full_fill
+
+
+def test_delayed_view_shifts_quotes_outages_and_trades():
+    l1 = pd.DataFrame({"avail_ts": [100, 200], "bid_px": [1.0, 1.1]})
+    end = np.iinfo(np.int64).max
+    down = np.array([[150, 170], [300, end]], dtype=np.int64)
+    trades = pd.DataFrame({"ts": [120, 180]})
+    v, d, tr = delayed_view(l1, down, trades, 0.045)
+    assert v.avail_ts.tolist() == [145, 245] and l1.avail_ts.tolist() == [100, 200]   # the input is untouched
+    assert d.tolist() == [[195, 215], [345, end]]                                      # "down until the end" stays so
+    assert tr.ts.tolist() == [165, 225]
+    assert delayed_view(l1, np.zeros((0, 2), np.int64), None, 0.045)[2] is None
+    assert delayed_view(l1, down, trades, 0.0)[0] is l1
+
+
+def test_observed_births_are_decided_when_they_are_seen():
+    # Births from the delayed view (load_day with feed_delay_ms) are already at the time the trader saw
+    # them: no further wait, and the books are read one feed delay back from there.
+    a = leg([0, 13_000], [101.0, 100.0], [101.1, 100.1])
+    b = leg([0, 10_000], [100.9, 99.9], [101.2, 100.0])
+    eps = births((15_000, "sell_a_buy_b"))  # b's 10 ms update, seen through a 5 ms feed
+    r = replay_day(eps, {"a": a, "b": b, "observed": True}, 0, 0.0, "optimistic", feed_delay_ms=(0, 5)).iloc[0]
+    assert r.seen_after_us == 0 and r.edge_dec_bps <= 0       # by 15 ms a's bid has fallen: nothing to take
+    view = replay_day(births((12_000, "sell_a_buy_b")), {"a": a, "b": b, "observed": True}, 0, 0.0,
+                      "optimistic", feed_delay_ms=(0, 5)).iloc[0]
+    assert view.edge_dec_bps < 0                               # at 12 ms b's new ask (10 ms) is not seen yet
 
 
 def test_feed_delay_is_not_order_latency():

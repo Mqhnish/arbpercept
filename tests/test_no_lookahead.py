@@ -10,7 +10,7 @@ from after the moment a trader would act.
 import numpy as np
 import pandas as pd
 
-from arbdata.align import align
+from arbdata.align import align, delayed_view
 from arbdata.config import PairSpec
 from arbdata.episodes import label_pair_day
 from arbdata.normalize import RawFeed, _RunCollapser
@@ -64,8 +64,10 @@ def _normalize(raw):
     return col.frame(), down
 
 
-def _episodes(raw_a, raw_b, pair_type, tr_a, tr_b, offset_window_s=None):
+def _episodes(raw_a, raw_b, pair_type, tr_a, tr_b, offset_window_s=None, feed_ms=(0.0, 0.0)):
     (a, da), (b, db) = _normalize(raw_a), _normalize(raw_b)
+    a, da, tr_a = delayed_view(a, da, tr_a, feed_ms[0])
+    b, db, tr_b = delayed_view(b, db, tr_b, feed_ms[1])
     pair = PairSpec(name="synthetic", type=pair_type, a="x", b="y")
     return label_pair_day(align(a, b, da, db), pair, DATE, HURDLES, 100, EP_CFG, FEAT_CFG,
                           leg_resolution_ms=(1, 100), trades=(tr_a, tr_b), cross_offset_window_s=offset_window_s)
@@ -109,3 +111,45 @@ def test_ratio_features_are_causal():
 def test_cross_features_against_the_usual_offset_are_causal():
     # births labelled on the gap minus the trailing offset (arbtrade.evaluate --offset-aware)
     _check("cross", 4, offset_window_s=60)
+
+
+def test_with_a_feed_delay_unseen_messages_cannot_change_a_birth():
+    # Births built from the books as the trader receives them (arbtrade.evaluate --feed-delay-ms).
+    # At a birth the trader has seen each venue only up to its feed delay earlier. Deleting every
+    # message it has not received yet must leave the birth and all its features unchanged.
+    rng = np.random.default_rng(5)
+    latent = _latent(rng)
+    raw_a = _raw_leg(rng, latent, 30_000, 12_000, 20_000)
+    raw_b = _raw_leg(rng, latent, 100_000, 3_600, 2_000, 3.0)
+    tr_a, tr_b = _trades(rng, raw_a), _trades(rng, raw_b)
+    feed = (2.0, 45.0)
+    full = _episodes(raw_a, raw_b, "cross", tr_a, tr_b, 60, feed)
+    assert len(full) > 20
+    fcols = [c for c in full.columns if c.startswith("f_")] + ["edge_birth_bps", "edge_offset_bps", "stale_birth"]
+    for _, ep in full.sample(25, random_state=5).iterrows():
+        ca, cb = ep.birth_ts - int(feed[0] * 1000), ep.birth_ts - int(feed[1] * 1000)
+        part = _episodes(raw_a[raw_a.t <= ca], raw_b[raw_b.t <= cb], "cross",
+                         tr_a[tr_a.ts <= ca], tr_b[tr_b.ts <= cb], 60, feed)
+        match = part[(part.birth_ts == ep.birth_ts) & (part.direction == ep.direction) & (part.hurdle_name == ep.hurdle_name)]
+        assert len(match) == 1, "a birth must still exist when every unseen message is removed"
+        got, want = match.iloc[0][fcols].astype(float).to_numpy(), ep[fcols].astype(float).to_numpy()
+        assert np.allclose(got, want, equal_nan=True), {c: (w, g) for c, w, g in zip(fcols, want, got) if not np.isclose(w, g, equal_nan=True)}
+
+
+def test_without_the_delayed_view_unseen_messages_do_change_births():
+    # The check above has teeth: births built from the raw books (the old way) use messages the
+    # trader has not received yet, so cutting those messages changes some of them.
+    rng = np.random.default_rng(5)
+    latent = _latent(rng)
+    raw_a = _raw_leg(rng, latent, 30_000, 12_000, 20_000)
+    raw_b = _raw_leg(rng, latent, 100_000, 3_600, 2_000, 3.0)
+    tr_a, tr_b = _trades(rng, raw_a), _trades(rng, raw_b)
+    full = _episodes(raw_a, raw_b, "cross", tr_a, tr_b, 60)
+    changed = 0
+    for _, ep in full.sample(25, random_state=5).iterrows():
+        ca, cb = ep.birth_ts - 2_000, ep.birth_ts - 45_000
+        part = _episodes(raw_a[raw_a.t <= ca], raw_b[raw_b.t <= cb], "cross",
+                         tr_a[tr_a.ts <= ca], tr_b[tr_b.ts <= cb], 60)
+        match = part[(part.birth_ts == ep.birth_ts) & (part.direction == ep.direction) & (part.hurdle_name == ep.hurdle_name)]
+        changed += len(match) == 0 or not np.isclose(match.iloc[0].edge_birth_bps, ep.edge_birth_bps)
+    assert changed > 0

@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from arbdata.splits import UNLOCK_ENV, dates_for, make_splits, save_frozen
+from arbdata.splits import CROSS_UNLOCK_ENV, UNLOCK_ENV, cross_window, dates_for, make_splits, save_frozen
 
 
 def _dates(n, start="2026-01-01"):
@@ -58,30 +58,34 @@ def test_older_data_added_later_joins_development(tmp_path):
     assert later["folds"][0]["train"][0] == "2026-01-01"
 
 
-def test_cross_venue_window_is_locked_and_kept_out_of_development(tmp_path, monkeypatch):
-    from arbdata.splits import CROSS_VENUE_WINDOW
-    dates = ["2024-01-30", "2024-01-31", "2024-02-01", "2024-02-02", "2024-03-15", "2024-03-31", "2024-04-01",
-             "2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05", "2026-09-06", "2026-09-07",
-             "2026-09-08", "2026-09-09", "2026-09-10"]
-    s = save_frozen(make_splits(dates, 0.2, 7, 1, 3), tmp_path / "splits.json")
-    assert s["cross_window"] == CROSS_VENUE_WINDOW
-    assert s["holdout_cross"] == ["2024-02-02", "2024-03-15", "2024-03-31"]
-    assert "2024-02-01" in s["embargo"]
-    assert not set(s["holdout_cross"]) & set(s["development"]) and "2024-01-31" in s["development"]
-    assert "2024-04-01" in s["development"]
-    monkeypatch.delenv(UNLOCK_ENV, raising=False)
+CROSS = {"embargo_start": "2026-01-10", "holdout_start": "2026-01-11", "holdout_end": "2026-01-20"}
+
+
+def test_cross_venue_holdout_never_joins_development(monkeypatch):
+    s = make_splits(_dates(90), 0.2, 7, 1, 3, cross=CROSS)
+    assert s["cross_window"] == CROSS
+    assert s["cross_embargo"] == ["2026-01-10"] and s["cross_holdout"] == _dates(10, "2026-01-11")
+    assert not set(s["development"]) & set(s["cross_holdout"] + s["cross_embargo"])
+    assert not {d for f in s["folds"] for d in f["train"] + f["val"]} & set(s["cross_holdout"])
+    monkeypatch.delenv(CROSS_UNLOCK_ENV, raising=False)
+    monkeypatch.setenv(UNLOCK_ENV, "1")  # opening the main holdout does not open this one
     with pytest.raises(PermissionError):
-        dates_for(s, "holdout_cross")
-    monkeypatch.setenv(UNLOCK_ENV, "1")
-    assert dates_for(s, "holdout_cross") == s["holdout_cross"]
+        dates_for(s, "cross_holdout")
+    monkeypatch.setenv(CROSS_UNLOCK_ENV, "1")
+    assert dates_for(s, "cross_holdout") == s["cross_holdout"]
 
 
-def test_an_older_splits_file_gets_the_cross_window_once(tmp_path):
-    import json
+def test_cross_dates_downloaded_later_go_to_the_cross_holdout(tmp_path):
+    # Splits frozen before the window had data; its dates arrive later and are older than the main holdout.
     path = tmp_path / "splits.json"
-    old = make_splits(_dates(30), 0.2, 7, 1, 3)
-    for k in ("cross_window", "cross_holdout_sha", "holdout_cross"):
-        old.pop(k)
-    path.write_text(json.dumps(old))
-    s = save_frozen(make_splits(_dates(30) + ["2024-02-10"], 0.2, 7, 1, 3), path)
-    assert s["holdout_cross"] == ["2024-02-10"] and "2024-02-10" not in s["development"]
+    first = save_frozen(make_splits(_dates(40, "2026-02-01"), 0.2, 7, 1, 3, cross=CROSS), path)
+    later = save_frozen(make_splits(_dates(31, "2026-01-01") + _dates(40, "2026-02-01"), 0.2, 7, 1, 3, cross=CROSS), path)
+    assert later["window"] == first["window"] and later["holdout"] == first["holdout"]
+    assert later["cross_holdout"] == _dates(10, "2026-01-11")
+    assert set(_dates(9, "2026-01-01")) <= set(later["development"])
+    assert not set(later["development"]) & set(_dates(11, "2026-01-10"))
+
+
+def test_the_committed_cross_window_is_the_frozen_one():
+    w = cross_window()
+    assert w == {"embargo_start": "2024-02-01", "holdout_start": "2024-02-02", "holdout_end": "2024-03-31"}

@@ -12,11 +12,14 @@ of its own latencies later. That is the leg risk in S = e*q - (1-q)*pi*l - c.
 Each leg can have its own latency (delay_buy_us), since the two venues are not equally far away.
 
 A sampled leg (Bybit's 100 ms archive) is only known at its snapshots, so between them the
-true book is unknown. Two bounds bracket the truth:
+true book is unknown. Two simulation assumptions show how much that matters:
   optimistic    the last snapshot at or before arrival is still valid at arrival
   conservative  the order fills only if the snapshots on both sides of arrival allow it,
                 at the worse of their prices and the smaller of their sizes
-For a tick-level leg (every change recorded) both modes are the same, exact, answer.
+Neither is a guaranteed bound: the book can move away and come back between two snapshots,
+and "conservative" cannot see that. Treat the gap between the two as a sensitivity, not as
+an interval that must contain the truth.
+For a tick-level leg (every change recorded) both modes are the same answer.
 
 Two optional effects, both off by default (old results reproduce exactly):
   feed delay        the trader sees each venue's book late, by that venue's feed delay. At

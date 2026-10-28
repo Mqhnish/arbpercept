@@ -9,11 +9,9 @@ The holdout is frozen as a calendar window the first time splits are made. Data 
 later is assigned by date: older dates join development, dates inside the window join
 the holdout, and dates after it are set aside. The window itself never moves.
 
-A second, cross-venue window is frozen the same way. The main holdout holds Bybit archive
-days only, so the Binance vs Bybit strategies could never be scored on it. February and
-March 2024 (Binance's best-price archive ends on 30 March 2024) are set aside for them,
-with one embargo day, before any of that data was downloaded. Those dates never join
-development, and reading them needs the same unlock as the main holdout.
+A second, cross-venue holdout (config/cross_holdout.json) exists because the main holdout
+has no Binance vs Bybit data. Its dates never join development, and reading them needs
+its own unlock.
 """
 
 from __future__ import annotations
@@ -28,11 +26,13 @@ from pathlib import Path
 import numpy as np
 
 UNLOCK_ENV = "ARBDATA_UNLOCK_HOLDOUT"
-CROSS_VENUE_WINDOW = {"embargo_start": "2024-02-01", "holdout_start": "2024-02-02", "holdout_end": "2024-03-31"}
+CROSS_UNLOCK_ENV = "ARBDATA_UNLOCK_CROSS_HOLDOUT"
+CROSS_HOLDOUT_PATH = Path(__file__).resolve().parents[1] / "config" / "cross_holdout.json"
 
 
-def _sha(window: dict) -> str:
-    return hashlib.sha256(json.dumps(window, sort_keys=True).encode()).hexdigest()[:16]
+def cross_window(path: Path = CROSS_HOLDOUT_PATH) -> dict | None:
+    """The frozen cross-venue holdout window (embargo_start, holdout_start, holdout_end), if any."""
+    return json.loads(path.read_text())["window"] if path.exists() else None
 
 
 def _minus_days(date: str, days: int) -> str:
@@ -59,22 +59,24 @@ def _folds(development: list[str], embargo_days: int, n_folds: int) -> list[dict
 
 def _assign(dates: list[str], window: dict, embargo_days: int, n_folds: int, cross: dict | None = None) -> dict:
     dates = sorted(set(dates))
-    in_cross = (lambda d: cross["embargo_start"] <= d <= cross["holdout_end"]) if cross else (lambda d: False)
+    in_cross = lambda d: cross is not None and cross["embargo_start"] <= d <= cross["holdout_end"]
     development = [d for d in dates if d < window["embargo_start"] and not in_cross(d)]
     return {
         "development": development,
-        "embargo": [d for d in dates if window["embargo_start"] <= d < window["holdout_start"]
-                    or (cross and cross["embargo_start"] <= d < cross["holdout_start"])],
+        "cross_embargo": [d for d in dates if in_cross(d) and d < cross["holdout_start"]],
+        "cross_holdout": [d for d in dates if in_cross(d) and d >= cross["holdout_start"]],
+        "embargo": [d for d in dates if window["embargo_start"] <= d < window["holdout_start"]],
         "holdout": [d for d in dates if window["holdout_start"] <= d <= window["holdout_end"]],
-        "holdout_cross": [d for d in dates if cross and cross["holdout_start"] <= d <= cross["holdout_end"]],
         "arrived_after_freeze": [d for d in dates if d > window["holdout_end"]],
         "folds": _folds(development, embargo_days, n_folds),
     }
 
 
 def make_splits(dates: list[str], holdout_fraction: float, min_holdout_days: int,
-                embargo_days: int, n_folds: int) -> dict:
-    dates = sorted(set(dates))
+                embargo_days: int, n_folds: int, cross: dict | None = None) -> dict:
+    """cross: the cross-venue holdout window. Its dates are set aside before the main holdout is chosen."""
+    every = sorted(set(dates))
+    dates = [d for d in every if not (cross and cross["embargo_start"] <= d <= cross["holdout_end"])]
     n_hold = max(min_holdout_days, math.ceil(holdout_fraction * len(dates)))
     if n_hold >= len(dates):
         raise ValueError(f"only {len(dates)} dates: not enough for a {n_hold}-date holdout plus development data")
@@ -87,29 +89,28 @@ def make_splits(dates: list[str], holdout_fraction: float, min_holdout_days: int
         "created_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "params": params,
         "window": window,
-        "holdout_sha": _sha(window),
-        "cross_window": CROSS_VENUE_WINDOW,
-        "cross_holdout_sha": _sha(CROSS_VENUE_WINDOW),
-        **_assign(dates, window, embargo_days, n_folds, CROSS_VENUE_WINDOW),
+        "holdout_sha": hashlib.sha256(json.dumps(window, sort_keys=True).encode()).hexdigest()[:16],
+        **({"cross_window": cross} if cross else {}),
+        **_assign(every, window, embargo_days, n_folds, cross),
     }
 
 
 def _all_dates(s: dict) -> set[str]:
-    return (set(s["development"]) | set(s["embargo"]) | set(s["holdout"]) | set(s.get("holdout_cross", []))
-            | set(s.get("arrived_after_freeze", [])))
+    return (set(s["development"]) | set(s["embargo"]) | set(s["holdout"]) | set(s.get("arrived_after_freeze", []))
+            | set(s.get("cross_embargo", [])) | set(s.get("cross_holdout", [])))
 
 
 def save_frozen(proposed: dict, path: Path, force: bool = False) -> dict:
-    """Write splits once. An existing holdout window is never moved unless force=True. A splits
-    file made before the cross-venue window existed gets it once, the first time it is saved."""
+    """Write splits once. An existing holdout window is never moved unless force=True."""
     if path.exists() and not force:
         existing = json.loads(path.read_text())
         p = existing["params"]
-        if "cross_window" not in existing:
-            existing["cross_window"] = CROSS_VENUE_WINDOW
-            existing["cross_holdout_sha"] = _sha(CROSS_VENUE_WINDOW)
+        # The cross-venue window, once recorded, never moves either.
+        cross = existing.get("cross_window") or proposed.get("cross_window")
+        if cross:
+            existing["cross_window"] = cross
         existing.update(_assign(sorted(_all_dates(existing) | _all_dates(proposed)), existing["window"],
-                                p["embargo_days"], p["n_folds"], existing["cross_window"]))
+                                p["embargo_days"], p["n_folds"], cross))
         path.write_text(json.dumps(existing, indent=1))
         return existing
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -118,13 +119,20 @@ def save_frozen(proposed: dict, path: Path, force: bool = False) -> dict:
 
 
 def dates_for(splits: dict, split: str, fold: int | None = None) -> list[str]:
-    if split in ("holdout", "holdout_cross"):
+    if split == "holdout":
         if os.environ.get(UNLOCK_ENV) != "1":
             raise PermissionError(
-                f"The {split} set is locked. Evaluate on it once, at the very end, by setting "
+                "The holdout is locked. Evaluate on it once, at the very end, by setting "
                 f"{UNLOCK_ENV}=1. Never tune thresholds, features or models after looking."
             )
-        return splits.get(split, [])
+        return splits["holdout"]
+    if split == "cross_holdout":
+        if os.environ.get(CROSS_UNLOCK_ENV) != "1":
+            raise PermissionError(
+                "The cross-venue holdout is locked. Follow config/cross_holdout.json, then set "
+                f"{CROSS_UNLOCK_ENV}=1 once, at the very end."
+            )
+        return splits.get("cross_holdout", [])
     if split == "development":
         return splits["development"]
     if split in ("train", "val"):
