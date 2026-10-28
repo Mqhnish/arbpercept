@@ -166,3 +166,16 @@ def test_binance_live_recording(tmp_path):
     assert df.bid_px.tolist() == [100.0, 100.1] and df.n_raw.tolist() == [3, 1]
     assert df.avail_ts.tolist() == [1_000_000, 1_030_000] and df.exch_ts.iloc[0] == 995_000
     assert feed.n == 4
+
+
+def test_collapser_keeps_the_smallest_size_of_each_price_run_across_batches():
+    from arbdata.normalize import _RunCollapser
+    c = _RunCollapser()
+    ts = np.arange(5, dtype=np.int64)
+    # run 1: price 100/101 with bid sizes 5, 2, 7 (split across two batches); run 2: new price
+    c.add(ts[:2], ts[:2], np.array([100.0, 100.0]), np.array([5.0, 2.0]), np.array([101.0, 101.0]), np.array([4.0, 4.0]))
+    c.add(ts[2:], ts[2:], np.array([100.0, 100.5, 100.5]), np.array([7.0, 3.0, 1.0]), np.array([101.0, 101.0, 101.0]),
+          np.array([4.0, 6.0, 0.5]))
+    f = c.frame()
+    assert f.bid_sz.tolist() == [5.0, 3.0] and f.bid_sz_min.tolist() == [2.0, 1.0] and f.ask_sz_min.tolist() == [4.0, 0.5]
+    assert f.n_raw.tolist() == [3, 2]

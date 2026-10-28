@@ -49,12 +49,17 @@ class Leg:
     bid_sz: np.ndarray
     ask_sz: np.ndarray
     sampled: bool
+    # Smallest size shown while each row's price held (tick sources fold size-only updates).
+    # The conservative bound fills against these; None means the sizes are exact per row.
+    bid_sz_min: np.ndarray | None = None
+    ask_sz_min: np.ndarray | None = None
 
     @classmethod
     def from_l1(cls, df: pd.DataFrame, sampled: bool) -> "Leg":
         d = df.drop_duplicates("avail_ts", keep="last").sort_values("avail_ts")
+        mins = (d.bid_sz_min.to_numpy(float), d.ask_sz_min.to_numpy(float)) if "bid_sz_min" in d else (None, None)
         return cls(d.avail_ts.to_numpy(np.int64), d.bid_px.to_numpy(float), d.ask_px.to_numpy(float),
-                   d.bid_sz.to_numpy(float), d.ask_sz.to_numpy(float), sampled)
+                   d.bid_sz.to_numpy(float), d.ask_sz.to_numpy(float), sampled, *mins)
 
     def quote(self, t: np.ndarray, mode: str = "optimistic") -> tuple[np.ndarray, ...]:
         """bid, ask, bid_sz, ask_sz in force at times t (NaN before the first update)."""
@@ -62,6 +67,9 @@ class Leg:
         ok = i >= 0
         i = np.maximum(i, 0)
         bid, ask, bsz, asz = self.bid[i], self.ask[i], self.bid_sz[i], self.ask_sz[i]
+        if mode == "conservative" and self.bid_sz_min is not None:
+            # size may have been pulled while the price held: assume only the run's minimum
+            bsz, asz = np.minimum(bsz, self.bid_sz_min[i]), np.minimum(asz, self.ask_sz_min[i])
         if mode == "conservative" and self.sampled:
             j = np.minimum(i + 1, len(self.t) - 1)
             between = (self.t[i] != t) & (j != i)  # arrival falls strictly between two snapshots

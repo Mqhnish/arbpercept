@@ -274,7 +274,8 @@ def spill_legs(legs: dict, folder: Path) -> dict:
     out = {}
     for k, v in legs.items():
         if isinstance(v, Leg):
-            out[k] = Leg(*(mapped(f"{k}_{f}", getattr(v, f)) for f in ("t", "bid", "ask", "bid_sz", "ask_sz")), v.sampled)
+            mins = [None if getattr(v, f) is None else mapped(f"{k}_{f}", getattr(v, f)) for f in ("bid_sz_min", "ask_sz_min")]
+            out[k] = Leg(*(mapped(f"{k}_{f}", getattr(v, f)) for f in ("t", "bid", "ask", "bid_sz", "ask_sz")), v.sampled, *mins)
         elif k == "offset":
             out[k] = tuple(mapped(f"offset_{i}", a) for i, a in enumerate(v))
         else:

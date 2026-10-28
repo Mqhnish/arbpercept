@@ -31,7 +31,7 @@ import pyarrow.csv as pacsv
 from sortedcontainers import SortedDict
 
 L1_COLUMNS = ["avail_ts", "exch_ts", "bid_px", "bid_sz", "ask_px", "ask_sz",
-              "bid_depth5", "ask_depth5", "n_raw", "resync"]
+              "bid_depth5", "ask_depth5", "n_raw", "resync", "bid_sz_min", "ask_sz_min"]
 
 # Raw silences longer than this are recorded; each source's max_gap_ms decides which matter.
 SILENCE_RECORD_US = 500_000
@@ -104,6 +104,10 @@ def _frame(cols: dict[str, list | np.ndarray]) -> pd.DataFrame:
         "ask_depth5": np.asarray(cols["ask_depth5"], dtype=np.float64),
         "n_raw": np.asarray(cols["n_raw"], dtype=np.int32),
         "resync": np.asarray(cols["resync"], dtype=bool),
+        # Smallest size shown at that price while the run lasted (tick sources fold size-only
+        # updates into one row). Sources that keep every snapshot have no run: min = size.
+        "bid_sz_min": np.asarray(cols["bid_sz_min"] if len(cols.get("bid_sz_min", [])) else cols["bid_sz"], dtype=np.float64),
+        "ask_sz_min": np.asarray(cols["ask_sz_min"] if len(cols.get("ask_sz_min", [])) else cols["ask_sz"], dtype=np.float64),
     })
     # Stable sort keeps the source's update order among equal timestamps.
     return df.sort_values("avail_ts", kind="stable").reset_index(drop=True)
@@ -220,7 +224,9 @@ def normalize_bybit_live(day_dir: Path) -> tuple[pd.DataFrame, RawFeed]:
 # ---------------------------------------------------------------------------
 
 class _RunCollapser:
-    """Keep the first row of every run of unchanged (bid_px, ask_px); count the run length.
+    """Keep the first row of every run of unchanged (bid_px, ask_px); count the run length and
+    record the smallest bid and ask size seen during the run (size-only updates are folded away,
+    so this is the only trace of liquidity that was pulled while the price held).
 
     Works across batch boundaries so a run split between two batches is counted once.
     """
@@ -243,6 +249,9 @@ class _RunCollapser:
             lead = n if len(keep) == 0 else keep[0]
             if self.parts:
                 self.parts[-1]["n_raw"][-1] += lead
+                last = self.parts[-1]
+                last["bid_sz_min"][-1] = min(last["bid_sz_min"][-1], bs[:lead].min())
+                last["ask_sz_min"][-1] = min(last["ask_sz_min"][-1], az[:lead].min())
         if len(keep) == 0:
             return
         counts = np.diff(np.append(keep, n)).astype(np.int32)
@@ -250,6 +259,8 @@ class _RunCollapser:
             "avail_ts": avail[keep], "exch_ts": exch[keep],
             "bid_px": bp[keep], "bid_sz": bs[keep], "ask_px": ap[keep], "ask_sz": az[keep],
             "n_raw": counts,
+            "bid_sz_min": np.minimum.reduceat(bs, keep).astype(np.float64),
+            "ask_sz_min": np.minimum.reduceat(az, keep).astype(np.float64),
         })
 
     def frame(self) -> pd.DataFrame:

@@ -74,3 +74,13 @@ def test_slow_path_reprices_from_quotes_seen_after_inference():
     assert np.isclose(now.edge_dec_bps.iloc[0], 1.0 / 100.5 * 1e4, rtol=1e-6)
     assert slow.edge_dec_bps.iloc[0] < 10       # the gap has mostly gone by the time the slow model is done
     assert slow.pnl.iloc[0] < now.pnl.iloc[0]
+
+
+def test_conservative_fill_uses_the_smallest_size_shown_while_the_price_held():
+    # Sell leg showed 10 when the gap opened, but size was pulled to 0.1 before the price changed.
+    a = Leg(np.array([0], np.int64), np.array([101.0]), np.array([101.1]), np.array([10.0]), np.array([10.0]), False,
+            np.array([0.1]), np.array([10.0]))
+    b = leg([0], [99.9], [100.0])
+    opt = execute(a, b, np.array([0]), 1_000, 0.0, 0.0, 1_000.0, "optimistic").iloc[0]
+    con = execute(a, b, np.array([0]), 1_000, 0.0, 0.0, 1_000.0, "conservative").iloc[0]
+    assert np.isclose(opt.hedged, opt.qty) and np.isclose(con.hedged, 0.1)
