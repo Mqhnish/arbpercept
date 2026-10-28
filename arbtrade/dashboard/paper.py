@@ -14,7 +14,7 @@ import time
 from collections import deque
 from pathlib import Path
 
-from arbtrade.live import PaperEngine, live_events, load_prior, prior_matches, replay_events
+from arbtrade.live import PaperEngine, find_prior, live_events, load_prior, prior_matches, replay_events
 
 HISTORY_STEP_US = 500_000   # one point of gap history per half second of market time
 HISTORY_LEN = 1_200          # ten minutes at that step
@@ -22,6 +22,7 @@ HISTORY_LEN = 1_200          # ten minutes at that step
 
 class PaperSession:
     def __init__(self, cfg, prior_path: Path):
+        """prior_path: one saved prior, or a folder of them (live.find_prior picks one per run)."""
         self.cfg, self.prior_path = cfg, prior_path
         self.lock = threading.Lock()
         self.stop_flag = threading.Event()
@@ -42,7 +43,10 @@ class PaperSession:
             lat = {"binance": float(opts.get("lat_binance") or self.cfg.latency_ms.get("binance", 50.0)),
                    "bybit": float(opts.get("lat_bybit") or self.cfg.latency_ms.get("bybit", 8.0))}
             prior, note = None, "No prior file: running the naive policy only."
-            if self.prior_path.exists():
+            if self.prior_path.is_dir():  # pick the saved prior for this asset and gap definition
+                found, note = find_prior(self.prior_path, opts.get("asset", "BTC"), window)
+                prior = load_prior(found) if found else None
+            elif self.prior_path.exists():
                 p = load_prior(self.prior_path)
                 if prior_matches(p, window):
                     prior, note = p, f"Prior: {p.get('trained_on', self.prior_path.name)}."

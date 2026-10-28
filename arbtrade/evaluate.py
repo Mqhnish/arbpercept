@@ -41,7 +41,7 @@ import numpy as np
 import pandas as pd
 
 from arbdata import pipeline as P
-from arbdata.align import align
+from arbdata.align import align, delayed_view
 from arbdata.config import load_config
 from arbdata.episodes import CROSS_SIGN, cross_offset_bps, label_pair_day
 from arbdata.splits import walk_forward_folds
@@ -64,12 +64,18 @@ CONV_DIRECTIONS = {
 STRATEGIES = ["naive fast path", "gap size only", "fast path + decay prior", "slow model always", "latency-aware cascade"]
 
 
-def load_day(cfg, pair_name: str, date: str, trigger_bps: float, offset_window_s: float | None = None):
+def load_day(cfg, pair_name: str, date: str, trigger_bps: float, offset_window_s: float | None = None,
+             feed_delay_ms: tuple[float, float] | None = None):
     """Births and replay legs for one pair-day.
 
     None: the day is missing or fails quality. (empty frame, None): the day is fine but has no
     births, so it counts as a $0 day. offset_window_s (cross pairs): label births on the gap
     measured against the venues' trailing offset, and keep the offset for the replay's re-check.
+
+    feed_delay_ms (leg a, leg b; cross pairs): births and features are built from the books as
+    the trader receives them, each venue that many ms late (align.delayed_view). birth_ts is then
+    the moment the trader sees the gap, and legs["observed"] tells replay_day so. The replay
+    legs keep the true times, since orders meet the real books.
     """
     spec = cfg.pairs[pair_name]
     l1, downs, trades, res = {}, {}, [], []
@@ -84,7 +90,13 @@ def load_day(cfg, pair_name: str, date: str, trigger_bps: float, offset_window_s
         downs[leg] = P.leg_down_windows(cfg, key, date, rep)
         trades.append(P.load_trades(cfg, key, date))
         res.append(cfg.source_cfg(key)["resolution_ms"])
-    al = align(l1["a"], l1["b"], downs["a"], downs["b"])
+    observed = spec.type == "cross" and feed_delay_ms is not None and any(feed_delay_ms)
+    if observed:
+        (va, da, ta), (vb, db, tb) = (delayed_view(l1[k], downs[k], tr, f)
+                                      for k, tr, f in zip("ab", trades, feed_delay_ms))
+        al, trades = align(va, vb, da, db), [ta, tb]
+    else:
+        al = align(l1["a"], l1["b"], downs["a"], downs["b"])
     use_offset = spec.type == "cross" and offset_window_s is not None
     eps = label_pair_day(al, spec, date, {"trigger": trigger_bps}, cfg.resolution_ms(spec), cfg.episodes,
                          cfg.features, leg_resolution_ms=tuple(res), trades=tuple(trades),
@@ -95,6 +107,8 @@ def load_day(cfg, pair_name: str, date: str, trigger_bps: float, offset_window_s
     if eps.empty:
         return pd.DataFrame(), None
     legs = {k: Leg.from_l1(v, sampled=r > 1) for (k, v), r in zip(l1.items(), res)}
+    if observed:
+        legs["observed"] = True
     if use_offset:
         eps["edge_rel_bps"] = eps.edge_birth_bps  # births are already labelled on the relative gap
         legs["offset"] = (al.t.to_numpy(), cross_offset_bps(al, offset_window_s))
@@ -155,6 +169,8 @@ def replay_day(eps: pd.DataFrame, legs: dict, delay_ms: float, fee_bps: float, m
     feed_delay_ms (leg a, leg b): each venue's market-data delay. The trader sees a birth once
     the update that opened it reaches it (replay.seen_after_us), and from then on sees each book
     that venue's feed delay late. The order latencies are separate (delay_ms, delay_b_ms).
+    If load_day built the births from the delayed view (legs["observed"]), each birth_ts is
+    already the moment the trader saw it, and its features use only what had arrived by then.
     deplete: fills use up the displayed size they took, shared by all the births given (replay.py).
 
     With an offset in legs (load_day with offset_window_s), edge_dec_bps is the gap seen at
@@ -177,19 +193,20 @@ def replay_day(eps: pd.DataFrame, legs: dict, delay_ms: float, fee_bps: float, m
     after = (us(decide_after_ms) if np.ndim(decide_after_ms) == 0
              else np.round(np.asarray(decide_after_ms, float) * 1000).astype(np.int64))
     off = legs.get("offset")
+    observed = legs.get("observed", False)  # births already at the time the trader saw them (load_day)
     parts = []
     for direction, (sell, buy) in DIRECTIONS.items():
         m = (eps.direction == direction).to_numpy()
         if m.any():
             t_birth = eps.birth_ts.to_numpy()[m]
             seen = (seen_after_us(legs[sell], legs[buy], t_birth, us(feed[sell]), us(feed[buy]))
-                    if any(feed.values()) else np.zeros(len(t_birth), np.int64))
+                    if any(feed.values()) and not observed else np.zeros(len(t_birth), np.int64))
             t_dec = t_birth + seen + (after if np.ndim(after) == 0 else after[m])
             r = execute(legs[sell], legs[buy], t_dec, us(lat[sell]), fee[sell], fee[buy], NOTIONAL, mode,
                         delay_buy_us=us(lat[buy]), feed_sell_us=us(feed[sell]), feed_buy_us=us(feed[buy]),
                         deplete=deplete)
             # The usual offset as of the books the trader has seen (both venues' views reach that far).
-            t_view = t_dec - us(max(feed.values()))
+            t_view = t_dec if observed else t_dec - us(max(feed.values()))  # an observed offset is on the trader's clock
             o = np.zeros(len(t_dec)) if off is None else offset_at_times(off, t_view, CROSS_SIGN[direction])
             r["edge_dec_bps"] = r.edge_dec_bps - o
             r["pnl_rel"] = r.pnl - np.where(r.hedged > 0, r.hedged * r.mid_dec * o / 1e4, 0.0)
@@ -313,7 +330,7 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
     rows, day_rows, trade_rows = [], [], []
     meta = {"pair": pair, "offset_aware": offset_aware, "offset_window_s": OFFSET_WINDOW_S if offset_aware else None,
             "latencies_ms": {str(t): list(lat_of[t]) for t in taus},
-            "feed_delay_ms": list(feed), "deplete_liquidity": deplete_liquidity,
+            "feed_delay_ms": list(feed), "births_from_delayed_view": gate_fast, "deplete_liquidity": deplete_liquidity,
             "folds": [{"train": [f["train"][0], f["train"][-1]], "val": [f["val"][0], f["val"][-1]]} for f in folds]}
 
     for fee_a, fee_b in fee_sets:
@@ -325,7 +342,9 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
         spill = Path(tempfile.mkdtemp(prefix="eval_prices_", dir=cfg.data_root))
         atexit.register(shutil.rmtree, spill, True)
         for d in dev_dates:
-            got = load_day(cfg, pair, d, trigger, OFFSET_WINDOW_S if offset_aware else None)
+            # With a feed delay, births and features come from the books as the trader receives them.
+            got = load_day(cfg, pair, d, trigger, OFFSET_WINDOW_S if offset_aware else None,
+                           **({"feed_delay_ms": feed} if gate_fast else {}))
             if got is None:
                 continue
             if len(got[0]):
