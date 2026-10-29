@@ -1,0 +1,27 @@
+{
+ "stream": "bybit_live/bybit/AAVE-USDT/perp",
+ "date": "2026-10-27",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 741183,
+ "raw_updates": 741183,
+ "coverage": 0.8652475757523148,
+ "n_outages": 68,
+ "max_raw_silence_s": 1642.826053,
+ "resyncs": 46,
+ "price_change_step_ms_median": 18.3505,
+ "feed_lag_ms_median": 19.39,
+ "feed_lag_ms_p99": 2494.8813600000717,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.7570882386335241,
+ "daily_rv_bps": 393.4613690814313,
+ "first_raw_ts": 1793059200055815,
+ "last_raw_ts": 1793145599795811,
+ "mid_first": 135.745,
+ "mid_last": 133.685,
+ "raw_out_of_order": 0,
+ "passes": false
+}

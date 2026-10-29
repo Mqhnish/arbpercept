@@ -1,0 +1,27 @@
+{
+ "stream": "bybit_live/bybit/TIA-USDT/perp",
+ "date": "2026-10-24",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 408020,
+ "raw_updates": 408020,
+ "coverage": 0.9987512945023148,
+ "n_outages": 20,
+ "max_raw_silence_s": 5.858167,
+ "resyncs": 3,
+ "price_change_step_ms_median": 42.197,
+ "feed_lag_ms_median": 16.211,
+ "feed_lag_ms_p99": 240.09272999999968,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 1.8784634169247485,
+ "daily_rv_bps": 582.6235723189684,
+ "first_raw_ts": 1792800000058282,
+ "last_raw_ts": 1792886399817742,
+ "mid_first": 0.53735,
+ "mid_last": 0.53335,
+ "raw_out_of_order": 0,
+ "passes": true
+}

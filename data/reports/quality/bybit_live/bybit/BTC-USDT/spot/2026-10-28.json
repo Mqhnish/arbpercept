@@ -1,0 +1,27 @@
+{
+ "stream": "bybit_live/bybit/BTC-USDT/spot",
+ "date": "2026-10-28",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 675880,
+ "raw_updates": 675880,
+ "coverage": 0.5160544802662037,
+ "n_outages": 13,
+ "max_raw_silence_s": 40502.672617,
+ "resyncs": 8,
+ "price_change_step_ms_median": 12.621,
+ "feed_lag_ms_median": 10.019,
+ "feed_lag_ms_p99": 100.15183999999985,
+ "feed_lag_negative_share": 0.03899212878025685,
+ "spread_bps_median": 0.012370718263178466,
+ "daily_rv_bps": 158.93338410284682,
+ "first_raw_ts": 1793145600055233,
+ "last_raw_ts": 1793231999613502,
+ "mid_first": 80908.35,
+ "mid_last": 81349.35,
+ "raw_out_of_order": 0,
+ "passes": false
+}

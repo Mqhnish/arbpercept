@@ -1,0 +1,27 @@
+{
+ "stream": "bybit_live/bybit/ARB-USDT/perp",
+ "date": "2026-10-28",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 665034,
+ "raw_updates": 665034,
+ "coverage": 0.5162079187847222,
+ "n_outages": 12,
+ "max_raw_silence_s": 40499.420779,
+ "resyncs": 11,
+ "price_change_step_ms_median": 13.483,
+ "feed_lag_ms_median": 11.56,
+ "feed_lag_ms_p99": 96.11,
+ "feed_lag_negative_share": 0.020956823260164143,
+ "spread_bps_median": 0.597068394185151,
+ "daily_rv_bps": 455.27024915050487,
+ "first_raw_ts": 1793145600085545,
+ "last_raw_ts": 1793231999749869,
+ "mid_first": 0.16723,
+ "mid_last": 0.172035,
+ "raw_out_of_order": 0,
+ "passes": false
+}

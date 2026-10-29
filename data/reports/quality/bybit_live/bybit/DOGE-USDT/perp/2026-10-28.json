@@ -1,0 +1,27 @@
+{
+ "stream": "bybit_live/bybit/DOGE-USDT/perp",
+ "date": "2026-10-28",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 496766,
+ "raw_updates": 496766,
+ "coverage": 0.5161573827893519,
+ "n_outages": 12,
+ "max_raw_silence_s": 40503.995492,
+ "resyncs": 11,
+ "price_change_step_ms_median": 29.021,
+ "feed_lag_ms_median": 11.947,
+ "feed_lag_ms_p99": 100.03104999999994,
+ "feed_lag_negative_share": 0.01927265553600689,
+ "spread_bps_median": 1.2585740356171573,
+ "daily_rv_bps": 274.0793501552585,
+ "first_raw_ts": 1793145600028634,
+ "last_raw_ts": 1793231999399247,
+ "mid_first": 0.079035,
+ "mid_last": 0.07972499999999999,
+ "raw_out_of_order": 0,
+ "passes": false
+}

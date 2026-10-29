@@ -1,0 +1,27 @@
+{
+ "stream": "binance_live/binance/ETH-USDT/perp",
+ "date": "2026-10-22",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 69155,
+ "raw_updates": 8878824,
+ "coverage": 0.2696703084259259,
+ "n_outages": 12,
+ "max_raw_silence_s": 40822.521285,
+ "resyncs": 0,
+ "price_change_step_ms_median": 0.821,
+ "feed_lag_ms_median": 45.401,
+ "feed_lag_ms_p99": 3034.4508200000023,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.04195466798216204,
+ "daily_rv_bps": 159.24395506684866,
+ "first_raw_ts": 1792668022521285,
+ "last_raw_ts": 1792713599922747,
+ "mid_first": 2403.3450000000003,
+ "mid_last": 2388.115,
+ "raw_out_of_order": 0,
+ "passes": false
+}
