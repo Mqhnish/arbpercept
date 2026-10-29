@@ -46,7 +46,9 @@ def list_runs(reports: Path) -> list[dict]:
         pair = meta.get("pair") or run.name
         tag = run.name[len(pair):] if run.name.startswith(pair) else ""
         head = pd.read_csv(d, usecols=["date", "fee", "mode", "tau_ms"])
-        out.append({"name": run.name, "pair": pair, "tag": tag, "coin": pair.split("_")[0].upper(),
+        parts = pair.removeprefix("tick_").split("_")  # <coin>_<market>_<venue a>_<venue b>
+        out.append({"name": run.name, "pair": pair, "tag": tag, "coin": parts[0].upper(),
+                    "venues": parts[2:4] if len(parts) >= 4 else None,
                     "days": int(head.date.nunique()), "fees": sorted(head.fee.unique().tolist()),
                     "taus": sorted(head.tau_ms.unique().tolist()), "modes": sorted(head["mode"].unique().tolist()),
                     "offset_aware": bool(meta.get("offset_aware")), "latencies_ms": meta.get("latencies_ms"),
@@ -140,7 +142,8 @@ def run_summary(reports: Path, name: str, fee: float, tau: float, mode: str, cap
         m = re.search(r"day's last (\d+(?:\.\d+)?) s", md.read_text(encoding="utf-8"))
         close = f"no trades in the last {m.group(1)} s; close within shown size" if m else "closed at the last quotes"
 
-    return {"run": name, "pair": meta.get("pair", name), "fee": fee, "tau": tau, "mode": mode, "cap": cap,
+    parts = meta.get("pair", name).removeprefix("tick_").split("_")
+    return {"run": name, "pair": meta.get("pair", name), "venues": parts[2:4] if len(parts) >= 4 else None, "fee": fee, "tau": tau, "mode": mode, "cap": cap,
             "days": days, "fold_starts": [d for d in fold_starts(meta) if d in set(days)],
             "strategies": strategies, "pairs": pairs, "by_tau": by_tau,
             "setup": {"venue_fees_bps": venue_fees, "close": close, "latencies_ms": meta.get("latencies_ms"), "feed_delay_ms": meta.get("feed_delay_ms"),
@@ -167,7 +170,7 @@ def coins(reports: Path, tag: str, mode: str, cap: str) -> dict:
         trades = here[here.strategy == "latency-aware cascade"].set_index("date").kept.reindex(days, fill_value=0)
         cum = {SHORT[s]: [_num(v) for v in np.cumsum(series[s].reindex(days, fill_value=0.0).to_numpy())]
                for s in ("latency-aware cascade", "gap size only") if s in series}
-        rows.append({"coin": r["coin"], "run": r["name"], "days": len(days), "first": days[0] if days else None,
+        rows.append({"coin": r["coin"], "venues": r["venues"], "run": r["name"], "days": len(days), "first": days[0] if days else None,
                      "last": days[-1] if days else None, "strategies": cells, "edge_vs_gap": edge,
                      "trades_per_day": _num(trades.mean()) if len(trades) else None, "dates": days, "cum": cum})
     rows.sort(key=lambda x: -(x["strategies"].get("Cascade", {}).get("mean") or -1e9))

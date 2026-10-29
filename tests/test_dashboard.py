@@ -121,6 +121,40 @@ def test_http_api_and_static_files(reports):
         httpd.shutdown()
 
 
+def test_tick_runs_name_their_coin_and_venues(reports):
+    _write_run(reports, "tick_btc_perp_binance_okx", "_tardis_real", 2)
+    r = next(x for x in D.list_runs(reports) if x["tag"] == "_tardis_real")
+    assert (r["coin"], r["venues"]) == ("BTC", ["binance", "okx"])
+    assert D.run_summary(reports, r["name"], 2.35, 50.0, "optimistic", "capped")["venues"] == ["binance", "okx"]
+    assert D.coins(reports, "_tardis_real", "optimistic", "capped")["rows"][0]["venues"] == ["binance", "okx"]
+
+
+def test_static_export_answers_every_request_the_page_can_make(reports, tmp_path):
+    from arbtrade.dashboard.export import api_file, export, js_num
+
+    assert [js_num(x) for x in (50.0, 2.35, 1, 0.5)] == ["50", "2.35", "1", "0.5"]
+    site = tmp_path / "site"
+    export(reports, site)
+    html = (site / "index.html").read_text()
+    assert 'data-static="1"' in html and '"/static/' not in html
+    assert (site / "app.js").exists() and (site / "img" / "architecture.png").exists() and (site / ".nojekyll").exists()
+
+    app = App(reports, None)
+    runs = json.loads((site / "api" / "runs.json").read_text())
+    assert runs == app.get("/api/runs", {})
+    for r in runs:
+        for mode in ("optimistic", "conservative"):
+            for cap in ("capped", "uncapped"):
+                q = {"name": r["name"], "fee": js_num(r["fees"][0]), "tau": js_num(r["taus"][0]), "mode": mode, "cap": cap}
+                saved = json.loads((site / api_file("/api/run", q)).read_text())
+                assert saved == app.get("/api/run", {k: [v] for k, v in q.items()})
+    q = {"tag": "_v9", "mode": "conservative", "cap": "uncapped"}
+    assert json.loads((site / api_file("/api/coins", q)).read_text()) == app.get("/api/coins", {k: [v] for k, v in q.items()})
+    assert json.loads((site / "api" / "decay.json").read_text()) == app.get("/api/decay", {})
+    for note in app.get("/api/notes", {}):
+        assert json.loads((site / api_file("/api/note", {"path": note["path"]})).read_text())["text"]
+
+
 def test_paper_session_replays_and_reports(monkeypatch, tmp_path):
     t0 = 1_700_000_000_000_000
     events = []

@@ -33,8 +33,27 @@
                           "_v6_real": "v6 realistic", "_v5_real": "v5 realistic", "_v5": "v5", "_v4_offset": "v4 offset-aware",
                           "_v3": "v3 raw gaps", "": "untagged" }[t] || t.replace(/^_/, ""));
 
+  const VENUES = { binance: "Binance", bybit: "Bybit", okx: "OKX" };
+  const venueName = v => VENUES[v] || v;
+  // Coin, plus its venues when they are not the usual Binance and Bybit (the Tardis runs pair OKX too)
+  const runLabel = r => r.coin + (r.venues && r.venues.join() !== "binance,bybit" ? ` ${r.venues.map(venueName).join("–")}` : "");
+
+  // The static copy (python -m arbtrade.dashboard.export) has every GET answer saved as a file; this names
+  // them the way api_file() in export.py does. It cannot take POSTs, so the paper trader stays local.
+  const STATIC = document.documentElement.dataset.static === "1";
+  function staticFile(path) {
+    const u = new URL(path, "http://x"), q = Object.fromEntries(u.searchParams);
+    if (u.pathname === "/api/run") return `api/run/${q.name}/${q.fee}_${q.tau}_${q.mode}_${q.cap}.json`;
+    if (u.pathname === "/api/coins") return `api/coins/${q.tag}_${q.mode}_${q.cap}.json`;
+    if (u.pathname === "/api/note") return `api/note/${q.path}.json`;
+    return u.pathname.slice(1) + ".json";
+  }
+
   async function api(path, body) {
+    if (STATIC && body) throw new Error("This static copy cannot run the paper trader; run the dashboard locally.");
+    if (STATIC) path = staticFile(path);
     const r = await fetch(path, body ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
+    if (STATIC && !r.ok) throw new Error(`not in this static copy: ${path}`);
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || r.statusText);
     return j;
@@ -53,18 +72,29 @@
   }
 
   // ---- tabs -------------------------------------------------------------------------------
-  const views = ["results", "coins", "decay", "paper", "reports"];
+  const views = ["overview", "results", "coins", "decay", "paper", "reports"];
+  const HOME = STATIC ? "overview" : "results";
   const loaded = {};
   function route() {
-    const name = (location.hash.replace("#", "").split("?")[0]) || "results";
-    const tab = views.includes(name) ? name : "results";
+    const name = (location.hash.replace("#", "").split("?")[0]) || HOME;
+    const tab = views.includes(name) ? name : HOME;
     for (const v of views) $("view-" + v).hidden = v !== tab;
     for (const a of document.querySelectorAll("#tabs a")) a.classList.toggle("on", a.dataset.tab === tab);
     Charts.hideTip();
-    if (!loaded[tab]) { loaded[tab] = true; ({ results: initResults, coins: initCoins, decay: initDecay, paper: initPaper, reports: initReports })[tab](); }
+    if (!loaded[tab]) {
+      loaded[tab] = true;
+      ({ overview: initOverview, results: initResults, coins: initCoins, decay: initDecay, paper: initPaper, reports: initReports })[tab]();
+    }
     paper.visible = tab === "paper";
   }
   window.addEventListener("hashchange", route);
+
+  // ---- Overview -----------------------------------------------------------------------------
+  function initOverview() {
+    $("o-static-note").hidden = !STATIC;
+    const sha = document.documentElement.dataset.commit;
+    $("o-commit").innerHTML = sha ? `commit <a href="https://github.com/Mqhnish/arbpercept/commit/${esc(sha)}">${esc(sha)}</a>` : "the latest commit";
+  }
 
   // ---- Results ------------------------------------------------------------------------------
   let RUNS = [];
@@ -95,7 +125,7 @@
       for (const r of groups[tag]) {
         const o = document.createElement("option");
         o.value = r.name;
-        o.textContent = `${r.coin} · ${r.days} days · ${monthYear(r.first)}–${monthYear(r.last)}`;
+        o.textContent = `${runLabel(r)} · ${r.days} days · ${monthYear(r.first)}–${monthYear(r.last)}`;
         g.appendChild(o);
       }
       sel.appendChild(g);
@@ -166,7 +196,7 @@
     const su = d.setup || {}, lat = su.latencies_ms ? Object.values(su.latencies_ms)[0] : null;
     const slow = su.slow_latency ? Object.values(su.slow_latency)[0] : null;
     const kv = [
-      ["Fees, Binance / Bybit", su.venue_fees_bps ? `${su.venue_fees_bps[0]} / ${su.venue_fees_bps[1]} bps` : `${+d.fee} bps each`],
+      [`Fees, ${(d.venues || ["binance", "bybit"]).map(venueName).join(" / ")}`, su.venue_fees_bps ? `${su.venue_fees_bps[0]} / ${su.venue_fees_bps[1]} bps` : `${+d.fee} bps each`],
       ["Order latency", lat ? `${lat[0]} / ${lat[1]} ms` : `${+d.tau} ms`],
       ["Feed delay", su.feed_delay_ms ? `${su.feed_delay_ms[0]} / ${su.feed_delay_ms[1]} ms` : "none"],
       ["Gap measured against", su.offset_aware ? `trailing ${su.offset_window_s || 300} s offset` : "zero (raw gap)"],
@@ -230,23 +260,24 @@
     const q = new URLSearchParams({ tag: $("c-tag").value, mode: cMode.get(), cap: cCap.get() });
     const d = await api("/api/coins?" + q);
     const open = run => { location.hash = "results?run=" + run; $("r-run").value = run; setRunOptions(); loadRun(); };
-    Charts.forest($("c-forest"), { labelWidth: 56, xFmt: v => usd(v), onClick: r => { loaded.results ? open(r.run) : (store.set("run", r.run), location.hash = "results"); },
+    const wide = d.rows.some(r => runLabel(r) !== r.coin);
+    Charts.forest($("c-forest"), { labelWidth: wide ? 120 : 56, xFmt: v => usd(v), onClick: r => { loaded.results ? open(r.run) : (store.set("run", r.run), location.hash = "results"); },
       rows: d.rows.map(r => { const c = r.strategies.Cascade || {}, g = r.strategies["Gap size only"];
-        return { label: r.coin, run: r.run, mean: c.mean ?? null, lo: c.lo, hi: c.hi,
+        return { label: runLabel(r), run: r.run, mean: c.mean ?? null, lo: c.lo, hi: c.hi,
                  color: c.lo > 0 ? "var(--s-cascade)" : c.hi < 0 ? "var(--neg)" : "var(--ink-2)", alt: g,
                  tip: `${r.coin}: cascade ${usd(c.mean)} ${ci(c.lo, c.hi)}${g ? `, gap rule ${usd(g.mean)} ${ci(g.lo, g.hi)}` : ""} per day, ${r.days} days` }; }) });
     const cell = (c, withCi = true) => c ? `<span class="${sign(c.mean)}">${usd(c.mean)}</span>${withCi ? `<span class="ci">${ci(c.lo, c.hi)}</span>` : ""}` : "–";
     const go = run => { store.set("run", run); if (loaded.results) open(run); else location.hash = "results?run=" + run; };
     $("c-table").innerHTML = `<thead><tr><th>Coin</th><th class="n">Days</th><th>Period</th><th class="n">Naive</th><th class="n">Gap rule</th>
       <th class="n">Cascade</th><th class="n">Cascade − gap rule</th><th class="n">Trades</th></tr></thead><tbody>${d.rows.map(r => `
-      <tr data-run="${esc(r.run)}"><td><b>${r.coin}</b></td><td class="n">${r.days}</td><td class="muted">${r.first ? monthYear(r.first) + "–" + monthYear(r.last) : ""}</td>
+      <tr data-run="${esc(r.run)}"><td><b>${esc(runLabel(r))}</b></td><td class="n">${r.days}</td><td class="muted">${r.first ? monthYear(r.first) + "–" + monthYear(r.last) : ""}</td>
       <td class="n">${cell(r.strategies.Naive, false)}</td><td class="n">${cell(r.strategies["Gap size only"])}</td>
       <td class="n">${cell(r.strategies.Cascade)}</td><td class="n">${cell(r.edge_vs_gap)}</td><td class="n">${num(r.trades_per_day)}</td></tr>`).join("")}</tbody>`;
     $("c-table").querySelectorAll("tbody tr").forEach(tr => tr.addEventListener("click", () => go(tr.dataset.run)));
     const beat = d.rows.filter(r => r.edge_vs_gap && r.edge_vs_gap.lo > 0).length;
     const pos = d.rows.filter(r => r.strategies.Cascade && r.strategies.Cascade.lo > 0).length;
     $("c-foot").textContent = `${pos} of ${d.rows.length} coins have a cascade interval above $0; on ${beat} the cascade beats the gap-size rule on the same days. Naive shows the mean only. Trades: cascade trades per day.`;
-    $("c-minis").innerHTML = d.rows.map((r, i) => `<div class="mini" data-run="${esc(r.run)}"><div class="h"><b>${r.coin}</b>
+    $("c-minis").innerHTML = d.rows.map((r, i) => `<div class="mini" data-run="${esc(r.run)}"><div class="h"><b>${esc(runLabel(r))}</b>
       <span class="mono ${sign((r.cum.Cascade || []).slice(-1)[0])}">${usd((r.cum.Cascade || []).slice(-1)[0])}</span></div><div class="chart" id="c-mini-${i}"></div></div>`).join("");
     d.rows.forEach((r, i) => {
       Charts.line($("c-mini-" + i), { x: r.dates, compact: true, yFmt: v => usd(v, false), tipFmt: v => usd(v), includeZero: true,
@@ -314,6 +345,7 @@
   const paper = { visible: false, timer: null, last: null };
   let pSource;
   function initPaper() {
+    if (STATIC) { $("p-static").hidden = false; $("p-live").hidden = true; return; }
     pSource = seg("p-source", v => {
       document.querySelectorAll(".only-live").forEach(e => (e.hidden = v !== "live"));
       document.querySelectorAll(".only-replay").forEach(e => (e.hidden = v !== "replay"));
@@ -414,8 +446,8 @@
   // ---- start ----------------------------------------------------------------------------------------
   (async function boot() {
     try { RUNS = await api("/api/runs"); } catch (e) { RUNS = []; }
-    $("meta").textContent = `${RUNS.length} runs in data/reports`;
-    if (!location.hash) history.replaceState(null, "", "#results");
+    $("meta").textContent = `${RUNS.length} runs in data/reports${STATIC ? " · static copy" : ""}`;
+    if (!location.hash) history.replaceState(null, "", "#" + HOME);
     route();
   })();
 })();

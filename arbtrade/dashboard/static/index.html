@@ -11,6 +11,7 @@
 <header class="top">
   <div class="brand"><span class="mark">arbpercept</span><span class="sub">latency-aware cross-venue arbitrage</span></div>
   <nav class="tabs" id="tabs">
+    <a href="#overview" data-tab="overview">Overview</a>
     <a href="#results" data-tab="results">Results</a>
     <a href="#coins" data-tab="coins">Coins</a>
     <a href="#decay" data-tab="decay">Decay models</a>
@@ -20,8 +21,76 @@
   <div class="meta" id="meta"></div>
 </header>
 
+<!-- Overview: what the system does and what the replays show, for a first-time reader -->
+<section class="view" id="view-overview" hidden>
+  <article class="prose">
+    <p class="lede">Perceptron 2026 (IIT Bombay × Optiver), Problem 6: cross-asset statistical arbitrage with latency budgets.
+      Mohnish Rawat, Anay Sharma, Arnav Jain. Code and every report: <a href="https://github.com/Mqhnish/arbpercept">github.com/Mqhnish/arbpercept</a>.</p>
+    <p class="note" id="o-static-note" hidden>This site is a static copy of the dashboard, built from the reports committed to the repo
+      (<span id="o-commit"></span>). Every number on it is a replay on development days. Both locked test sets are still unopened, and no real orders were placed.</p>
+
+    <h2>The problem</h2>
+    <p>The same perpetual future trades on Binance and Bybit, and the two prices drift apart for a moment many times a day.
+      Spotting such a gap is easy. By the time our orders reach both venues, though, the gap has often closed.
+      Binance is 50 ms away from our machine and Bybit 8 ms, and the taker fees are 1.7 and 3.0 bps a leg, so most gaps are gone or too small by the time we could act.
+      The question is which gaps will still be there when the orders land, and whether that is worth the fees.</p>
+
+    <h2>How the system decides</h2>
+    <p>Each gap is scored at the latency it will face before the orders arrive:</p>
+    <p class="formula"><i>S</i>(τ) = <i>q</i>(τ)·(<i>ê</i> − <i>c</i>) + (1 − <i>q</i>(τ))·<i>ℓ̄</i>(τ)</p>
+    <p><i>q</i> is the probability that both immediate-or-cancel legs fill at the prices we saw, after latency τ.
+      <i>ê</i> is the gap measured against the venues' usual offset rather than against zero, <i>c</i> is both legs' fees,
+      and <i>ℓ̄</i> is the average outcome when a trade does not fully fill, measured on training days.
+      A cheap logistic prior (1.5 µs) scores every gap. When it is unsure, a gradient-boosted model with 23 features (about 15 µs) decides.
+      That is the "cascade".</p>
+    <figure><img src="img/architecture.png" alt="Pipeline: exchange feeds, fast path, decay prior, expected value check, slow model when unsure, send both legs, orders travel, paper trader, dashboard"></figure>
+
+    <h2>What the replays show</h2>
+    <p>Every policy is replayed on the same days with per-venue latency and fees. Fills use up the displayed size, and each trade's position, funding and closing cost are tracked under a $50k cap.
+      Validation days come from walk-forward folds, and the intervals are day-bootstrap 95% intervals.</p>
+    <figure><img src="img/btc_cumulative_v9.png" alt="Cumulative realised P&amp;L on BTC over 205 days"></figure>
+    <p>On the 100 ms archive (Binance ticks, Bybit snapshots every 100 ms) the cascade makes $15 a day on BTC (95% CI $7 to $23, 205 days) and $15 on ETH ($11 to $21) with optimistic fills.
+      With conservative fills it breaks even there. The archive sees Bybit only in 100 ms snapshots, and the conservative bound fills a leg only when the snapshots on both sides of its arrival allow it.</p>
+    <figure><img src="img/coins_v9.png" alt="Cascade against the gap-size rule on nine coins"></figure>
+    <figure><img src="img/naive_v9.png" alt="Loss per day from trading every gap, nine coins"></figure>
+    <p>Trading every gap loses $94 to $925 a day on every coin.
+      When the decay model picks the trades, the cascade's interval is above zero on five of the nine coins, and it beats the gap-size rule on five.</p>
+    <figure><img src="img/tardis_binance_bybit.png" alt="Cascade on Tardis tick data with optimistic and conservative fills"></figure>
+    <p>Tardis.dev tick data (the free first day of each month, 2020 to 2026) records every quote change on both venues.
+      There the conservative fills keep $10 a day on BTC, $12 on ETH and $10 on SOL, each interval above zero.
+      Pairs with OKX show no edge at our assumed OKX fee and latency.</p>
+
+    <h2>Will the gap last?</h2>
+    <figure><img src="img/decay_auc.png" alt="Walk-forward AUC of the decay model against gap size alone"></figure>
+    <figure><img src="img/survival.png" alt="Share of gaps still open after t"></figure>
+    <p>Gap size alone barely predicts whether a gap survives (AUC 0.49 to 0.58 on the cross-venue and basis pairs); the decay model reaches 0.78 to 0.84 on the archive.
+      On our own 10 ms recordings it scores 0.64 to 0.74 at 50 to 500 ms, so the archive figures are an upper bound.</p>
+
+    <h2>How to read the other tabs</h2>
+    <dl class="kv wide">
+      <dt>Naive</dt><dd>trades every gap the fast path flags</dd>
+      <dt>Gap size only</dt><dd>the same expected-value rule, with <i>q</i> estimated from the gap's size alone: the obvious baseline</dd>
+      <dt>Prior only</dt><dd>uses only the cheap logistic model of <i>q</i></dd>
+      <dt>Slow always</dt><dd>waits for the gradient-boosted model on every gap</dd>
+      <dt>Cascade</dt><dd>the prior first, the slow model only when the prior is unsure</dd>
+      <dt>Optimistic fills</dt><dd>the last 100 ms Bybit snapshot before an order arrives is taken as still valid when it lands</dd>
+      <dt>Conservative fills</dt><dd>a leg fills only if the snapshots on both sides of its arrival allow it, at the worse price and the smaller size</dd>
+      <dt>$50k cap</dt><dd>a trade that would push the net position past $50k is skipped</dd>
+      <dt>Setups v3 to v9</dt><dd>successive versions of the replay; v9 has every fix and is the one to read</dd>
+    </dl>
+    <p>Results shows one run in full. Coins compares the cascade with the gap-size rule across coins. Decay models has the survival models' scores.
+      Reports holds every markdown report in the repo. The paper trader needs live exchange feeds, so it runs only on a local checkout.</p>
+
+    <h2>Run it yourself</h2>
+    <pre>git clone https://github.com/Mqhnish/arbpercept
+cd arbpercept
+pip install -r requirements-lock.txt &amp;&amp; pip install -e . --no-deps
+python -m arbtrade.dashboard --open</pre>
+  </article>
+</section>
+
 <!-- Results: one run, one setting -->
-<section class="view" id="view-results">
+<section class="view" id="view-results" hidden>
   <div class="bar">
     <label>Run <select id="r-run"></select></label>
     <div class="seg" id="r-mode" data-value="optimistic">
@@ -125,7 +194,17 @@
 
 <!-- Paper trader -->
 <section class="view" id="view-paper" hidden>
-  <div class="grid">
+  <div class="grid" id="p-static" hidden>
+    <div class="panel span-12 prose-panel">
+      <div class="ph"><h2>Paper trader</h2><span class="hint">runs on a local checkout</span></div>
+      <p>The paper trader connects to Binance and Bybit's live order books, watches the gap against their usual offset, and simulates both legs of every trade it would take.
+        No orders are sent. It needs a live connection to the exchanges, so this static copy cannot run it.
+        To try it, start the dashboard locally (<code>python -m arbtrade.dashboard --open</code>, see Overview) and open this tab.
+        Below is a session from our machine.</p>
+      <figure><img src="img/dashboard_paper.png" alt="A live paper trading session: both books, the gap against the usual offset, and each decision with its reason"></figure>
+    </div>
+  </div>
+  <div class="grid" id="p-live">
     <div class="panel span-3 form" id="p-form">
       <div class="ph"><h2>Session</h2><span class="hint" id="p-status"></span></div>
       <div class="seg full" id="p-source" data-value="live">

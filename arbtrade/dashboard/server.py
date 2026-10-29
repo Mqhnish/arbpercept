@@ -25,6 +25,7 @@ from . import data as D
 from .paper import PaperSession
 
 STATIC = Path(__file__).resolve().parent / "static"
+IMAGES = Path(__file__).resolve().parents[2] / "docs" / "abstract"
 # Set explicitly: on Windows, mimetypes reads the registry, which can map .js to text/plain.
 TYPES = {".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8",
          ".js": "text/javascript; charset=utf-8", ".svg": "image/svg+xml"}
@@ -93,8 +94,11 @@ def make_handler(app: App):
             if u.path.startswith("/api/"):
                 return self._api(lambda: app.get(u.path, parse_qs(u.query)))
             rel = "index.html" if u.path in ("/", "") else u.path.lstrip("/").removeprefix("static/")
-            f = (STATIC / rel).resolve()
-            if STATIC not in f.parents or not f.is_file():
+            root = STATIC
+            if rel.startswith("img/"):  # the Overview's figures, kept with the abstract's
+                root, rel = IMAGES, rel.removeprefix("img/")
+            f = (root / rel).resolve()
+            if root not in f.parents or not f.is_file():
                 return self._send(HTTPStatus.NOT_FOUND, b"not found", "text/plain")
             ctype = TYPES.get(f.suffix) or mimetypes.guess_type(f.name)[0] or "application/octet-stream"
             self._send(HTTPStatus.OK, f.read_bytes(), ctype)

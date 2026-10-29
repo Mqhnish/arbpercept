@@ -79,7 +79,8 @@ For the exact versions the tests last passed with, install `requirements-lock.tx
 .venv/bin/python -m arbtrade.dashboard --open
 ```
 
-It opens a local page at http://127.0.0.1:8050. It reads only `data/reports/`, so it works on a fresh checkout without the data folders. It has five tabs:
+It opens a local page at http://127.0.0.1:8050. It reads only `data/reports/`, so it works on a fresh checkout without the data folders. It has six tabs:
+- **Overview:** what the system does and what the replays show, with the abstract's figures (`docs/abstract/`).
 - **Results:** one run at a time. The page shows cumulative and daily realised P&L per strategy, the paired differences, and where the P&L comes from (trades, funding, closing). You can switch the fill bound, the position cap and the latency. Every number is the inventory-accounted one, with day-bootstrap 95% intervals.
 - **Coins:** every pair in one setup side by side. Click a coin to open its run.
 - **Decay models:** walk-forward AUC by latency budget, calibration, and how long gaps stay open.
@@ -87,6 +88,8 @@ It opens a local page at http://127.0.0.1:8050. It reads only `data/reports/`, s
 - **Reports:** the markdown reports in `data/reports/`.
 
 It uses the Python standard library only, with no JavaScript packages, and listens on 127.0.0.1 only.
+
+A static copy of every tab except the paper trader is online at https://mqhnish.github.io/arbpercept/. `python -m arbtrade.dashboard.export site/` writes it: each answer the page can ask for, saved as a JSON file. `.github/workflows/pages.yml` rebuilds it from the committed reports on every push to main.
 
 The Paper trader picks the saved prior for the coin and the gap definition by itself (`data/reports/live/prior*.json`). The priors in the repository were trained on raw gaps. With the default 300 s offset window, only the naive policy runs until a matching prior is trained, and the page says so.
 
