@@ -6,7 +6,7 @@ An arbitrage opportunity is worth acting on only if it will still be there when 
 
 | Part | Path | What it does |
 |---|---|---|
-| Data pipeline | `arbdata/` | Downloads free archives (Bybit, Binance, Tardis) and perpetual funding rates (`funding.py`), and records Bybit and Binance live. Rebuilds order books, validates them against independent trade records, and labels every opportunity with its lifetime and causal features. Leakage-safe, frozen date splits. See [DATA_CARD.md](DATA_CARD.md). |
+| Data pipeline | `arbdata/` | Downloads free archives (Bybit, Binance, Tardis) and perpetual funding rates (`funding.py`), and records Bybit, Binance and OKX live. Rebuilds order books, validates them against independent trade records, and labels every opportunity with its lifetime and causal features. Leakage-safe, frozen date splits. See [DATA_CARD.md](DATA_CARD.md). |
 | Slow-path statistics | `arbdata/kalman.py` | A Kalman filter on the pair's log-spread (and a two-state hedge-ratio version), plus an OU mean-reversion half-life. Numba-compiled and causal. |
 | Trading system | `arbtrade/` | Replay execution with injected latency, IOC legs, fees and leg risk (`replay.py`). Fast prior, slow model, isotonic calibration and cascade policies (`policies.py`), with the slow model compiled to a Numba tree walker (`compiled.py`). Walk-forward P&L-vs-latency evaluation (`evaluate.py`). Maker-taker execution (`makertaker.py`), a live paper trader (`live.py`) with the slow model's features computed one quote at a time (`slowpath.py`), and inventory accounting: positions per venue, funding, end-of-day closing and a position cap (`inventory.py`). |
 | Analysis | `analysis/` | Decay models and figures (`decay_pilot.py`, `decay_figures.py`), the P&L chart and intervals (`pnl_figure.py`, `pnl_stats.py`), the 100 ms vs 10 ms resolution check (`resolution_check.py`), models retrained on our 10 ms recordings (`live_prior.py`, `live_decay.py`), and the maker-taker sweeps (`maker_taker.py`, `maker_taker_live.py`). |
@@ -59,9 +59,11 @@ With the slow model at microseconds, model compute no longer costs edge; network
 | Live paper trader: naive and prior policies | Built, tested | `arbtrade/live.py`, dashboard Paper tab |
 | Live paper trader: slow model and full cascade | Engine supports it; no trained live slow model yet | `PaperEngine(slow=...)` |
 | Prior trained on gaps against the usual offset | Command exists; needs the data folders to train | `python -m arbtrade.live --train-prior` |
-| Execution stream that keeps size-only updates | Planned | `arbdata/normalize.py` keeps price changes only |
+| Conservative fills limited to the smallest size shown while each price held | Built, tested | `arbdata/normalize.py` (`bid_sz_min`, `ask_sz_min`), `arbtrade/replay.py` |
+| Live recording on OKX (bbo-tbt, 10 ms) beside Bybit and Binance | Built, tested | `arbdata/recorder.py` |
+| Tardis tick data: Binance, OKX and Bybit, first of each month 2020–2026 | Built, evaluated | `data/reports/pnl/tardis_summary.md` |
 | Cross-venue holdout (Feb–Mar 2024) | Frozen, not downloaded, not opened | `config/cross_holdout.json` |
-| Re-run of the results with the delayed-view births and the closing split | Planned: needs the data folders | see Results |
+| Re-run of the results with the delayed-view births, the closing split and the run minimums (v9) | Done | see Results |
 
 ## Running it
 
@@ -197,35 +199,52 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 
 ## Results so far (development data only)
 
-All numbers below were re-run after the review fixes (offset-relative labelling, per-venue fees and latency, a depth-limited close, the cap at each trade's price, and $0 days for days without trades).
+All numbers below are simulation results on development days. The Binance–Bybit tables are the v9 re-run with every later fix: births and features built from the delayed books when a feed delay is set, the closing split into executed and assumed parts, and conservative fills limited to the smallest size shown while each price held (`data/reports/pnl/<pair>_v9_real/inventory.md`).
 
-**Read these as simulation results.** They were produced before two later fixes. First, with a feed delay, births and features are now built from the delayed books; before, the model could see a Bybit quote up to 45 ms before the trader had it. Second, the closing is now split into what was really traded and what was assumed at the last quotes. Size-only book updates are also still dropped, which can overstate the size available to fills. The re-run needs the data folders and has not been done yet. The numbers may get worse, and they will be reported either way.
-
-**Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals (`data/reports/pnl/<pair>_v7_real/inventory.md`).
+**Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals.
 
 *BTC and ETH, May 2023 to January 2024:*
 
 | Pair | Validation days | Naive fast path | Gap size only | Cascade, optimistic fills | Cascade, conservative fills | Cascade − gap size only | Cascade − naive |
 |---|---|---|---|---|---|---|---|
-| BTC | 205 | −$240 [−309, −180] | $6 [2, 11] | **$18 [11, 25]** | −$1 [−2, −1] | +$11 [+8, +15] | +$258 [+194, +330] |
-| ETH | 180 | −$173 [−242, −122] | $6 [3, 9] | **$14 [9, 19]** | $0 [−1, 1] | +$8 [+5, +11] | +$187 [+133, +259] |
+| BTC | 205 | −$338 [−432, −254] | $8 [4, 12] | **$15 [7, 23]** | −$1 [−1, 0] | +$7 [0, +13] | +$353 [+267, +450] |
+| ETH | 180 | −$230 [−311, −169] | $7 [4, 10] | **$15 [11, 21]** | $0 [−1, 0] | +$8 [+5, +11] | +$246 [+182, +330] |
 
 *Eight mid-cap perpetuals, October to December 2023* (ZEC is left out: only 8 days pass the quality checks):
 
 | Coin | Validation days | Naive fast path | Cascade, optimistic fills | Cascade, conservative fills | Cascade − gap size only |
 |---|---|---|---|---|---|
-| SOL | 68 | −$759 [−919, −614] | **$26 [15, 39]** | $0 [−1, 1] | +$11 [+6, +18] |
-| TIA | 42 | −$669 [−890, −484] | **$10 [4, 16]** | −$1 [−3, 0] | +$3 [−1, +7] |
-| XRP | 73 | −$417 [−536, −314] | **$8 [2, 15]** | −$1 [−1, 0] | +$15 [+3, +32] |
-| WLD | 71 | −$417 [−528, −324] | $4 [0, 10] | $0 [−1, 0] | +$1 [−3, +5] |
-| ARB | 73 | −$208 [−248, −171] | $2 [0, 4] | $0 | +$1 [−1, +4] |
-| AAVE | 64 | −$80 [−98, −63] | $2 [−1, 6] | $0 | $0 [−2, +3] |
-| DOGE | 73 | −$418 [−555, −305] | −$2 [−7, 3] | −$1 [−2, 0] | −$5 [−8, −1] |
+| SOL | 68 | −$925 [−1,118, −751] | **$25 [14, 37]** | $0 [−1, 1] | +$9 [+4, +14] |
+| TIA | 42 | −$803 [−1,056, −590] | **$10 [5, 16]** | $0 | +$2 [−1, +6] |
+| WLD | 71 | −$465 [−593, −358] | **$8 [3, 14]** | $0 [−1, 0] | +$6 [+2, +11] |
+| XRP | 73 | −$525 [−679, −395] | $5 [−2, 14] | −$1 [−1, 0] | +$18 [+1, +40] |
+| ARB | 73 | −$248 [−296, −204] | $2 [−1, 6] | $0 [−1, 0] | +$1 [−2, +4] |
+| AAVE | 64 | −$94 [−115, −74] | $2 [0, 5] | $0 [−1, 0] | $0 [−2, +2] |
+| DOGE | 73 | −$504 [−667, −366] | $0 [−6, 5] | $0 [0, 1] | +$2 [−5, +12] |
 
-- **Every coin, every period:** naive gap-chasing loses $80–760 a day, and the cascade avoids those losses. With optimistic fills it earns small positive amounts on most coins; with conservative fills it is close to break-even everywhere.
-- **Against a simple rule:** the decay model beats trading every gap above the fee threshold on BTC, ETH, SOL and XRP, ties on most other coins, and loses slightly on DOGE.
-- **January 2024 was unusual.** On January alone (the US spot-ETF approval month) the BTC cascade made $57 a day [17, 116] (`..._v6_real/`); the eight-month average is $18. The longer sample is the one to trust.
+- **Every coin:** naive gap-chasing loses $94–925 a day, and the cascade avoids those losses. With optimistic fills it earns small amounts, with intervals above zero on BTC, ETH, SOL, TIA and WLD. With conservative fills it is about break-even everywhere.
+- **Against a simple rule:** the decay model beats trading every gap above the fee threshold on BTC, ETH, SOL, WLD and XRP, and ties on the rest.
+- **January 2024 was unusual.** On January alone (the US spot-ETF approval month) the BTC cascade made $57 a day [17, 116] (`..._v6_real/`, before the later fixes); the eight-month average is $15. The longer sample is the one to trust.
 - **Many gaps, little profit on mid-caps.** They produce 66,000 to 874,000 opportunities each over three months, far more than BTC, but most are drifts of the offset or too short-lived to reach at 50 ms.
+
+**A second data source: Tardis tick data on three venues** (`data/reports/pnl/tardis_summary.md`). Tardis.dev publishes the 1st of every month for free, with every top-of-book change on Binance, OKX and Bybit from one collector. We ran BTC, ETH and SOL perpetuals on all three venue pairs, January 2020 to October 2026. February and March 2024 (the frozen test) were not downloaded. Binance and Bybit use the setup above. For OKX, the 2.0 bps taker fee and 35 ms order latency are our assumptions, not measurements, and OKX funding is not charged because its API keeps only three months. The latencies are applied on Tardis's clock: they assume a trader placed like us and were not measured on this data.
+
+| Pair | Validation days | Naive fast path | Gap size only | Cascade, optimistic fills | Cascade, conservative fills | Cascade − gap size only |
+|---|---|---|---|---|---|---|
+| BTC Binance–Bybit | 56 | −$406 [−659, −206] | $3 [−1, 9] | **$11 [2, 20]** | **$10 [2, 18]** | +$7 [+1, +15] |
+| ETH Binance–Bybit | 55 | −$411 [−620, −244] | $16 [8, 27] | **$25 [14, 38]** | **$12 [5, 20]** | +$8 [+3, +14] |
+| SOL Binance–Bybit | 49 | −$376 [−543, −245] | $20 [11, 31] | **$20 [8, 34]** | **$10 [2, 19]** | $0 [−7, +8] |
+| BTC Binance–OKX | 60 | −$427 [−588, −299] | $1 [−1, 4] | −$5 [−13, 1] | $1 [−1, 4] | −$6 [−13, −1] |
+| ETH Binance–OKX | 60 | −$730 [−943, −540] | $0 [−1, 0] | −$5 [−7, −2] | $0 [−2, 2] | −$4 [−7, −2] |
+| SOL Binance–OKX | 49 | −$642 [−864, −461] | $0 | −$4 [−8, −1] | $0 [0, 1] | −$4 [−8, −1] |
+| BTC OKX–Bybit | 55 | −$311 [−457, −189] | $0 [−1, 0] | −$4 [−8, 0] | −$1 [−3, 2] | −$4 [−7, 0] |
+| ETH OKX–Bybit | 54 | −$423 [−587, −281] | no trades | −$2 [−4, 0] | $1 [−2, 6] | n/a |
+| SOL OKX–Bybit | 48 | −$390 [−546, −260] | $0 [−2, 1] | −$5 [−13, 0] | −$2 [−5, 1] | −$5 [−12, 0] |
+
+- **Binance–Bybit holds up on different data and different years.** The cascade makes $11–25 a day with optimistic fills and $10–12 with conservative ones, with intervals above zero for all three coins.
+- **Conservative fills are not near zero here.** Tardis has every Bybit top-of-book change, while the Bybit archive behind the tables above has a snapshot every 100 ms. Much of the gap between the two fill assumptions there comes from that sampling.
+- **No edge on the OKX pairs at our assumed OKX costs.** The cascade makes between −$5 and +$1 a day there and does slightly worse than the simple rule. We cannot yet tell whether that is OKX itself or our guesses about its fee and latency.
+- **Naive trading** loses $311–730 a day on every pair.
 
 *Fee sweep at 1 bps per leg, equal latency on both legs, BTC January 2024 only* (`data/reports/pnl/btc_perp_binance_bybit_v5/inventory.md`), for comparison with earlier runs:
 
@@ -241,7 +260,7 @@ All numbers below were re-run after the review fixes (offset-relative labelling,
 - **With conservative fills** every gated policy is close to break-even, and naive trading loses $600–4,700 a day.
 - **Cascade vs slow-always:** statistically the same. The slow model's 6.4 µs is inference only; computing its features live has not been timed yet.
 - **Why earlier numbers were higher.** Versions before the inventory accounting credited each trade with the whole gap measured from zero. In January 2024 Binance's BTC perpetual traded 0.5–3 bps below Bybit's, so most trades went the same way and mainly harvested that offset, which closing the positions pays back (`..._v3/inventory.md`).
-- **Not yet modelled:** size-only book updates (only price changes are kept, so displayed size can be stale), queue position and market impact.
+- **Not yet modelled:** queue position and market impact. Size-only book updates are folded into each price run; conservative fills use the smallest size shown during the run, optimistic fills the first.
 
 Fills are limited to displayed top-of-book size, with no queue position or market impact.
 
@@ -292,8 +311,8 @@ We compared our system with three public arbitrage projects and adopted what was
 1. **Record continuously on a VM** ([DEPLOY.md](DEPLOY.md)) and retrain the prior, decay and slow models on weeks of 10 ms data. January 2024 and October 2026 behave very differently: about 450 triggers an hour at 2 bps then, almost none now.
 2. **Maker-taker, version 2:** estimate queue cancellations from book size changes, requote when the price moves, add inventory limits, and gate quotes with the decay model so we quote only when the Binance side is likely to hold until the hedge.
 3. **Run the resolution check on more days** as Bybit publishes them, to firm up how many archive episodes are stale-quote artifacts.
-4. **Re-run every result** with births from the delayed books and the closing split, and report what changed, including anything that got worse.
-5. **Keep size-only updates for execution:** a second L1 stream with every size change, used by the replay's fills (needs a data rebuild).
+4. **Measure OKX's costs** from the recordings (order latency and the fee tier we could reach) and re-run the OKX pairs on measured values.
+5. **Evaluate the live recordings** once there are enough hours with all three venues up, on our own clock.
 6. **Train the prior on gaps against the offset** (`--train-prior`), so the prior policy runs in the default live setup.
 7. **A slow model for the live trader.** Train it on recorded days, on the 24 inputs the live engine computes (`SlowFeatures.names()` plus the gap). Then add a `--slow` flag to `arbtrade.live` that loads it. `PaperEngine` can already run one.
 8. **Open each holdout once, at the end** (`ARBDATA_UNLOCK_HOLDOUT=1`, `ARBDATA_UNLOCK_CROSS_HOLDOUT=1`), following its protocol, and report it as it comes out.
