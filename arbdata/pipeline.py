@@ -21,6 +21,9 @@ def _write_json(path: Path, obj: dict) -> None:
     path.write_text(json.dumps(obj, indent=1))
 
 
+SIZE_COLUMNS = ("bid_sz", "ask_sz", "bid_sz_min", "ask_sz_min", "bid_depth5", "ask_depth5")
+
+
 def quality_path(cfg: Config, stream_key: str, date: str) -> Path:
     return cfg.reports_dir / "quality" / stream_key / f"{date}.json"
 
@@ -34,6 +37,10 @@ def normalize_day(cfg: Config, stream_key: str, date: str, force: bool = False) 
         report = json.loads(qpath.read_text())
     elif raw.exists():
         df, feed = NORMALIZERS[stream.source](raw)
+        if stream.contract_size:  # sizes quoted in contracts (OKX swaps) -> base units
+            for c in SIZE_COLUMNS:
+                if c in df:
+                    df[c] = df[c] * stream.contract_size
         df, dropped = clean(df, cfg.quality["spike_bps"])
         src = cfg.sources[stream.source]
         silences = feed.silences_frame()

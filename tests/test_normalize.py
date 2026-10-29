@@ -179,3 +179,39 @@ def test_collapser_keeps_the_smallest_size_of_each_price_run_across_batches():
     f = c.frame()
     assert f.bid_sz.tolist() == [5.0, 3.0] and f.bid_sz_min.tolist() == [2.0, 1.0] and f.ask_sz_min.tolist() == [4.0, 0.5]
     assert f.n_raw.tolist() == [3, 2]
+
+
+def test_okx_live_recording(tmp_path):
+    from arbdata.normalize import normalize_okx_live
+    day = tmp_path / "2026-10-29"
+    day.mkdir()
+    def rec(recv, b, a, bs="5"):
+        return json.dumps({"recv_us": recv, "msg": {"arg": {"channel": "bbo-tbt", "instId": "BTC-USDT-SWAP"}, "data": [
+            {"bids": [[str(b), bs, "0", "3"]], "asks": [[str(a), "7", "0", "2"]], "ts": str(recv // 1000 - 3), "seqId": recv}]}})
+    lines = [rec(1_000_000, 100.0, 100.1), rec(1_020_000, 100.0, 100.1, bs="2"),  # size-only change
+             rec(1_030_000, 100.1, 100.2)]
+    with gzip.open(day / "05_run.jsonl.gz", "wt") as fh:
+        fh.write("\n".join(lines) + "\n")
+    df, feed = normalize_okx_live(day)
+    assert df.bid_px.tolist() == [100.0, 100.1] and df.n_raw.tolist() == [2, 1]
+    assert df.bid_sz.tolist() == [5.0, 5.0] and df.bid_sz_min.tolist() == [2.0, 5.0]  # contracts
+    assert df.exch_ts.iloc[0] == 997_000 and feed.n == 3
+
+
+def test_contract_sizes_are_converted_to_base_units(tmp_path):
+    import pandas as pd
+    import yaml
+    from arbdata.config import Config, DEFAULT_CONFIG
+    from arbdata.pipeline import normalize_day
+    raw = yaml.safe_load(DEFAULT_CONFIG.read_text())
+    raw["data_root"] = str(tmp_path)
+    cfg = Config(raw, tmp_path)
+    day = tmp_path / "raw" / "okx_live" / "okx" / "BTC-USDT" / "perp" / "2026-10-29"
+    day.mkdir(parents=True)
+    msg = {"arg": {"instId": "BTC-USDT-SWAP"}, "data": [{"bids": [["100.0", "250", "0", "1"]],
+                                                         "asks": [["100.1", "40", "0", "1"]], "ts": "1000"}]}
+    with gzip.open(day / "00_run.jsonl.gz", "wt") as fh:
+        fh.write(json.dumps({"recv_us": 1_000_000, "msg": msg}) + "\n")
+    normalize_day(cfg, "okx_live/okx/BTC-USDT/perp", "2026-10-29")
+    df = pd.read_parquet(cfg.l1_path(cfg.streams["okx_live/okx/BTC-USDT/perp"], "2026-10-29"))
+    assert df.bid_sz.tolist() == [2.5] and df.ask_sz.tolist() == [0.4] and df.bid_sz_min.tolist() == [2.5]

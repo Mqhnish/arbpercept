@@ -1,5 +1,5 @@
-"""Record Bybit's live top-of-book (10 ms) and trades, and Binance USD-M top-of-book (every change),
-on one receive clock: 10x finer timing than the Bybit archive, and cross-venue data the free
+"""Record Bybit's live top-of-book (10 ms) and trades, Binance USD-M top-of-book (every change) and
+OKX perpetual top-of-book (bbo-tbt, 10 ms), on one receive clock: 10x finer timing than the Bybit archive, and cross-venue data the free
 archives no longer provide (Binance's bookTicker archive ends in March 2024).
 
     .venv/bin/python -m arbdata record                  # every bybit_live stream in the config, forever
@@ -35,6 +35,7 @@ from .config import Config, Stream
 
 WS_URL = {"spot": "wss://stream.bybit.com/v5/public/spot", "linear": "wss://stream.bybit.com/v5/public/linear"}
 BINANCE_FUTURES_WS = "wss://fstream.binance.com/stream?streams="  # USD-M futures; Binance sends the pings
+OKX_WS = "wss://ws.okx.com:8443/ws/v5/public"  # OKX drops a connection silent for 30 s; we ping every 20 s
 PING_EVERY_S = 20  # Bybit closes idle public connections; it documents a 20 s ping
 STALL_S = 30  # nothing received for this long (not even a pong): the connection is dead, reconnect
 # Verify TLS against certifi's CA bundle: some Python installs (python.org builds on macOS)
@@ -175,8 +176,56 @@ async def _run_binance(streams: list[Stream], cfg: Config, stop: asyncio.Event, 
         w.close()
 
 
+async def _run_okx(streams: list[Stream], cfg: Config, stop: asyncio.Event, stats: dict) -> None:
+    """OKX perpetuals, bbo-tbt: the top of the book every 10 ms when it changes. Sizes are in contracts
+    (the stream's contract_size converts them when normalising)."""
+    writers = {s.symbol: HourlyWriter(cfg, s) for s in streams}
+    args = [{"channel": "bbo-tbt", "instId": s.symbol} for s in streams]
+    backoff = 1.0
+    pending_mark: set[str] = set()
+    while not stop.is_set():
+        try:
+            async with websockets.connect(OKX_WS, ssl=TLS, ping_interval=None, max_size=2**22) as ws:
+                await ws.send(json.dumps({"op": "subscribe", "args": args}))
+                last_ping = last_msg = time.monotonic()
+                backoff = 1.0
+                while not stop.is_set():
+                    if time.monotonic() - last_ping > PING_EVERY_S:
+                        await ws.send("ping")
+                        last_ping = time.monotonic()
+                    try:
+                        raw = await asyncio.wait_for(ws.recv(), timeout=5)
+                    except asyncio.TimeoutError:
+                        if time.monotonic() - last_msg > STALL_S:
+                            raise Stalled(f"nothing received for {STALL_S} s")
+                        continue
+                    last_msg = time.monotonic()
+                    if raw == "pong":
+                        continue
+                    recv_us = time.time_ns() // 1000
+                    msg = orjson.loads(raw)
+                    if "data" not in msg:
+                        continue  # subscription acks and errors
+                    symbol = msg["arg"]["instId"]
+                    rec = {"recv_us": recv_us, "msg": msg}
+                    if symbol in pending_mark:
+                        rec["reconnect"] = True
+                        pending_mark.discard(symbol)
+                    writers[symbol].write(recv_us, orjson.dumps(rec) + b"\n")
+                    stats[f"okx.{symbol}"] = stats.get(f"okx.{symbol}", 0) + 1
+        except (OSError, websockets.WebSocketException, Stalled) as exc:
+            now = time.time_ns() // 1000
+            for w in writers.values():
+                w.event(now, "disconnect", f"{type(exc).__name__}: {exc}")
+            pending_mark = set(writers)
+            await asyncio.sleep(backoff)
+            backoff = min(backoff * 2, 60)
+    for w in writers.values():
+        w.close()
+
+
 async def record(cfg: Config, minutes: float | None = None) -> dict:
-    streams = [s for s in cfg.streams.values() if s.source in ("bybit_live", "binance_live")]
+    streams = [s for s in cfg.streams.values() if s.source in ("bybit_live", "binance_live", "okx_live")]
     if not streams:
         raise SystemExit("no live streams in the config")
     stop = asyncio.Event()
@@ -194,5 +243,8 @@ async def record(cfg: Config, minutes: float | None = None) -> dict:
     tasks = [_run_market(m, ss, cfg, stop, stats) for m, ss in by_market.items()]
     if binance:
         tasks.append(_run_binance(binance, cfg, stop, stats))
+    okx = [s for s in streams if s.source == "okx_live"]
+    if okx:
+        tasks.append(_run_okx(okx, cfg, stop, stats))
     await asyncio.gather(*tasks)
     return stats

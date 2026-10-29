@@ -25,7 +25,7 @@ BYBIT_DEPTHS = {"linear": (200, 500), "spot": (200,)}
 BINANCE_BT_URL = "https://data.binance.vision/data/futures/um/daily/bookTicker/{symbol}/{symbol}-bookTicker-{date}.zip"
 TARDIS_URL = "https://datasets.tardis.dev/v1/{exchange}/quotes/{y}/{m:02d}/{d:02d}/{symbol}.csv.gz"
 
-RAW_EXT = {"bybit_ob": ".zip", "binance_bt": ".zip", "tardis": ".csv.gz", "bybit_live": "", "binance_live": ""}  # live: a folder per day
+RAW_EXT = {"bybit_ob": ".zip", "binance_bt": ".zip", "tardis": ".csv.gz", "bybit_live": "", "binance_live": "", "okx_live": ""}  # live: a folder per day
 
 # Bybit's public trade archive: every trade with its matching-engine time. An independent
 # record used to validate reconstructed books and to describe order flow.

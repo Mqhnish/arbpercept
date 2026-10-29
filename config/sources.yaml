@@ -27,6 +27,11 @@ sources:
     resolution_ms: 1
     max_gap_ms: 5000
     clock: observer_receive      # avail_ts = this machine's receive time (same clock as bybit_live), exch_ts = transaction time
+  okx_live:
+    description: Our own recording of OKX perpetuals' top of book (bbo-tbt, 10 ms), see arbdata/recorder.py
+    resolution_ms: 10
+    max_gap_ms: 5000
+    clock: observer_receive      # avail_ts = this machine's receive time (same clock as the other live sources), exch_ts = OKX ts
   tardis:
     description: Tardis.dev free first-of-month quotes (every top-of-book change)
     resolution_ms: 1
@@ -63,6 +68,16 @@ streams:
   - {source: binance_live, venue: binance, pair: TIA-USDT, kind: perp, symbol: TIAUSDT}
   - {source: binance_live, venue: binance, pair: AAVE-USDT, kind: perp, symbol: AAVEUSDT}
   - {source: binance_live, venue: binance, pair: ARB-USDT, kind: perp, symbol: ARBUSDT}
+  - {source: okx_live,   venue: okx,     pair: BTC-USDT, kind: perp, symbol: BTC-USDT-SWAP, contract_size: 0.01}
+  - {source: okx_live,   venue: okx,     pair: ETH-USDT, kind: perp, symbol: ETH-USDT-SWAP, contract_size: 0.1}
+  - {source: okx_live,   venue: okx,     pair: SOL-USDT, kind: perp, symbol: SOL-USDT-SWAP, contract_size: 1}
+  - {source: okx_live,   venue: okx,     pair: XRP-USDT, kind: perp, symbol: XRP-USDT-SWAP, contract_size: 100}
+  - {source: okx_live,   venue: okx,     pair: DOGE-USDT, kind: perp, symbol: DOGE-USDT-SWAP, contract_size: 1000}
+  - {source: okx_live,   venue: okx,     pair: WLD-USDT, kind: perp, symbol: WLD-USDT-SWAP, contract_size: 1}
+  - {source: okx_live,   venue: okx,     pair: ZEC-USDT, kind: perp, symbol: ZEC-USDT-SWAP, contract_size: 0.01}
+  - {source: okx_live,   venue: okx,     pair: TIA-USDT, kind: perp, symbol: TIA-USDT-SWAP, contract_size: 1}
+  - {source: okx_live,   venue: okx,     pair: AAVE-USDT, kind: perp, symbol: AAVE-USDT-SWAP, contract_size: 0.1}
+  - {source: okx_live,   venue: okx,     pair: ARB-USDT, kind: perp, symbol: ARB-USDT-SWAP, contract_size: 10}
   - {source: binance_bt, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT}
   - {source: binance_bt, venue: binance, pair: ETH-USDT, kind: perp, symbol: ETHUSDT}
   # Mid-cap archive perpetuals on both venues (downloaded for Oct-Dec 2023; WLD lists from Jul 2023, TIA from 31 Oct 2023)
@@ -85,9 +100,15 @@ streams:
   - {source: tardis, venue: binance, pair: BTC-USDT, kind: spot, symbol: BTCUSDT,       exchange: binance}
   - {source: tardis, venue: binance, pair: BTC-USDT, kind: perp, symbol: BTCUSDT,       exchange: binance-futures}
   - {source: tardis, venue: okx,     pair: BTC-USDT, kind: spot, symbol: BTC-USDT,      exchange: okex}
-  - {source: tardis, venue: okx,     pair: BTC-USDT, kind: perp, symbol: BTC-USDT-SWAP, exchange: okex-swap}
+  - {source: tardis, venue: okx,     pair: BTC-USDT, kind: perp, symbol: BTC-USDT-SWAP, exchange: okex-swap, contract_size: 0.01}
   - {source: tardis, venue: bybit,   pair: BTC-USDT, kind: spot, symbol: BTCUSDT,       exchange: bybit-spot}
   - {source: tardis, venue: bybit,   pair: BTC-USDT, kind: perp, symbol: BTCUSDT,       exchange: bybit}
+  - {source: tardis, venue: binance, pair: ETH-USDT, kind: perp, symbol: ETHUSDT,       exchange: binance-futures}
+  - {source: tardis, venue: okx,     pair: ETH-USDT, kind: perp, symbol: ETH-USDT-SWAP, exchange: okex-swap, contract_size: 0.1}
+  - {source: tardis, venue: bybit,   pair: ETH-USDT, kind: perp, symbol: ETHUSDT,       exchange: bybit}
+  - {source: tardis, venue: binance, pair: SOL-USDT, kind: perp, symbol: SOLUSDT,       exchange: binance-futures}
+  - {source: tardis, venue: okx,     pair: SOL-USDT, kind: perp, symbol: SOL-USDT-SWAP, exchange: okex-swap, contract_size: 1}
+  - {source: tardis, venue: bybit,   pair: SOL-USDT, kind: perp, symbol: SOLUSDT,       exchange: bybit}
 
 # What gets compared. basis pairs: a = spot, b = perp on the same venue.
 # cross pairs: the same instrument type on two venues.
@@ -109,6 +130,16 @@ pairs:
   - {name: live_tia_perp_binance_bybit, type: cross, a: binance_live/binance/TIA-USDT/perp, b: bybit_live/bybit/TIA-USDT/perp}
   - {name: live_aave_perp_binance_bybit, type: cross, a: binance_live/binance/AAVE-USDT/perp, b: bybit_live/bybit/AAVE-USDT/perp}
   - {name: live_arb_perp_binance_bybit, type: cross, a: binance_live/binance/ARB-USDT/perp, b: bybit_live/bybit/ARB-USDT/perp}
+  - {name: live_btc_perp_okx_bybit, type: cross, a: okx_live/okx/BTC-USDT/perp, b: bybit_live/bybit/BTC-USDT/perp}
+  - {name: live_eth_perp_okx_bybit, type: cross, a: okx_live/okx/ETH-USDT/perp, b: bybit_live/bybit/ETH-USDT/perp}
+  - {name: live_sol_perp_okx_bybit, type: cross, a: okx_live/okx/SOL-USDT/perp, b: bybit_live/bybit/SOL-USDT/perp}
+  - {name: live_xrp_perp_okx_bybit, type: cross, a: okx_live/okx/XRP-USDT/perp, b: bybit_live/bybit/XRP-USDT/perp}
+  - {name: live_doge_perp_okx_bybit, type: cross, a: okx_live/okx/DOGE-USDT/perp, b: bybit_live/bybit/DOGE-USDT/perp}
+  - {name: live_wld_perp_okx_bybit, type: cross, a: okx_live/okx/WLD-USDT/perp, b: bybit_live/bybit/WLD-USDT/perp}
+  - {name: live_zec_perp_okx_bybit, type: cross, a: okx_live/okx/ZEC-USDT/perp, b: bybit_live/bybit/ZEC-USDT/perp}
+  - {name: live_tia_perp_okx_bybit, type: cross, a: okx_live/okx/TIA-USDT/perp, b: bybit_live/bybit/TIA-USDT/perp}
+  - {name: live_aave_perp_okx_bybit, type: cross, a: okx_live/okx/AAVE-USDT/perp, b: bybit_live/bybit/AAVE-USDT/perp}
+  - {name: live_arb_perp_okx_bybit, type: cross, a: okx_live/okx/ARB-USDT/perp, b: bybit_live/bybit/ARB-USDT/perp}
   - {name: btc_perp_binance_bybit, type: cross, a: binance_bt/binance/BTC-USDT/perp, b: bybit_ob/bybit/BTC-USDT/perp}
   - {name: eth_perp_binance_bybit, type: cross, a: binance_bt/binance/ETH-USDT/perp, b: bybit_ob/bybit/ETH-USDT/perp}
   - {name: sol_perp_binance_bybit, type: cross, a: binance_bt/binance/SOL-USDT/perp, b: bybit_ob/bybit/SOL-USDT/perp}
@@ -124,6 +155,13 @@ pairs:
   - {name: tick_btc_spot_okx_bybit,     type: cross, a: tardis/okx/BTC-USDT/spot,     b: tardis/bybit/BTC-USDT/spot}
   - {name: tick_btc_perp_binance_okx,   type: cross, a: tardis/binance/BTC-USDT/perp, b: tardis/okx/BTC-USDT/perp}
   - {name: tick_btc_perp_binance_bybit, type: cross, a: tardis/binance/BTC-USDT/perp, b: tardis/bybit/BTC-USDT/perp}
+  - {name: tick_btc_perp_okx_bybit,     type: cross, a: tardis/okx/BTC-USDT/perp,     b: tardis/bybit/BTC-USDT/perp}
+  - {name: tick_eth_perp_binance_bybit, type: cross, a: tardis/binance/ETH-USDT/perp, b: tardis/bybit/ETH-USDT/perp}
+  - {name: tick_eth_perp_binance_okx,   type: cross, a: tardis/binance/ETH-USDT/perp, b: tardis/okx/ETH-USDT/perp}
+  - {name: tick_eth_perp_okx_bybit,     type: cross, a: tardis/okx/ETH-USDT/perp,     b: tardis/bybit/ETH-USDT/perp}
+  - {name: tick_sol_perp_binance_bybit, type: cross, a: tardis/binance/SOL-USDT/perp, b: tardis/bybit/SOL-USDT/perp}
+  - {name: tick_sol_perp_binance_okx,   type: cross, a: tardis/binance/SOL-USDT/perp, b: tardis/okx/SOL-USDT/perp}
+  - {name: tick_sol_perp_okx_bybit,     type: cross, a: tardis/okx/SOL-USDT/perp,     b: tardis/bybit/SOL-USDT/perp}
   - {name: tick_btc_basis_binance,      type: basis, a: tardis/binance/BTC-USDT/spot, b: tardis/binance/BTC-USDT/perp}
   - {name: tick_btc_basis_okx,          type: basis, a: tardis/okx/BTC-USDT/spot,     b: tardis/okx/BTC-USDT/perp}
   - {name: tick_btc_basis_bybit,        type: basis, a: tardis/bybit/BTC-USDT/spot,   b: tardis/bybit/BTC-USDT/perp}

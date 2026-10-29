@@ -20,6 +20,7 @@ class Stream:
     symbol: str
     market: str | None = None
     exchange: str | None = None
+    contract_size: float | None = None  # base units per contract, when the venue quotes sizes in contracts
 
     @property
     def key(self) -> str:

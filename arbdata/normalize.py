@@ -384,8 +384,36 @@ def normalize_binance_live(day_dir: Path) -> tuple[pd.DataFrame, RawFeed]:
     return col.frame(), feed
 
 
+def normalize_okx_live(day_dir: Path) -> tuple[pd.DataFrame, RawFeed]:
+    """Our OKX bbo-tbt recordings: avail_ts = receive time, exch_ts = OKX's ts. Sizes stay in
+    contracts here; normalize_day converts them with the stream's contract_size."""
+    recs = []
+    for f in sorted(day_dir.glob("*.jsonl.gz")):
+        try:
+            with gzip.open(f, "rb") as fh:
+                for line in fh:
+                    if line.strip() and line.endswith(b"\n"):
+                        r = orjson.loads(line)
+                        for d in r["msg"]["data"]:
+                            if d.get("bids") and d.get("asks"):
+                                recs.append((r["recv_us"], int(d["ts"]) * 1000, float(d["bids"][0][0]), float(d["bids"][0][1]),
+                                             float(d["asks"][0][0]), float(d["asks"][0][1])))
+        except (EOFError, gzip.BadGzipFile, zlib.error):
+            pass  # a killed run: keep what was flushed
+    feed = RawFeed()
+    col = _RunCollapser()
+    if recs:
+        a = np.array(recs, dtype=float)
+        a = a[np.argsort(a[:, 0], kind="stable")]  # several runs within an hour interleave by receive time
+        recv = a[:, 0].astype(np.int64)
+        feed.observe(recv)
+        col.add(recv, a[:, 1].astype(np.int64), a[:, 2], a[:, 3], a[:, 4], a[:, 5])
+    return col.frame(), feed
+
+
 NORMALIZERS = {"bybit_ob": normalize_bybit, "binance_bt": normalize_binance_bt, "tardis": normalize_tardis,
-               "bybit_live": normalize_bybit_live, "binance_live": normalize_binance_live}
+               "bybit_live": normalize_bybit_live, "binance_live": normalize_binance_live,
+               "okx_live": normalize_okx_live}
 
 
 # ---------------------------------------------------------------------------
