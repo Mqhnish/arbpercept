@@ -36,9 +36,14 @@ from .config import Config, Stream
 WS_URL = {"spot": "wss://stream.bybit.com/v5/public/spot", "linear": "wss://stream.bybit.com/v5/public/linear"}
 BINANCE_FUTURES_WS = "wss://fstream.binance.com/stream?streams="  # USD-M futures; Binance sends the pings
 PING_EVERY_S = 20  # Bybit closes idle public connections; it documents a 20 s ping
+STALL_S = 30  # nothing received for this long (not even a pong): the connection is dead, reconnect
 # Verify TLS against certifi's CA bundle: some Python installs (python.org builds on macOS)
 # ship without system root certificates. Verification stays on.
 TLS = ssl.create_default_context(cafile=certifi.where())
+
+
+class Stalled(Exception):
+    """An open connection that has gone silent. Without this the receive loop waits on it forever."""
 
 
 RUN_ID = time.strftime("%Y%m%dT%H%M%S", time.gmtime())  # one file per process run: a crash never corrupts a later run
@@ -92,7 +97,7 @@ async def _run_market(market: str, streams: list[Stream], cfg: Config, stop: asy
         try:
             async with websockets.connect(WS_URL[market], ssl=TLS, ping_interval=None, max_size=2**22) as ws:
                 await ws.send(json.dumps({"op": "subscribe", "args": topics}))
-                last_ping = time.monotonic()
+                last_ping = last_msg = time.monotonic()
                 backoff = 1.0
                 while not stop.is_set():
                     if time.monotonic() - last_ping > PING_EVERY_S:
@@ -101,7 +106,10 @@ async def _run_market(market: str, streams: list[Stream], cfg: Config, stop: asy
                     try:
                         raw = await asyncio.wait_for(ws.recv(), timeout=5)
                     except asyncio.TimeoutError:
+                        if time.monotonic() - last_msg > STALL_S:
+                            raise Stalled(f"nothing received for {STALL_S} s")
                         continue
+                    last_msg = time.monotonic()
                     recv_us = time.time_ns() // 1000
                     msg = orjson.loads(raw)
                     topic = msg.get("topic")
@@ -114,7 +122,7 @@ async def _run_market(market: str, streams: list[Stream], cfg: Config, stop: asy
                         pending_mark.discard(symbol)
                     writers[symbol].write(recv_us, orjson.dumps(rec) + b"\n")
                     stats[topic] = stats.get(topic, 0) + 1
-        except (OSError, websockets.WebSocketException) as exc:
+        except (OSError, websockets.WebSocketException, Stalled) as exc:
             now = time.time_ns() // 1000
             for w in writers.values():
                 w.event(now, "disconnect", f"{type(exc).__name__}: {exc}")
@@ -134,12 +142,16 @@ async def _run_binance(streams: list[Stream], cfg: Config, stop: asyncio.Event, 
     while not stop.is_set():
         try:
             async with websockets.connect(url, ssl=TLS, ping_interval=None, max_size=2**22) as ws:
+                last_msg = time.monotonic()
                 backoff = 1.0
                 while not stop.is_set():
                     try:
                         raw = await asyncio.wait_for(ws.recv(), timeout=5)
                     except asyncio.TimeoutError:
+                        if time.monotonic() - last_msg > STALL_S:
+                            raise Stalled(f"nothing received for {STALL_S} s")
                         continue
+                    last_msg = time.monotonic()
                     recv_us = time.time_ns() // 1000
                     msg = orjson.loads(raw)
                     data = msg.get("data")
@@ -152,7 +164,7 @@ async def _run_binance(streams: list[Stream], cfg: Config, stop: asyncio.Event, 
                         pending_mark.discard(symbol)
                     writers[symbol].write(recv_us, orjson.dumps(rec) + b"\n")
                     stats[msg["stream"]] = stats.get(msg["stream"], 0) + 1
-        except (OSError, websockets.WebSocketException) as exc:
+        except (OSError, websockets.WebSocketException, Stalled) as exc:
             now = time.time_ns() // 1000
             for w in writers.values():
                 w.event(now, "disconnect", f"{type(exc).__name__}: {exc}")
