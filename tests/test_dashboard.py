@@ -138,6 +138,7 @@ def test_static_export_answers_every_request_the_page_can_make(reports, tmp_path
     html = (site / "index.html").read_text()
     assert 'data-static="1"' in html and '"/static/' not in html
     assert (site / "app.js").exists() and (site / "img" / "architecture.png").exists() and (site / ".nojekyll").exists()
+    assert (site / "abstract.md").read_text().startswith("# ")
 
     app = App(reports, None)
     runs = json.loads((site / "api" / "runs.json").read_text())

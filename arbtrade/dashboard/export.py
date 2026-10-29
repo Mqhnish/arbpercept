@@ -21,7 +21,7 @@ from . import data as D
 from .server import IMAGES, STATIC
 
 REPO = Path(__file__).resolve().parents[2]
-OVERVIEW_IMAGES = ["architecture", "btc_cumulative_v9", "coins_v9", "naive_v9", "tardis_binance_bybit", "decay_auc",
+SITE_IMAGES = ["architecture", "btc_cumulative_v9", "coins_v9", "naive_v9", "tardis_binance_bybit", "decay_auc",
                    "survival", "dashboard_paper"]
 MODES, CAPS = ("optimistic", "conservative"), ("capped", "uncapped")
 
@@ -94,8 +94,9 @@ def export(reports: Path, out: Path) -> int:
     html = html.replace('<html lang="en">', f'<html lang="en" data-static="1" data-commit="{_commit()}">', 1)
     (out / "index.html").write_text(html.replace('"/static/', '"'), encoding="utf-8")
     (out / "img").mkdir()
-    for name in OVERVIEW_IMAGES:
+    for name in SITE_IMAGES:
         shutil.copy(IMAGES / f"{name}.png", out / "img" / f"{name}.png")
+    shutil.copy(IMAGES / "abstract.md", out / "abstract.md")
     (out / ".nojekyll").write_text("")  # serve files as they are (Jekyll would skip names starting with _)
     return n
 

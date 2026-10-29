@@ -3,15 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>arbpercept</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230f6e6e'/%3E%3Cpath d='M3 11 L7 6 L10 9 L13 4' stroke='white' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+<title>arbpercept · latency-aware cross-venue arbitrage</title>
+<meta name="description" content="Perceptron 2026, Problem 6: a cross-venue arbitrage system that prices each gap at the latency it will face. Abstract, figures and every replay result.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230f6e6e'/%3E%3Cpath d='M3 11 L7 6 L10 9 L13 4' stroke='white' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <link rel="stylesheet" href="/static/app.css">
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="mark">arbpercept</span><span class="sub">latency-aware cross-venue arbitrage</span></div>
+  <a class="brand" href="#abstract"><span class="mark">arbpercept</span><span class="sub">latency-aware cross-venue arbitrage</span></a>
   <nav class="tabs" id="tabs">
-    <a href="#overview" data-tab="overview">Overview</a>
+    <a href="#abstract" data-tab="abstract">Abstract</a>
+    <a href="#figures" data-tab="figures">Figures</a>
     <a href="#results" data-tab="results">Results</a>
     <a href="#coins" data-tab="coins">Coins</a>
     <a href="#decay" data-tab="decay">Decay models</a>
@@ -21,72 +26,136 @@
   <div class="meta" id="meta"></div>
 </header>
 
-<!-- Overview: what the system does and what the replays show, for a first-time reader -->
-<section class="view" id="view-overview" hidden>
-  <article class="prose">
-    <p class="lede">Perceptron 2026 (IIT Bombay × Optiver), Problem 6: cross-asset statistical arbitrage with latency budgets.
-      Mohnish Rawat, Anay Sharma, Arnav Jain. Code and every report: <a href="https://github.com/Mqhnish/arbpercept">github.com/Mqhnish/arbpercept</a>.</p>
-    <p class="note" id="o-static-note" hidden>This site is a static copy of the dashboard, built from the reports committed to the repo
-      (<span id="o-commit"></span>). Every number on it is a replay on development days. Both locked test sets are still unopened, and no real orders were placed.</p>
+<!-- Abstract: the Round 1 abstract as submitted, with links into the evidence and notes in the margin -->
+<section class="view" id="view-abstract" hidden>
+  <div class="paper">
+    <header class="hero">
+      <p class="kicker">Perceptron 2026 · IIT Bombay × Optiver · Problem 6, Theme 3</p>
+      <h1 id="a-title"><span class="nw">Latency-aware</span> <span class="nw">cross-venue</span> arbitrage</h1>
+      <p class="byline">Mohnish Rawat · Anay Sharma · Arnav Jain</p>
+      <div class="actions">
+        <a class="btn primary" href="#figures">See the figures</a>
+        <a class="btn" href="#results">Explore every run</a>
+        <a class="btn ghost" href="https://github.com/Mqhnish/arbpercept">Code on GitHub <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="note">This is our Round 1 abstract. Underlined phrases open the evidence on this site, and the notes beside each section say what to look at.
+        Every number is a replay on development days. Both locked test sets are unopened, and no real orders were placed.</p>
+    </header>
+    <div class="abstract" id="a-body"><p class="muted">Loading the abstract…</p></div>
+  </div>
+</section>
 
-    <h2>The problem</h2>
-    <p>The same perpetual future trades on Binance and Bybit, and the two prices drift apart for a moment many times a day.
-      Spotting such a gap is easy. By the time our orders reach both venues, though, the gap has often closed.
-      Binance is 50 ms away from our machine and Bybit 8 ms, and the taker fees are 1.7 and 3.0 bps a leg, so most gaps are gone or too small by the time we could act.
-      The question is which gaps will still be there when the orders land, and whether that is worth the fees.</p>
+<!-- Figures: each chart beside what it shows and how to read it -->
+<section class="view" id="view-figures" hidden>
+  <div class="paper">
+    <header class="hero compact">
+      <p class="kicker">Figures</p>
+      <h1>What the replays show</h1>
+      <p class="lede">Each figure sits beside what it shows and how to read it, with a link to the interactive view behind it.
+        All are replays on development days with per-venue latency and fees. Fills use up the displayed size, positions are capped at $50k,
+        and funding and closing costs are charged. Intervals are day-bootstrap 95% intervals over walk-forward validation days.</p>
+      <p class="note" id="f-static-note" hidden>This site is a static copy of the dashboard, built from the reports committed to the repo (<span id="f-commit"></span>).</p>
+    </header>
 
-    <h2>How the system decides</h2>
-    <p>Each gap is scored at the latency it will face before the orders arrive:</p>
-    <p class="formula"><i>S</i>(τ) = <i>q</i>(τ)·(<i>ê</i> − <i>c</i>) + (1 − <i>q</i>(τ))·<i>ℓ̄</i>(τ)</p>
-    <p><i>q</i> is the probability that both immediate-or-cancel legs fill at the prices we saw, after latency τ.
-      <i>ê</i> is the gap measured against the venues' usual offset rather than against zero, <i>c</i> is both legs' fees,
-      and <i>ℓ̄</i> is the average outcome when a trade does not fully fill, measured on training days.
-      A cheap logistic prior (1.5 µs) scores every gap. When it is unsure, a gradient-boosted model with 23 features (about 15 µs) decides.
-      That is the "cascade".</p>
-    <figure><img src="img/architecture.png" alt="Pipeline: exchange feeds, fast path, decay prior, expected value check, slow model when unsure, send both legs, orders travel, paper trader, dashboard"></figure>
+    <section class="fig-row" id="f-arch">
+      <figure><img src="img/architecture.png" alt="Pipeline: exchange feeds, fast path, decay prior, expected-value check, slow model when unsure, send both legs, orders travel, paper trader, dashboard" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>How a gap becomes a trade</h2>
+        <p>Each gap is scored at the latency it will face before the orders arrive:</p>
+        <p class="formula"><i>S</i>(τ) = <i>q</i>(τ)·(<i>ê</i> − <i>c</i>) + (1 − <i>q</i>(τ))·<i>ℓ̄</i>(τ)</p>
+        <p><i>q</i> is the probability that both immediate-or-cancel legs fill at the prices we saw, after latency τ. <i>ê</i> is the gap measured against the venues' usual offset,
+          <i>c</i> is both legs' fees, and <i>ℓ̄</i> is the average outcome when a trade does not fully fill.</p>
+        <p class="how"><b>How to read it.</b> Left to right. The fast path measures the gap against the usual offset (1.8 µs). The decay prior estimates <i>q</i> (1.5 µs).
+          A confident score acts or skips at once; an unsure one waits for the slow model (23 features, 15 µs). Orders then take 50 ms to Binance and 8 ms to Bybit.</p>
+        <a class="more" href="#paper">See the paper trader →</a>
+      </div>
+    </section>
 
-    <h2>What the replays show</h2>
-    <p>Every policy is replayed on the same days with per-venue latency and fees. Fills use up the displayed size, and each trade's position, funding and closing cost are tracked under a $50k cap.
-      Validation days come from walk-forward folds, and the intervals are day-bootstrap 95% intervals.</p>
-    <figure><img src="img/btc_cumulative_v9.png" alt="Cumulative realised P&amp;L on BTC over 205 days"></figure>
-    <p>On the 100 ms archive (Binance ticks, Bybit snapshots every 100 ms) the cascade makes $15 a day on BTC (95% CI $7 to $23, 205 days) and $15 on ETH ($11 to $21) with optimistic fills.
-      With conservative fills it breaks even there. The archive sees Bybit only in 100 ms snapshots, and the conservative bound fills a leg only when the snapshots on both sides of its arrival allow it.</p>
-    <figure><img src="img/coins_v9.png" alt="Cascade against the gap-size rule on nine coins"></figure>
-    <figure><img src="img/naive_v9.png" alt="Loss per day from trading every gap, nine coins"></figure>
-    <p>Trading every gap loses $94 to $925 a day on every coin.
-      When the decay model picks the trades, the cascade's interval is above zero on five of the nine coins, and it beats the gap-size rule on five.</p>
-    <figure><img src="img/tardis_binance_bybit.png" alt="Cascade on Tardis tick data with optimistic and conservative fills"></figure>
-    <p>Tardis.dev tick data (the free first day of each month, 2020 to 2026) records every quote change on both venues.
-      There the conservative fills keep $10 a day on BTC, $12 on ETH and $10 on SOL, each interval above zero.
-      Pairs with OKX show no edge at our assumed OKX fee and latency.</p>
+    <section class="fig-row" id="f-btc">
+      <figure><img src="img/btc_cumulative_v9.png" alt="Cumulative realised P&amp;L on BTC over 205 validation days" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>BTC, 205 validation days</h2>
+        <p>Realised P&amp;L adding up over July 2023 to January 2024 with optimistic fills. The cascade makes $15 a day (95% CI $7 to $23), against $9.0 for the prior alone and $7.8 for the gap-size rule.</p>
+        <p class="how"><b>How to read it.</b> Each line is cumulative after fees, funding and the day-end close. Flat stretches are days without trades.
+          With conservative fills every gated policy is near $0 a day on this 100 ms archive, and trading every gap loses $338 a day (not drawn).</p>
+        <a class="more" href="#results?run=btc_perp_binance_bybit_v9_real&amp;mode=optimistic&amp;cap=capped">Open the BTC run →</a>
+      </div>
+    </section>
 
-    <h2>Will the gap last?</h2>
-    <figure><img src="img/decay_auc.png" alt="Walk-forward AUC of the decay model against gap size alone"></figure>
-    <figure><img src="img/survival.png" alt="Share of gaps still open after t"></figure>
-    <p>Gap size alone barely predicts whether a gap survives (AUC 0.49 to 0.58 on the cross-venue and basis pairs); the decay model reaches 0.78 to 0.84 on the archive.
-      On our own 10 ms recordings it scores 0.64 to 0.74 at 50 to 500 ms, so the archive figures are an upper bound.</p>
+    <section class="fig-row" id="f-coins">
+      <figure><img src="img/coins_v9.png" alt="Cascade against the gap-size rule on nine coins" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>Nine coins against the obvious baseline</h2>
+        <p>The cascade's realised P&amp;L per day on nine coins, next to the gap-size rule, which estimates <i>q</i> from the gap's size alone.
+          The cascade's interval is above $0 on five coins and it beats the gap-size rule on five.</p>
+        <p class="how"><b>How to read it.</b> Squares are the cascade with its 95% interval, circles the gap-size rule.
+          The right-hand column is the paired difference on the same days; green means the whole interval is above zero.</p>
+        <a class="more" href="#coins?tag=_v9_real&amp;mode=optimistic">Open the coin table →</a>
+      </div>
+    </section>
 
-    <h2>How to read the other tabs</h2>
-    <dl class="kv wide">
-      <dt>Naive</dt><dd>trades every gap the fast path flags</dd>
-      <dt>Gap size only</dt><dd>the same expected-value rule, with <i>q</i> estimated from the gap's size alone: the obvious baseline</dd>
-      <dt>Prior only</dt><dd>uses only the cheap logistic model of <i>q</i></dd>
-      <dt>Slow always</dt><dd>waits for the gradient-boosted model on every gap</dd>
-      <dt>Cascade</dt><dd>the prior first, the slow model only when the prior is unsure</dd>
-      <dt>Optimistic fills</dt><dd>the last 100 ms Bybit snapshot before an order arrives is taken as still valid when it lands</dd>
-      <dt>Conservative fills</dt><dd>a leg fills only if the snapshots on both sides of its arrival allow it, at the worse price and the smaller size</dd>
-      <dt>$50k cap</dt><dd>a trade that would push the net position past $50k is skipped</dd>
-      <dt>Setups v3 to v9</dt><dd>successive versions of the replay; v9 has every fix and is the one to read</dd>
-    </dl>
-    <p>Results shows one run in full. Coins compares the cascade with the gap-size rule across coins. Decay models has the survival models' scores.
-      Reports holds every markdown report in the repo. The paper trader needs live exchange feeds, so it runs only on a local checkout.</p>
+    <section class="fig-row" id="f-naive">
+      <figure><img src="img/naive_v9.png" alt="Loss per day from trading every gap, nine coins" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>Trading every gap loses money</h2>
+        <p>The naive policy trades every gap the fast path flags. It loses $94 to $925 a day on every coin, on the same replays, fees and latency.</p>
+        <p class="how"><b>How to read it.</b> Bars are the mean realised loss per validation day. This is the cost of ignoring decay: most gaps are gone, or too small, by the time the orders land.</p>
+        <a class="more" href="#coins?tag=_v9_real&amp;mode=optimistic">See the naive column →</a>
+      </div>
+    </section>
 
-    <h2>Run it yourself</h2>
-    <pre>git clone https://github.com/Mqhnish/arbpercept
+    <section class="fig-row" id="f-tardis">
+      <figure><img src="img/tardis_binance_bybit.png" alt="Cascade on Tardis tick data with optimistic and conservative fills" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>Tick data, both fill bounds</h2>
+        <p>Tardis.dev's free days (the 1st of each month, 2020 to 2026) record every quote change on both venues.
+          There the cascade keeps $10 a day on BTC, $12 on ETH and $10 on SOL with conservative fills, each interval above zero.</p>
+        <p class="how"><b>How to read it.</b> Blue squares are optimistic fills, orange diamonds conservative. On the 100 ms archive the conservative bound breaks even,
+          because it sees Bybit only in snapshots; with every quote change recorded the two bounds are much closer. Pairs with OKX show no edge at our assumed OKX fee and latency.</p>
+        <a class="more" href="#coins?tag=_tardis_real&amp;mode=conservative">Open the tick-data table →</a>
+      </div>
+    </section>
+
+    <section class="fig-row" id="f-auc">
+      <figure><img src="img/decay_auc.png" alt="Walk-forward AUC of the decay model against gap size alone" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>Will the gap last?</h2>
+        <p>Walk-forward AUC for predicting that a gap above 1 bps is still open 500 ms later. The decay model reaches 0.78 to 0.84 on the cross-venue and basis pairs; gap size alone gets 0.49 to 0.58.</p>
+        <p class="how"><b>How to read it.</b> 0.5 is no skill. Dots are the boosted model, circles gap size alone. On our own 10 ms recordings the model scores 0.64 to 0.74 at 50 to 500 ms, so these archive figures are an upper bound.</p>
+        <a class="more" href="#decay">Open the decay models →</a>
+      </div>
+    </section>
+
+    <section class="fig-row" id="f-surv">
+      <figure><img src="img/survival.png" alt="Share of gaps still open after t" loading="lazy"></figure>
+      <div class="fig-text">
+        <h2>How fast gaps close</h2>
+        <p>After one second only about 23% of gaps above 1 bps, and 6% of those above 2 bps, are still open (Bybit BTC spot against perpetual, 72,567 births).</p>
+        <p class="how"><b>How to read it.</b> Lines show the share still open t after birth, on a log time axis. The shaded band is what 100 ms sampling allows, from surely open to possibly open.</p>
+        <a class="more" href="#decay">Open the survival curves →</a>
+      </div>
+    </section>
+
+    <section class="glossary" id="f-glossary">
+      <h2>Terms used across the site</h2>
+      <dl class="kv wide">
+        <dt>Naive</dt><dd>trades every gap the fast path flags</dd>
+        <dt>Gap size only</dt><dd>the same expected-value rule, with <i>q</i> estimated from the gap's size alone: the obvious baseline</dd>
+        <dt>Prior only</dt><dd>uses only the cheap logistic model of <i>q</i></dd>
+        <dt>Slow always</dt><dd>waits for the gradient-boosted model on every gap</dd>
+        <dt>Cascade</dt><dd>the prior first, the slow model only when the prior is unsure</dd>
+        <dt>Optimistic fills</dt><dd>the last 100 ms Bybit snapshot before an order arrives is taken as still valid when it lands</dd>
+        <dt>Conservative fills</dt><dd>a leg fills only if the snapshots on both sides of its arrival allow it, at the worse price and the smaller size</dd>
+        <dt>$50k cap</dt><dd>a trade that would push the net position past $50k is skipped</dd>
+        <dt>Setups v3 to v9</dt><dd>successive versions of the replay; v9 has every fix and is the one to read</dd>
+      </dl>
+      <h2>Run it yourself</h2>
+      <pre>git clone https://github.com/Mqhnish/arbpercept
 cd arbpercept
 pip install -r requirements-lock.txt &amp;&amp; pip install -e . --no-deps
 python -m arbtrade.dashboard --open</pre>
-  </article>
+    </section>
+  </div>
 </section>
 
 <!-- Results: one run, one setting -->
@@ -102,6 +171,11 @@ python -m arbtrade.dashboard --open</pre>
     <label id="r-tau-wrap">Latency <select id="r-tau"></select></label>
     <label id="r-fee-wrap">Fee <select id="r-fee"></select></label>
     <span class="setup" id="r-setup"></span>
+  </div>
+  <div class="explain">
+    <p><b>What this shows.</b> One run at one setting: every policy replayed on the same validation days, after fees, funding and the day-end close.</p>
+    <p><b>How to read it.</b> Brackets are 95% intervals. Click a strategy in the table to see its daily P&amp;L and where it comes from. Switch the fill bound or the $50k cap above; the v9 runs have every fix.</p>
+    <p><a href="#figures?f=btc">The BTC figure, explained →</a> <a href="#figures?f=glossary">Terms →</a></p>
   </div>
   <div class="grid">
     <div class="panel span-12 kpis" id="r-kpis"></div>
@@ -147,6 +221,11 @@ python -m arbtrade.dashboard --open</pre>
     </div>
     <span class="setup">Click a coin to open its run.</span>
   </div>
+  <div class="explain">
+    <p><b>What this shows.</b> Every coin in one setup side by side: the cascade against the gap-size rule and against trading every gap.</p>
+    <p><b>How to read it.</b> Filled squares are the cascade with its 95% interval, hollow circles the gap-size rule. "Cascade − gap rule" is the paired difference on the same days. Choose the Tardis.dev setup for tick data on three venues. Click a coin to open its run.</p>
+    <p><a href="#figures?f=coins">The coin figure, explained →</a> <a href="#figures?f=tardis">Tick data →</a></p>
+  </div>
   <div class="grid">
     <div class="panel span-4">
       <div class="ph"><h2>Cascade, realised $/day</h2><span class="hint">filled: cascade · hollow: gap-size rule</span></div>
@@ -173,6 +252,11 @@ python -m arbtrade.dashboard --open</pre>
     </div>
     <label>Hurdle <select id="d-hurdle"></select></label>
     <span class="setup" id="d-source"></span>
+  </div>
+  <div class="explain">
+    <p><b>What this shows.</b> How well each model predicts that a gap is still open after the latency budget τ, and how long gaps stay open.</p>
+    <p><b>How to read it.</b> AUC of 0.5 is no skill. Brier skill above 0 beats the base rate, and ECE is calibration error, so lower is better. These are 100 ms archive figures; on our own 10 ms recordings the model scores 0.64 to 0.74 at 50 to 500 ms.</p>
+    <p><a href="#figures?f=auc">The decay figures, explained →</a></p>
   </div>
   <div class="grid">
     <div class="panel span-7">
@@ -253,6 +337,10 @@ python -m arbtrade.dashboard --open</pre>
 
 <!-- Reports: the markdown files in data/reports -->
 <section class="view" id="view-reports" hidden>
+  <div class="explain">
+    <p><b>What this shows.</b> Every markdown report in the repository's <code>data/reports/</code>, as committed.</p>
+    <p><b>How to read it.</b> Each run's <code>inventory.md</code> has the full tables behind the Results and Coins views; <code>tardis_summary.md</code> covers the tick-data runs, and <code>resolution_check_*</code> compares the 100 ms archive with our 10 ms recordings.</p>
+  </div>
   <div class="grid">
     <div class="panel span-3"><div class="ph"><h2>Files</h2><span class="hint">data/reports</span></div><ul class="files" id="n-list"></ul></div>
     <div class="panel span-9"><article class="md" id="n-body"></article></div>

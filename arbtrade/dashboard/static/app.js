@@ -72,28 +72,127 @@
   }
 
   // ---- tabs -------------------------------------------------------------------------------
-  const views = ["overview", "results", "coins", "decay", "paper", "reports"];
-  const HOME = STATIC ? "overview" : "results";
-  const loaded = {};
-  function route() {
+  const views = ["abstract", "figures", "results", "coins", "decay", "paper", "reports"];
+  const HOME = "abstract";
+  const loaded = {};  // view -> the promise of its first load
+  // Links can carry settings after the view name: #coins?tag=_tardis_real&mode=conservative, #figures?f=btc
+  function hashParams() {
+    const h = location.hash.slice(1), i = h.indexOf("?");
+    return i < 0 ? {} : Object.fromEntries(new URLSearchParams(h.slice(i + 1)));
+  }
+  async function route() {
     const name = (location.hash.replace("#", "").split("?")[0]) || HOME;
     const tab = views.includes(name) ? name : HOME;
+    const shown = views.find(v => !$("view-" + v).hidden);
     for (const v of views) $("view-" + v).hidden = v !== tab;
     for (const a of document.querySelectorAll("#tabs a")) a.classList.toggle("on", a.dataset.tab === tab);
     Charts.hideTip();
-    if (!loaded[tab]) {
-      loaded[tab] = true;
-      ({ overview: initOverview, results: initResults, coins: initCoins, decay: initDecay, paper: initPaper, reports: initReports })[tab]();
-    }
     paper.visible = tab === "paper";
+    if (shown !== tab) window.scrollTo(0, 0);
+    const first = !loaded[tab];
+    if (first) {
+      loaded[tab] = ({ abstract: initAbstract, figures: initFigures, results: initResults, coins: initCoins, decay: initDecay,
+                       paper: initPaper, reports: initReports })[tab]();
+    }
+    await loaded[tab];
+    const q = hashParams(), apply = { figures: applyFigures, results: applyResults, coins: applyCoins, reports: applyReports }[tab];
+    if (apply && Object.keys(q).length) apply(q, first);
   }
   window.addEventListener("hashchange", route);
 
-  // ---- Overview -----------------------------------------------------------------------------
-  function initOverview() {
-    $("o-static-note").hidden = !STATIC;
+  // ---- Abstract ---------------------------------------------------------------------------------
+  // abstract.md is the abstract as submitted (docs/abstract/abstract.md). Links in it point at the views here;
+  // the notes in the margin come from EVIDENCE, matched to each section by its heading.
+  const EVIDENCE = [
+    [/problem/i, [["img/survival.png", "How fast gaps close", "After 1 s most gaps are gone", "#figures?f=surv"]]],
+    [/understanding/i, [["img/naive_v9.png", "Raw gaps are a trap", "Trading every gap loses money on every coin", "#figures?f=naive"],
+                        ["§", "100 ms against 10 ms", "The resolution check behind the second trap", "#reports?p=resolution_check_BTC_2026-10-19.md"]]],
+    [/approach/i, [["img/architecture.png", "The pipeline, explained", "Each stage and its measured cost", "#figures?f=arch"],
+                   ["img/decay_auc.png", "Decay models", "AUC, calibration and survival", "#decay"]]],
+    [/minimum/i, [["img/survival.png", "Decay report", "Survival curves and AUC from any run", "#decay"],
+                  ["img/dashboard_paper.png", "Paper trader", "Every trigger, with the reason it traded or skipped", "#paper"]]],
+    [/stretch/i, [["img/dashboard_paper.png", "Paper-trading demo", "Live books, simulated fills", "#paper"],
+                  ["img/btc_cumulative_v9.png", "Latency in the replay", "Per-venue latency, fees and model time", "#results?run=btc_perp_binance_bybit_v9_real"]]],
+    [/novelty/i, [["img/coins_v9.png", "Nine coins", "The cascade against the gap-size rule", "#figures?f=coins"],
+                  ["img/naive_v9.png", "Trading every gap", "Loses $94 to $925 a day", "#figures?f=naive"]]],
+    [/evaluation|results/i, [["img/btc_cumulative_v9.png", "BTC, 205 days", "Cumulative realised P&L", "#figures?f=btc"],
+                             ["img/tardis_binance_bybit.png", "Tick data", "Both fill bounds, three coins", "#figures?f=tardis"],
+                             ["img/decay_auc.png", "Will the gap last?", "AUC with the 10 ms caveat", "#figures?f=auc"]]],
+    [/feasibility|risk/i, [["{}", "Code and tests", "github.com/Mqhnish/arbpercept", "https://github.com/Mqhnish/arbpercept"],
+                           ["§", "Every report", "The tables behind each number", "#reports"]]],
+  ];
+  function mdInline(s) {
+    return esc(s)
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, t, u) => `<a href="${u}"${/^https?:/.test(u.replace(/&amp;/g, "&")) ? ' target="_blank" rel="noopener"' : ""}>${t}</a>`)
+      .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/(^|[\s(])_([^_]+)_(?=[\s.,;:)]|$)/g, "$1<i>$2</i>")
+      .replace(/(^|[\s(])\*([^*]+)\*(?=[\s.,;:)]|$)/g, "$1<i>$2</i>").replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+  function renderAbstract(src) {
+    const secs = [];
+    let cur = null;
+    const lines = src.split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i].trim();
+      if (!l) continue;
+      if (l.startsWith("# ")) { $("a-title").innerHTML = esc(l.slice(2)).replace(/(\S+-\S+)/g, '<span class="nw">$1</span>'); continue; }
+      if (l.startsWith("## ")) { cur = { title: l.slice(3), html: [] }; secs.push(cur); continue; }
+      if (!cur) continue;  // the subtitle line: the hero already says it
+      if (l.startsWith("### ")) { cur.html.push(`<h3>${mdInline(l.slice(4))}</h3>`); continue; }
+      if (l === "[formula]") {
+        cur.html.push('<p class="formula" role="math" aria-label="S of tau equals q of tau times e-hat minus c, plus one minus q of tau, times l-bar of tau">' +
+                      "<i>S</i>(τ) = <i>q</i>(τ)·(<i>ê</i> − <i>c</i>) + (1 − <i>q</i>(τ))·<i>ℓ̄</i>(τ)</p>");
+        continue;
+      }
+      if (l === "[architecture diagram]") {
+        const cap = /^_.*_$/.test((lines[i + 1] || "").trim()) ? lines[++i].trim().slice(1, -1) : "";
+        cur.html.push(`<figure><a href="#figures?f=arch"><img src="img/architecture.png" alt="The decision pipeline"></a>${cap ? `<figcaption>${mdInline(cap)}</figcaption>` : ""}</figure>`);
+        continue;
+      }
+      if (l.startsWith("|") && /^\|[\s:|-]+\|$/.test((lines[i + 1] || "").trim())) {
+        const cells = r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+        let t = "<table><thead><tr>" + cells(l).map(c => `<th>${mdInline(c)}</th>`).join("") + "</tr></thead><tbody>";
+        i += 2;
+        while (i < lines.length && lines[i].trim().startsWith("|")) { t += "<tr>" + cells(lines[i]).map(c => `<td>${mdInline(c)}</td>`).join("") + "</tr>"; i++; }
+        cur.html.push(t + "</tbody></table>"); i--; continue;
+      }
+      if (/^[-*]\s+/.test(l)) {
+        let u = "<ul>";
+        while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) { u += `<li>${mdInline(lines[i].trim().replace(/^[-*]\s+/, ""))}</li>`; i++; }
+        cur.html.push(u + "</ul>"); i--; continue;
+      }
+      cur.html.push(`<p>${mdInline(l)}</p>`);
+    }
+    const card = ([img, t, n, href]) => `<a class="ev" href="${href}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : ""}>` +
+      (img.startsWith("img/") ? `<img src="${img}" alt="" loading="lazy">` : `<span class="ev-glyph" aria-hidden="true">${esc(img)}</span>`) +
+      `<span><b>${esc(t)}</b><span>${esc(n)}</span></span></a>`;
+    $("a-body").innerHTML = secs.map(s => {
+      const ev = (EVIDENCE.find(([re]) => re.test(s.title)) || [null, []])[1];
+      return `<section class="ab-sec"><div class="ab-text"><h2>${mdInline(s.title)}</h2>${s.html.join("")}</div>` +
+             `<aside class="ab-side">${ev.length ? '<p class="side-h">Evidence</p>' + ev.map(card).join("") : ""}</aside></section>`;
+    }).join("");
+  }
+  async function initAbstract() {
+    try {
+      const r = await fetch("abstract.md");
+      if (!r.ok) throw new Error(r.statusText);
+      renderAbstract(await r.text());
+    } catch (e) {
+      $("a-body").innerHTML = `<p class="muted">Could not load the abstract (${esc(e.message)}).</p>`;
+    }
+  }
+
+  // ---- Figures ----------------------------------------------------------------------------------
+  function initFigures() {
+    $("f-static-note").hidden = !STATIC;
     const sha = document.documentElement.dataset.commit;
-    $("o-commit").innerHTML = sha ? `commit <a href="https://github.com/Mqhnish/arbpercept/commit/${esc(sha)}">${esc(sha)}</a>` : "the latest commit";
+    $("f-commit").innerHTML = sha ? `commit <a href="https://github.com/Mqhnish/arbpercept/commit/${esc(sha)}">${esc(sha)}</a>` : "the latest commit";
+  }
+  function applyFigures(q) {
+    const el = $("f-" + q.f);
+    if (!el) return;
+    const still = document.hidden || matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(() => el.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" }));
+    el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
   }
 
   // ---- Results ------------------------------------------------------------------------------
@@ -104,8 +203,9 @@
   async function initResults() {
     rMode = seg("r-mode", loadRun);
     rCap = seg("r-cap", loadRun);
-    rMode.set(store.get("mode", "optimistic"));
-    rCap.set(store.get("cap", "capped"));
+    const q = hashParams();
+    rMode.set(q.mode || store.get("mode", "optimistic"));
+    rCap.set(q.cap || store.get("cap", "capped"));
     fillRunSelect();
     $("r-run").addEventListener("change", () => { setRunOptions(); loadRun(); });
     $("r-tau").addEventListener("change", loadRun);
@@ -132,6 +232,15 @@
     }
     const want = (location.hash.match(/run=([^&]+)/) || [])[1] || store.get("run", null);
     if (want && RUNS.some(r => r.name === want)) sel.value = want;
+  }
+
+  function applyResults(q, first) {  // #results?run=..&mode=..&cap=.. (the first load already used them)
+    if (first) return;
+    let changed = false;
+    if (q.run && q.run !== $("r-run").value && RUNS.some(r => r.name === q.run)) { $("r-run").value = q.run; setRunOptions(); changed = true; }
+    if (q.mode && q.mode !== rMode.get()) { rMode.set(q.mode); changed = true; }
+    if (q.cap && q.cap !== rCap.get()) { rCap.set(q.cap); changed = true; }
+    if (changed) loadRun();
   }
 
   function setRunOptions() {
@@ -254,7 +363,19 @@
     const tags = [...new Set(RUNS.map(r => r.tag))].filter(t => RUNS.filter(r => r.tag === t).length > 1);
     $("c-tag").innerHTML = tags.map(t => `<option value="${esc(t)}">${esc(tagName(t))}</option>`).join("");
     $("c-tag").addEventListener("change", loadCoins);
+    const q = hashParams();
+    if (q.tag && tags.includes(q.tag)) $("c-tag").value = q.tag;
+    if (q.mode) cMode.set(q.mode);
+    if (q.cap) cCap.set(q.cap);
     await loadCoins();
+  }
+  function applyCoins(q, first) {  // #coins?tag=..&mode=..&cap=..
+    if (first) return;
+    let changed = false;
+    if (q.tag && q.tag !== $("c-tag").value && [...$("c-tag").options].some(o => o.value === q.tag)) { $("c-tag").value = q.tag; changed = true; }
+    if (q.mode && q.mode !== cMode.get()) { cMode.set(q.mode); changed = true; }
+    if (q.cap && q.cap !== cCap.get()) { cCap.set(q.cap); changed = true; }
+    if (changed) loadCoins();
   }
   async function loadCoins() {
     const q = new URLSearchParams({ tag: $("c-tag").value, mode: cMode.get(), cap: cCap.get() });
@@ -410,11 +531,16 @@
     const files = await api("/api/notes");
     $("n-list").innerHTML = files.map(f => `<li data-p="${esc(f.path)}" title="${esc(f.path)}">${esc(f.path)}</li>`).join("");
     $("n-list").querySelectorAll("li").forEach(li => li.addEventListener("click", () => openNote(li.dataset.p)));
-    const first = files.find(f => /btc_perp_binance_bybit_v9_real\/inventory/.test(f.path)) || files.find(f => f.path.includes("inventory")) || files[0];
+    const want = hashParams().p;
+    const first = files.find(f => f.path === want) || files.find(f => /btc_perp_binance_bybit_v9_real\/inventory/.test(f.path)) ||
+                  files.find(f => f.path.includes("inventory")) || files[0];
     if (first) openNote(first.path);
   }
+  function applyReports(q, first) { if (!first && q.p) openNote(q.p); }  // #reports?p=<path in data/reports>
   async function openNote(p) {
-    $("n-list").querySelectorAll("li").forEach(li => li.classList.toggle("sel", li.dataset.p === p));
+    const li = [...$("n-list").querySelectorAll("li")].find(x => x.dataset.p === p);
+    $("n-list").querySelectorAll("li").forEach(x => x.classList.toggle("sel", x === li));
+    if (li) li.scrollIntoView({ block: "nearest" });
     const d = await api("/api/note?" + new URLSearchParams({ path: p }));
     $("n-body").innerHTML = md(d.text);
   }

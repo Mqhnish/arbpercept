@@ -95,8 +95,10 @@ def make_handler(app: App):
                 return self._api(lambda: app.get(u.path, parse_qs(u.query)))
             rel = "index.html" if u.path in ("/", "") else u.path.lstrip("/").removeprefix("static/")
             root = STATIC
-            if rel.startswith("img/"):  # the Overview's figures, kept with the abstract's
+            if rel.startswith("img/"):  # the Figures page's charts, kept with the abstract in docs/abstract
                 root, rel = IMAGES, rel.removeprefix("img/")
+            elif rel == "abstract.md":
+                root = IMAGES
             f = (root / rel).resolve()
             if root not in f.parents or not f.is_file():
                 return self._send(HTTPStatus.NOT_FOUND, b"not found", "text/plain")
