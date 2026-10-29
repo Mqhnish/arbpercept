@@ -1,0 +1,55 @@
+{
+ "pair": "tick_sol_perp_binance_okx",
+ "date": "2022-11-01",
+ "status": "ok",
+ "events": 34877,
+ "valid_share": 0.9998566390457895,
+ "episodes": 19369,
+ "by_hurdle": {
+  "gross>0bps|sell_b_buy_a": {
+   "n": 4105,
+   "died_share": 0.9987819732034104,
+   "median_obs_ms": 4370.194,
+   "sub_resolution_share": 0.001218026796589525,
+   "resolved_median_obs_ms": 4377.663500000001,
+   "stale_share": 0.00389768574908648,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 4105,
+   "died_share": 0.9987819732034104,
+   "median_obs_ms": 4370.194,
+   "sub_resolution_share": 0.001218026796589525,
+   "resolved_median_obs_ms": 4377.663500000001,
+   "stale_share": 0.00389768574908648,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 4105,
+   "died_share": 0.9987819732034104,
+   "median_obs_ms": 4370.194,
+   "sub_resolution_share": 0.001218026796589525,
+   "resolved_median_obs_ms": 4377.663500000001,
+   "stale_share": 0.00389768574908648,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 7030,
+   "died_share": 0.9995732574679943,
+   "median_obs_ms": 652.4775,
+   "sub_resolution_share": 0.006970128022759601,
+   "resolved_median_obs_ms": 667.6,
+   "stale_share": 0.0024182076813655763,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_b_buy_a": {
+   "n": 24,
+   "died_share": 1.0,
+   "median_obs_ms": 16.816,
+   "sub_resolution_share": 0.041666666666666664,
+   "resolved_median_obs_ms": 17.798,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  }
+ }
+}

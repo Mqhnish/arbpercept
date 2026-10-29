@@ -27,7 +27,7 @@ import pandas as pd
 
 from arbdata import pipeline as P
 from arbdata.config import load_config
-from arbdata.funding import load_funding
+from arbdata.funding import funding_path, load_funding
 from arbtrade.inventory import CLOSE_WINDOW_S, RESIDUAL_COST_BPS, account_day, with_residual_cost
 from arbtrade.replay import Leg
 from arbtrade.stats import boot_ci, paired_diff
@@ -71,7 +71,9 @@ def main() -> None:
         tr["fee_a_bps"] = tr["fee_b_bps"] = tr.fee_bps_per_leg
     spec = cfg.pairs[args.pair]
     sa, sb = cfg.streams[spec.a], cfg.streams[spec.b]
-    fund = {k: load_funding(cfg, s.venue, s.symbol) for k, s in (("a", sa), ("b", sb))}
+    # OKX's API keeps only the last 3 months of funding, so older OKX legs are not charged it (said in the report).
+    no_funding = [s.venue for s in (sa, sb) if s.venue == "okx" and not funding_path(cfg, s.venue, s.symbol).exists()]
+    fund = {k: None if s.venue in no_funding else load_funding(cfg, s.venue, s.symbol) for k, s in (("a", sa), ("b", sb))}
     res_a, res_b = cfg.source_cfg(spec.a)["resolution_ms"], cfg.source_cfg(spec.b)["resolution_ms"]
 
     rows = []
@@ -106,7 +108,8 @@ def main() -> None:
              "Old: each hedged trade credited with the whole gap. Realised: positions tracked, funding paid or received, "
              f"{close}. Capped: no trade that takes the position past ${CAP_USD:,.0f} at the price of that trade. "
              "Validation days without a trade count as $0. Optimistic and conservative are two simulation assumptions "
-             "about the sampled Bybit book between snapshots, not guaranteed bounds on the truth.", ""]
+             "about the sampled Bybit book between snapshots, not guaranteed bounds on the truth."
+             + (f" No funding is charged on the {no_funding[0]} leg: its history is not available." if no_funding else ""), ""]
     for fee in sorted(df.fee.unique()):
         all_days = validation_days(d, tr, fee)
         realised = lambda g, cap="$50k cap": g[g.cap == cap].set_index("date")["realised"]

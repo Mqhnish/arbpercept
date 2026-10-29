@@ -1,0 +1,100 @@
+{
+ "pair": "tick_btc_perp_binance_bybit",
+ "date": "2024-09-01",
+ "status": "ok",
+ "events": 169662,
+ "valid_share": 0.9999764237130294,
+ "episodes": 38118,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 8036,
+   "died_share": 0.9998755599800896,
+   "median_obs_ms": 305.4275,
+   "sub_resolution_share": 0.004977600796416127,
+   "resolved_median_obs_ms": 308.0295,
+   "stale_share": 0.002613240418118467,
+   "stale_partner_share": 0.0
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 8282,
+   "died_share": 1.0,
+   "median_obs_ms": 484.1635,
+   "sub_resolution_share": 0.003984544795943009,
+   "resolved_median_obs_ms": 494.244,
+   "stale_share": 0.0021733880705143687,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 5135,
+   "died_share": 1.0,
+   "median_obs_ms": 151.657,
+   "sub_resolution_share": 0.007400194741966894,
+   "resolved_median_obs_ms": 153.037,
+   "stale_share": 0.0017526777020447906,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 9721,
+   "died_share": 1.0,
+   "median_obs_ms": 378.232,
+   "sub_resolution_share": 0.005143503754757741,
+   "resolved_median_obs_ms": 388.751,
+   "stale_share": 0.002366011727188561,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 2505,
+   "died_share": 1.0,
+   "median_obs_ms": 74.029,
+   "sub_resolution_share": 0.007584830339321357,
+   "resolved_median_obs_ms": 74.7595,
+   "stale_share": 0.0027944111776447107,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 4170,
+   "died_share": 1.0,
+   "median_obs_ms": 102.811,
+   "sub_resolution_share": 0.0057553956834532375,
+   "resolved_median_obs_ms": 104.64349999999999,
+   "stale_share": 0.0019184652278177458,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_a_buy_b": {
+   "n": 141,
+   "died_share": 1.0,
+   "median_obs_ms": 50.168,
+   "sub_resolution_share": 0.014184397163120567,
+   "resolved_median_obs_ms": 50.407,
+   "stale_share": 0.014184397163120567,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 89,
+   "died_share": 1.0,
+   "median_obs_ms": 62.267,
+   "sub_resolution_share": 0.011235955056179775,
+   "resolved_median_obs_ms": 62.492000000000004,
+   "stale_share": 0.02247191011235955,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_a_buy_b": {
+   "n": 22,
+   "died_share": 1.0,
+   "median_obs_ms": 49.2355,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 49.2355,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_b_buy_a": {
+   "n": 17,
+   "died_share": 1.0,
+   "median_obs_ms": 53.53,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 53.53,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  }
+ }
+}

@@ -1,0 +1,82 @@
+{
+ "pair": "tick_btc_perp_binance_okx",
+ "date": "2023-01-01",
+ "status": "ok",
+ "events": 15733,
+ "valid_share": 0.9999364393313418,
+ "episodes": 711,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 1,
+   "died_share": 1.0,
+   "median_obs_ms": 148.964,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 148.964,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 1,
+   "died_share": 0.0,
+   "median_obs_ms": 60186724.41,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 60186724.41,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 1,
+   "died_share": 1.0,
+   "median_obs_ms": 123.936,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 123.936,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 3,
+   "died_share": 0.6666666666666666,
+   "median_obs_ms": 10026046.698,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 10026046.698,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 1,
+   "died_share": 1.0,
+   "median_obs_ms": 98.46,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 98.46,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 14,
+   "died_share": 0.9285714285714286,
+   "median_obs_ms": 2919392.511,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 2919392.511,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_a_buy_b": {
+   "n": 1,
+   "died_share": 1.0,
+   "median_obs_ms": 1.864,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 1.864,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 689,
+   "died_share": 1.0,
+   "median_obs_ms": 5888.27,
+   "sub_resolution_share": 0.008708272859216255,
+   "resolved_median_obs_ms": 5987.454,
+   "stale_share": 0.002902757619738752,
+   "stale_partner_share": 0.0
+  }
+ }
+}

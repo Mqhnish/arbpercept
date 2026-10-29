@@ -1,0 +1,551 @@
+fee_bps_per_leg,mode,fold,tau_ms,strategy,date,pnl_usd,pnl_rel_usd,trades
+2.5,optimistic,0,35.0,naive fast path,2022-01-01,-1173.1399836959108,-415.8357059147811,1240
+2.5,optimistic,0,35.0,naive fast path,2022-02-01,-1818.786814610871,-1156.704034854891,1927
+2.5,optimistic,0,35.0,naive fast path,2022-03-01,-2471.3355416088393,-1909.9052707212809,3132
+2.5,optimistic,0,35.0,naive fast path,2022-04-01,-365.7467698191058,-340.56454431000816,338
+2.5,optimistic,0,35.0,naive fast path,2022-05-01,-389.3759861842956,-338.0179665934968,236
+2.5,optimistic,0,35.0,naive fast path,2022-07-01,-1688.2322478211834,-1800.3120935368408,2211
+2.5,optimistic,0,35.0,naive fast path,2022-08-01,-301.3783796922956,-384.5959492701812,343
+2.5,optimistic,0,35.0,naive fast path,2022-09-01,-248.94004206348484,-231.58306501380756,209
+2.5,optimistic,0,35.0,naive fast path,2022-10-01,-68.60834450734204,-69.19487687419897,46
+2.5,optimistic,0,35.0,naive fast path,2022-11-01,-29.80663182695685,-17.009314882801714,21
+2.5,optimistic,0,35.0,naive fast path,2022-12-01,-135.91011708783594,-177.17008587914572,152
+2.5,optimistic,0,35.0,naive fast path,2023-01-01,-1.7073573265105288,-3.530811248452953,3
+2.5,optimistic,0,35.0,naive fast path,2023-02-01,-394.2547724341638,-393.608098926179,404
+2.5,optimistic,0,35.0,naive fast path,2023-03-01,-161.77902855367867,-174.14009349554385,113
+2.5,optimistic,0,35.0,gap size only,2022-01-01,0.0,0.0,1
+2.5,optimistic,0,35.0,gap size only,2022-02-01,-3.971925973197563,-3.971925973197563,1
+2.5,optimistic,0,35.0,gap size only,2022-03-01,-6.1270833691177575,-6.1270833691177575,2
+2.5,optimistic,0,35.0,gap size only,2022-04-01,21.595785801575207,15.741680475202964,1
+2.5,optimistic,0,35.0,gap size only,2022-05-01,-6.12582256032109,-6.12582256032109,1
+2.5,optimistic,0,35.0,gap size only,2022-07-01,-6.101710182038511,-5.968386407217343,7
+2.5,optimistic,0,35.0,gap size only,2022-08-01,0.0,0.0,0
+2.5,optimistic,0,35.0,gap size only,2022-09-01,0.0,0.0,0
+2.5,optimistic,0,35.0,gap size only,2022-10-01,0.0,0.0,0
+2.5,optimistic,0,35.0,gap size only,2022-11-01,0.0,0.0,0
+2.5,optimistic,0,35.0,gap size only,2022-12-01,0.0,0.0,1
+2.5,optimistic,0,35.0,gap size only,2023-01-01,0.0,0.0,0
+2.5,optimistic,0,35.0,gap size only,2023-02-01,0.0,0.0,0
+2.5,optimistic,0,35.0,gap size only,2023-03-01,0.0,0.0,0
+2.5,optimistic,0,35.0,fast path + decay prior,2022-01-01,-19.89214587419019,4.002801680042293,27
+2.5,optimistic,0,35.0,fast path + decay prior,2022-02-01,-13.904321033260603,3.495320075566428,25
+2.5,optimistic,0,35.0,fast path + decay prior,2022-03-01,-24.17274417870152,-10.195631306663351,18
+2.5,optimistic,0,35.0,fast path + decay prior,2022-04-01,-9.675541213398699,-9.675541213398699,3
+2.5,optimistic,0,35.0,fast path + decay prior,2022-05-01,-6.2027589603210975,-6.102616688052323,2
+2.5,optimistic,0,35.0,fast path + decay prior,2022-07-01,-0.06959962142189502,-0.06959962142189502,5
+2.5,optimistic,0,35.0,fast path + decay prior,2022-08-01,-0.9934832000001748,-0.9934832000001748,1
+2.5,optimistic,0,35.0,fast path + decay prior,2022-09-01,-0.2888276000000291,0.03358016156900717,1
+2.5,optimistic,0,35.0,fast path + decay prior,2022-10-01,-3.732001344818473,-11.451028966183951,3
+2.5,optimistic,0,35.0,fast path + decay prior,2022-11-01,0.0,0.0,0
+2.5,optimistic,0,35.0,fast path + decay prior,2022-12-01,-2.5382892969099866,-2.5382892969099866,2
+2.5,optimistic,0,35.0,fast path + decay prior,2023-01-01,0.0,0.0,0
+2.5,optimistic,0,35.0,fast path + decay prior,2023-02-01,0.0,0.0,0
+2.5,optimistic,0,35.0,fast path + decay prior,2023-03-01,0.0,0.0,0
+2.5,optimistic,0,35.0,slow model always,2022-01-01,-48.5245211115832,13.174749213935073,58
+2.5,optimistic,0,35.0,slow model always,2022-02-01,-42.855396671126286,-4.116892610370286,32
+2.5,optimistic,0,35.0,slow model always,2022-03-01,-48.875795591224744,14.191626437245372,36
+2.5,optimistic,0,35.0,slow model always,2022-04-01,92.57925809923907,80.14547385644217,16
+2.5,optimistic,0,35.0,slow model always,2022-05-01,8.616501107884917,6.139293418183298,6
+2.5,optimistic,0,35.0,slow model always,2022-07-01,0.10279322702314841,-6.657202416769353,18
+2.5,optimistic,0,35.0,slow model always,2022-08-01,-1.0334540000002184,-1.0334540000002184,1
+2.5,optimistic,0,35.0,slow model always,2022-09-01,0.0,0.0,0
+2.5,optimistic,0,35.0,slow model always,2022-10-01,-4.356069812903353,1.1328606426826324,1
+2.5,optimistic,0,35.0,slow model always,2022-11-01,0.0,0.0,0
+2.5,optimistic,0,35.0,slow model always,2022-12-01,0.22897640000002917,0.03700527618222124,2
+2.5,optimistic,0,35.0,slow model always,2023-01-01,0.0,0.0,0
+2.5,optimistic,0,35.0,slow model always,2023-02-01,-1.6226132,-1.6226132,1
+2.5,optimistic,0,35.0,slow model always,2023-03-01,2.1466906200001175,1.6665363647840423,1
+2.5,optimistic,0,35.0,latency-aware cascade,2022-01-01,-43.5767181920604,21.299161605299226,100
+2.5,optimistic,0,35.0,latency-aware cascade,2022-02-01,-80.93366793820442,-21.40881747130084,65
+2.5,optimistic,0,35.0,latency-aware cascade,2022-03-01,-83.71840301811919,-15.008683128238781,64
+2.5,optimistic,0,35.0,latency-aware cascade,2022-04-01,81.16194792199684,68.72816367919995,19
+2.5,optimistic,0,35.0,latency-aware cascade,2022-05-01,1.8767906869478388,5.232923776254241,9
+2.5,optimistic,0,35.0,latency-aware cascade,2022-07-01,-0.2398739729769095,-6.999869616769411,20
+2.5,optimistic,0,35.0,latency-aware cascade,2022-08-01,-2.8732558000005897,-2.8732558000005897,3
+2.5,optimistic,0,35.0,latency-aware cascade,2022-09-01,2.0254283999999707,0.4032670415968786,2
+2.5,optimistic,0,35.0,latency-aware cascade,2022-10-01,-8.088071157721826,-10.318168323501318,4
+2.5,optimistic,0,35.0,latency-aware cascade,2022-11-01,0.0,0.0,0
+2.5,optimistic,0,35.0,latency-aware cascade,2022-12-01,-2.3093128969099572,-2.5012840207277653,3
+2.5,optimistic,0,35.0,latency-aware cascade,2023-01-01,3.2433376000004666,1.4198836780580424,1
+2.5,optimistic,0,35.0,latency-aware cascade,2023-02-01,-1.6226132,-1.6226132,1
+2.5,optimistic,0,35.0,latency-aware cascade,2023-03-01,2.8813292999999196,1.993380686085461,2
+2.5,optimistic,1,35.0,naive fast path,2023-04-01,-111.59818906265917,-108.55882513875967,80
+2.5,optimistic,1,35.0,naive fast path,2023-05-01,-1225.3974478339533,-798.7771164798884,634
+2.5,optimistic,1,35.0,naive fast path,2023-06-01,-226.85106870313263,-211.10475067795713,128
+2.5,optimistic,1,35.0,naive fast path,2023-07-01,-14.311381998046478,-11.37138000896792,15
+2.5,optimistic,1,35.0,naive fast path,2023-08-01,-151.00748708108847,-168.93796147932994,89
+2.5,optimistic,1,35.0,naive fast path,2023-09-01,-68.11453090279664,-88.29662594900266,56
+2.5,optimistic,1,35.0,naive fast path,2023-10-01,-77.15989602747719,-132.0548660910456,120
+2.5,optimistic,1,35.0,naive fast path,2023-11-01,-873.7242391842029,-610.471025811602,401
+2.5,optimistic,1,35.0,naive fast path,2023-12-01,-82.70724517161206,-70.30223609948045,52
+2.5,optimistic,1,35.0,naive fast path,2024-01-01,-82.48798666381322,-82.6374327367673,54
+2.5,optimistic,1,35.0,naive fast path,2024-04-01,-185.54371959487824,-103.67244599515028,98
+2.5,optimistic,1,35.0,naive fast path,2024-05-01,-1390.546163010121,-1393.0302744740256,1267
+2.5,optimistic,1,35.0,naive fast path,2024-06-01,-9.243501462103724,-10.664206750878389,9
+2.5,optimistic,1,35.0,naive fast path,2024-07-01,-42.977064650821205,-64.62043725358909,64
+2.5,optimistic,1,35.0,gap size only,2023-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-05-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-08-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-09-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-10-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-11-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2023-12-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2024-01-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2024-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2024-05-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2024-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,gap size only,2024-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-05-01,-4.031001869301517,-4.031001869301517,1
+2.5,optimistic,1,35.0,fast path + decay prior,2023-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-08-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-09-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-10-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-11-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2023-12-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2024-01-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2024-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2024-05-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2024-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,fast path + decay prior,2024-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-05-01,-4.031001869301517,-4.031001869301517,1
+2.5,optimistic,1,35.0,slow model always,2023-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-08-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-09-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-10-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-11-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2023-12-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2024-01-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2024-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2024-05-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2024-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,slow model always,2024-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-05-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-07-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-08-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-09-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-10-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-11-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2023-12-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2024-01-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2024-04-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2024-05-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2024-06-01,0.0,0.0,0
+2.5,optimistic,1,35.0,latency-aware cascade,2024-07-01,0.0,0.0,0
+2.5,optimistic,2,35.0,naive fast path,2024-08-01,51.143115375185744,-78.55349573918251,211
+2.5,optimistic,2,35.0,naive fast path,2024-09-01,-99.2112502558697,-171.31313040766113,220
+2.5,optimistic,2,35.0,naive fast path,2024-10-01,-155.27524509295694,-141.4932254493586,181
+2.5,optimistic,2,35.0,naive fast path,2024-11-01,-24.043720332438262,-38.825402055253264,156
+2.5,optimistic,2,35.0,naive fast path,2024-12-01,-32.68025621402531,-19.13734113668705,20
+2.5,optimistic,2,35.0,naive fast path,2025-01-01,21.078108072419838,-19.454504512417305,31
+2.5,optimistic,2,35.0,naive fast path,2025-02-01,-34.51189717840735,-40.498112655514205,30
+2.5,optimistic,2,35.0,naive fast path,2025-03-01,-72.82199251949778,-62.23431467796268,90
+2.5,optimistic,2,35.0,naive fast path,2025-04-01,-34.74586116511927,-46.692330090283505,37
+2.5,optimistic,2,35.0,naive fast path,2025-05-01,-72.64579362439345,-74.93967056873768,55
+2.5,optimistic,2,35.0,naive fast path,2025-06-01,-32.16657344913693,-34.839572989374204,20
+2.5,optimistic,2,35.0,naive fast path,2025-07-01,-41.760691176345546,-43.360959268837476,17
+2.5,optimistic,2,35.0,naive fast path,2025-08-01,-73.36405963757917,-68.48682189427278,54
+2.5,optimistic,2,35.0,naive fast path,2025-09-01,-37.69755966216573,-37.5914307933812,18
+2.5,optimistic,2,35.0,gap size only,2024-08-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2024-09-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2024-10-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2024-11-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2024-12-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-01-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-02-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-03-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-04-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-05-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-06-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-07-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-08-01,0.0,0.0,0
+2.5,optimistic,2,35.0,gap size only,2025-09-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2024-08-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2024-09-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2024-10-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2024-11-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2024-12-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-01-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-02-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-03-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-04-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-05-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-06-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-07-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-08-01,0.0,0.0,0
+2.5,optimistic,2,35.0,fast path + decay prior,2025-09-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2024-08-01,20.952847277903146,10.161843055761803,3
+2.5,optimistic,2,35.0,slow model always,2024-09-01,-3.4837519016385268,-3.4837519016385268,1
+2.5,optimistic,2,35.0,slow model always,2024-10-01,0.0,0.0,1
+2.5,optimistic,2,35.0,slow model always,2024-11-01,11.777226239101347,10.2941585919192,1
+2.5,optimistic,2,35.0,slow model always,2024-12-01,-4.010770283965379,-4.010770283965379,1
+2.5,optimistic,2,35.0,slow model always,2025-01-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2025-02-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2025-03-01,-8.086853522101421,2.128683457868758,3
+2.5,optimistic,2,35.0,slow model always,2025-04-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2025-05-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2025-06-01,2.208383367496231,0.42867913751458175,1
+2.5,optimistic,2,35.0,slow model always,2025-07-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2025-08-01,0.0,0.0,0
+2.5,optimistic,2,35.0,slow model always,2025-09-01,0.0,0.0,1
+2.5,optimistic,2,35.0,latency-aware cascade,2024-08-01,20.952847277903146,10.161843055761803,3
+2.5,optimistic,2,35.0,latency-aware cascade,2024-09-01,-3.4837519016385268,-3.4837519016385268,1
+2.5,optimistic,2,35.0,latency-aware cascade,2024-10-01,0.0,0.0,1
+2.5,optimistic,2,35.0,latency-aware cascade,2024-11-01,11.777226239101347,10.2941585919192,1
+2.5,optimistic,2,35.0,latency-aware cascade,2024-12-01,-4.010770283965379,-4.010770283965379,1
+2.5,optimistic,2,35.0,latency-aware cascade,2025-01-01,0.0,0.0,0
+2.5,optimistic,2,35.0,latency-aware cascade,2025-02-01,0.0,0.0,0
+2.5,optimistic,2,35.0,latency-aware cascade,2025-03-01,-8.086853522101421,2.128683457868758,3
+2.5,optimistic,2,35.0,latency-aware cascade,2025-04-01,0.0,0.0,0
+2.5,optimistic,2,35.0,latency-aware cascade,2025-05-01,0.0,0.0,0
+2.5,optimistic,2,35.0,latency-aware cascade,2025-06-01,2.208383367496231,0.42867913751458175,1
+2.5,optimistic,2,35.0,latency-aware cascade,2025-07-01,0.0,0.0,0
+2.5,optimistic,2,35.0,latency-aware cascade,2025-08-01,0.0,0.0,0
+2.5,optimistic,2,35.0,latency-aware cascade,2025-09-01,0.0,0.0,1
+2.5,optimistic,3,35.0,naive fast path,2025-10-01,-65.97823582767845,-66.75027412756576,25
+2.5,optimistic,3,35.0,naive fast path,2025-11-01,-11.51191071600031,-12.372024197641089,11
+2.5,optimistic,3,35.0,naive fast path,2025-12-01,-145.28896735762785,-144.39330847062075,176
+2.5,optimistic,3,35.0,naive fast path,2026-01-01,-3.2937532067564614,-5.104634064920574,17
+2.5,optimistic,3,35.0,naive fast path,2026-02-01,-290.61004317172865,-261.5895570818803,309
+2.5,optimistic,3,35.0,naive fast path,2026-03-01,-593.0650397282632,-609.5671754572473,540
+2.5,optimistic,3,35.0,naive fast path,2026-04-01,-163.50031732443557,-166.1471082807585,146
+2.5,optimistic,3,35.0,naive fast path,2026-05-01,-79.648813418042,-83.0762572334262,95
+2.5,optimistic,3,35.0,naive fast path,2026-06-01,-86.58927467613425,-85.28163244004503,64
+2.5,optimistic,3,35.0,naive fast path,2026-07-01,-156.2751985608992,-152.98352471060954,90
+2.5,optimistic,3,35.0,naive fast path,2026-08-01,4.305089265639871,4.979651552625061,3
+2.5,optimistic,3,35.0,naive fast path,2026-09-01,-18.201559983025433,-18.878665708927663,34
+2.5,optimistic,3,35.0,naive fast path,2026-10-01,-34.799076612555815,-36.0215076270993,26
+2.5,optimistic,3,35.0,gap size only,2025-10-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2025-11-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2025-12-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-01-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-02-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-03-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-04-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-05-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-06-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-07-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-08-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-09-01,0.0,0.0,0
+2.5,optimistic,3,35.0,gap size only,2026-10-01,0.0,0.0,0
+2.5,optimistic,3,35.0,fast path + decay prior,2025-10-01,-4.016131327342024,-4.016131327342024,1
+2.5,optimistic,3,35.0,fast path + decay prior,2025-11-01,0.0,0.0,0
+2.5,optimistic,3,35.0,fast path + decay prior,2025-12-01,4.812654659655597,4.8068660816773265,2
+2.5,optimistic,3,35.0,fast path + decay prior,2026-01-01,0.7289980009994035,0.5343421060403619,1
+2.5,optimistic,3,35.0,fast path + decay prior,2026-02-01,0.0,0.0,0
+2.5,optimistic,3,35.0,fast path + decay prior,2026-03-01,-0.40333414800003436,-0.40333414800003436,1
+2.5,optimistic,3,35.0,fast path + decay prior,2026-04-01,0.0,0.0,0
+2.5,optimistic,3,35.0,fast path + decay prior,2026-05-01,0.8750627227475567,1.3242612107632632,2
+2.5,optimistic,3,35.0,fast path + decay prior,2026-06-01,-4.01149207935495,-4.01149207935495,1
+2.5,optimistic,3,35.0,fast path + decay prior,2026-07-01,-1.6617510000004074,-1.6617510000004074,1
+2.5,optimistic,3,35.0,fast path + decay prior,2026-08-01,0.0,0.0,0
+2.5,optimistic,3,35.0,fast path + decay prior,2026-09-01,0.0,0.0,0
+2.5,optimistic,3,35.0,fast path + decay prior,2026-10-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2025-10-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2025-11-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2025-12-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2026-01-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2026-02-01,-0.14194772142429107,0.980085300737813,3
+2.5,optimistic,3,35.0,slow model always,2026-03-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2026-04-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2026-05-01,4.470506002518899,4.289915018414171,1
+2.5,optimistic,3,35.0,slow model always,2026-06-01,-3.9900306395533685,-3.317626395711147,4
+2.5,optimistic,3,35.0,slow model always,2026-07-01,-14.647371553056729,-14.67655299647769,7
+2.5,optimistic,3,35.0,slow model always,2026-08-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2026-09-01,0.0,0.0,0
+2.5,optimistic,3,35.0,slow model always,2026-10-01,0.0,0.0,0
+2.5,optimistic,3,35.0,latency-aware cascade,2025-10-01,-4.016131327342024,-4.016131327342024,1
+2.5,optimistic,3,35.0,latency-aware cascade,2025-11-01,-3.733915042268386,-3.733915042268386,2
+2.5,optimistic,3,35.0,latency-aware cascade,2025-12-01,10.719456520925998,9.61173120597413,14
+2.5,optimistic,3,35.0,latency-aware cascade,2026-01-01,0.7289980009994035,0.5343421060403619,1
+2.5,optimistic,3,35.0,latency-aware cascade,2026-02-01,-1.8141010547799814,-0.18286196916017394,13
+2.5,optimistic,3,35.0,latency-aware cascade,2026-03-01,-6.029289644911512,-8.278985378663949,27
+2.5,optimistic,3,35.0,latency-aware cascade,2026-04-01,-4.880767460525986,-4.786693308573366,9
+2.5,optimistic,3,35.0,latency-aware cascade,2026-05-01,5.345568725266456,5.614176229177435,3
+2.5,optimistic,3,35.0,latency-aware cascade,2026-06-01,-20.26873423303571,-19.58074581352276,10
+2.5,optimistic,3,35.0,latency-aware cascade,2026-07-01,-13.14742807333465,-9.876193711706215,13
+2.5,optimistic,3,35.0,latency-aware cascade,2026-08-01,4.1828442437920925,3.442027556813626,1
+2.5,optimistic,3,35.0,latency-aware cascade,2026-09-01,11.556234995683843,10.877496954669034,4
+2.5,optimistic,3,35.0,latency-aware cascade,2026-10-01,-4.0103196362187035,-4.0103196362187035,1
+2.5,conservative,0,35.0,naive fast path,2022-01-01,-1661.1485249993032,-1164.827190015792,1240
+2.5,conservative,0,35.0,naive fast path,2022-02-01,-2272.2351057181895,-1844.9906309988448,1927
+2.5,conservative,0,35.0,naive fast path,2022-03-01,-3515.6919918925223,-3122.4950231698344,3132
+2.5,conservative,0,35.0,naive fast path,2022-04-01,-403.1291370272507,-373.1158621892891,338
+2.5,conservative,0,35.0,naive fast path,2022-05-01,-388.22424780495123,-356.8624805137576,236
+2.5,conservative,0,35.0,naive fast path,2022-07-01,-1641.531809414868,-1763.4341254908043,2211
+2.5,conservative,0,35.0,naive fast path,2022-08-01,-320.32473731704783,-401.3103237265745,343
+2.5,conservative,0,35.0,naive fast path,2022-09-01,-233.80072941866737,-225.47658939052826,209
+2.5,conservative,0,35.0,naive fast path,2022-10-01,-73.01784181872495,-68.57725500189584,46
+2.5,conservative,0,35.0,naive fast path,2022-11-01,-27.40312514306099,-19.374745719139483,21
+2.5,conservative,0,35.0,naive fast path,2022-12-01,-143.63120635805333,-162.46289071396765,152
+2.5,conservative,0,35.0,naive fast path,2023-01-01,-1.7073573265105288,-3.530811248452953,3
+2.5,conservative,0,35.0,naive fast path,2023-02-01,-407.00188327446665,-405.997180919133,404
+2.5,conservative,0,35.0,naive fast path,2023-03-01,-165.52430359181287,-175.5436899201899,113
+2.5,conservative,0,35.0,gap size only,2022-01-01,0.0,0.0,1
+2.5,conservative,0,35.0,gap size only,2022-02-01,-3.971925973197563,-3.971925973197563,1
+2.5,conservative,0,35.0,gap size only,2022-03-01,-6.1270833691177575,-6.1270833691177575,2
+2.5,conservative,0,35.0,gap size only,2022-04-01,21.595785801575207,15.741680475202964,1
+2.5,conservative,0,35.0,gap size only,2022-05-01,-6.12582256032109,-6.12582256032109,1
+2.5,conservative,0,35.0,gap size only,2022-07-01,-3.375501021421902,-3.242177246600734,7
+2.5,conservative,0,35.0,gap size only,2022-08-01,0.0,0.0,0
+2.5,conservative,0,35.0,gap size only,2022-09-01,0.0,0.0,0
+2.5,conservative,0,35.0,gap size only,2022-10-01,0.0,0.0,0
+2.5,conservative,0,35.0,gap size only,2022-11-01,0.0,0.0,0
+2.5,conservative,0,35.0,gap size only,2022-12-01,0.0,0.0,1
+2.5,conservative,0,35.0,gap size only,2023-01-01,0.0,0.0,0
+2.5,conservative,0,35.0,gap size only,2023-02-01,0.0,0.0,0
+2.5,conservative,0,35.0,gap size only,2023-03-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2022-01-01,0.0,0.0,1
+2.5,conservative,0,35.0,fast path + decay prior,2022-02-01,-4.359631473197527,-4.359631473197527,2
+2.5,conservative,0,35.0,fast path + decay prior,2022-03-01,-12.640396584857033,-10.709650969262936,6
+2.5,conservative,0,35.0,fast path + decay prior,2022-04-01,31.638654631082666,28.318808784464423,2
+2.5,conservative,0,35.0,fast path + decay prior,2022-05-01,-6.12582256032109,-6.12582256032109,2
+2.5,conservative,0,35.0,fast path + decay prior,2022-07-01,-7.432213282052862,-7.298889507231694,9
+2.5,conservative,0,35.0,fast path + decay prior,2022-08-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2022-09-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2022-10-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2022-11-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2022-12-01,0.0,0.0,1
+2.5,conservative,0,35.0,fast path + decay prior,2023-01-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2023-02-01,0.0,0.0,0
+2.5,conservative,0,35.0,fast path + decay prior,2023-03-01,2.1466906200001175,1.6665363647840423,1
+2.5,conservative,0,35.0,slow model always,2022-01-01,-0.45762526000003195,0.10961938641065683,4
+2.5,conservative,0,35.0,slow model always,2022-02-01,-2.6584185549362385,6.071913060584485,11
+2.5,conservative,0,35.0,slow model always,2022-03-01,13.521208580044934,7.3625123558343155,15
+2.5,conservative,0,35.0,slow model always,2022-04-01,52.686654575217354,43.58075348954192,9
+2.5,conservative,0,35.0,slow model always,2022-05-01,-6.501262040321145,-6.501262040321145,4
+2.5,conservative,0,35.0,slow model always,2022-07-01,-19.76366498893254,-18.570009322896166,23
+2.5,conservative,0,35.0,slow model always,2022-08-01,0.0,0.0,0
+2.5,conservative,0,35.0,slow model always,2022-09-01,-0.10357385999998106,-0.10357385999998106,1
+2.5,conservative,0,35.0,slow model always,2022-10-01,0.0,0.0,0
+2.5,conservative,0,35.0,slow model always,2022-11-01,0.0,0.0,0
+2.5,conservative,0,35.0,slow model always,2022-12-01,0.0,0.0,1
+2.5,conservative,0,35.0,slow model always,2023-01-01,0.0,0.0,0
+2.5,conservative,0,35.0,slow model always,2023-02-01,0.0,0.0,0
+2.5,conservative,0,35.0,slow model always,2023-03-01,-1.8941982090230143,-2.3743524642390894,2
+2.5,conservative,0,35.0,latency-aware cascade,2022-01-01,-0.8415235600000175,-0.12275832273667936,3
+2.5,conservative,0,35.0,latency-aware cascade,2022-02-01,-2.9885982765957677,6.881976646337703,7
+2.5,conservative,0,35.0,latency-aware cascade,2022-03-01,14.073407910044896,7.782976818596661,9
+2.5,conservative,0,35.0,latency-aware cascade,2022-04-01,52.686654575217354,43.58075348954192,9
+2.5,conservative,0,35.0,latency-aware cascade,2022-05-01,-6.470375360321149,-6.470375360321149,3
+2.5,conservative,0,35.0,latency-aware cascade,2022-07-01,-19.75571158893254,-18.562055922896167,22
+2.5,conservative,0,35.0,latency-aware cascade,2022-08-01,0.0,0.0,0
+2.5,conservative,0,35.0,latency-aware cascade,2022-09-01,0.0,0.0,0
+2.5,conservative,0,35.0,latency-aware cascade,2022-10-01,0.0,0.0,0
+2.5,conservative,0,35.0,latency-aware cascade,2022-11-01,0.0,0.0,0
+2.5,conservative,0,35.0,latency-aware cascade,2022-12-01,0.0,0.0,1
+2.5,conservative,0,35.0,latency-aware cascade,2023-01-01,0.0,0.0,0
+2.5,conservative,0,35.0,latency-aware cascade,2023-02-01,0.0,0.0,0
+2.5,conservative,0,35.0,latency-aware cascade,2023-03-01,-1.8941982090230143,-2.3743524642390894,2
+2.5,conservative,1,35.0,naive fast path,2023-04-01,-124.58909425910842,-109.80710882285346,80
+2.5,conservative,1,35.0,naive fast path,2023-05-01,-1202.3148259828752,-848.5540796800448,634
+2.5,conservative,1,35.0,naive fast path,2023-06-01,-219.74341067802627,-211.46236180495606,128
+2.5,conservative,1,35.0,naive fast path,2023-07-01,-18.848421219955846,-16.593809783652922,15
+2.5,conservative,1,35.0,naive fast path,2023-08-01,-145.0838350541526,-163.01430945239403,89
+2.5,conservative,1,35.0,naive fast path,2023-09-01,-71.10348755242238,-94.60102244985549,56
+2.5,conservative,1,35.0,naive fast path,2023-10-01,-118.15611082392454,-146.31784051104762,120
+2.5,conservative,1,35.0,naive fast path,2023-11-01,-837.1304628824455,-636.7694568361637,401
+2.5,conservative,1,35.0,naive fast path,2023-12-01,-77.2814197265041,-65.39945201587223,52
+2.5,conservative,1,35.0,naive fast path,2024-01-01,-77.29911253531839,-81.82785509550962,54
+2.5,conservative,1,35.0,naive fast path,2024-04-01,-181.53556648019674,-97.38115806287148,98
+2.5,conservative,1,35.0,naive fast path,2024-05-01,-1467.685971732242,-1466.6464252135765,1267
+2.5,conservative,1,35.0,naive fast path,2024-06-01,-9.77974338210377,-11.07726258124218,9
+2.5,conservative,1,35.0,naive fast path,2024-07-01,-61.313643911882835,-75.593612199919,64
+2.5,conservative,1,35.0,gap size only,2023-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-05-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-08-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-09-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-10-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-11-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2023-12-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2024-01-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2024-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2024-05-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2024-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,gap size only,2024-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-05-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-08-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-09-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-10-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-11-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2023-12-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2024-01-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2024-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2024-05-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2024-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,fast path + decay prior,2024-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2023-04-01,-0.5404820500000656,0.04857428210803764,2
+2.5,conservative,1,35.0,slow model always,2023-05-01,-4.031001869301517,-4.031001869301517,1
+2.5,conservative,1,35.0,slow model always,2023-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2023-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2023-08-01,-0.3745978000000451,-0.3745978000000451,1
+2.5,conservative,1,35.0,slow model always,2023-09-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2023-10-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2023-11-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2023-12-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2024-01-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2024-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2024-05-01,0.2177594800000146,0.3037364203771215,2
+2.5,conservative,1,35.0,slow model always,2024-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,slow model always,2024-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-05-01,-4.031001869301517,-4.031001869301517,1
+2.5,conservative,1,35.0,latency-aware cascade,2023-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-07-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-08-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-09-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-10-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-11-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2023-12-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2024-01-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2024-04-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2024-05-01,0.2728318000000146,0.3588087403771215,1
+2.5,conservative,1,35.0,latency-aware cascade,2024-06-01,0.0,0.0,0
+2.5,conservative,1,35.0,latency-aware cascade,2024-07-01,0.0,0.0,0
+2.5,conservative,2,35.0,naive fast path,2024-08-01,18.658322346106033,-109.64946393565964,211
+2.5,conservative,2,35.0,naive fast path,2024-09-01,-131.6455943906113,-186.80068710398717,220
+2.5,conservative,2,35.0,naive fast path,2024-10-01,-171.85082258731026,-165.46810503609026,181
+2.5,conservative,2,35.0,naive fast path,2024-11-01,-27.42262195300356,-43.35907374310227,156
+2.5,conservative,2,35.0,naive fast path,2024-12-01,-26.78343160755574,-13.42947115732986,20
+2.5,conservative,2,35.0,naive fast path,2025-01-01,8.161577666933095,-26.881058833316995,31
+2.5,conservative,2,35.0,naive fast path,2025-02-01,-38.401282019370726,-44.761452820385,30
+2.5,conservative,2,35.0,naive fast path,2025-03-01,-73.60555977728531,-64.16895630312378,90
+2.5,conservative,2,35.0,naive fast path,2025-04-01,-32.1054626854666,-44.05193161063083,37
+2.5,conservative,2,35.0,naive fast path,2025-05-01,-73.11722656318965,-74.90471384937567,55
+2.5,conservative,2,35.0,naive fast path,2025-06-01,-32.16657344913693,-34.839572989374204,20
+2.5,conservative,2,35.0,naive fast path,2025-07-01,-38.12313301326282,-39.72340110575475,17
+2.5,conservative,2,35.0,naive fast path,2025-08-01,-73.36405963757917,-68.48682189427278,54
+2.5,conservative,2,35.0,naive fast path,2025-09-01,-34.249924678333386,-34.143795809548855,18
+2.5,conservative,2,35.0,gap size only,2024-08-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2024-09-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2024-10-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2024-11-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2024-12-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-01-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-02-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-03-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-04-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-05-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-06-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-07-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-08-01,0.0,0.0,0
+2.5,conservative,2,35.0,gap size only,2025-09-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2024-08-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2024-09-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2024-10-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2024-11-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2024-12-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-01-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-02-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-03-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-04-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-05-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-06-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-07-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-08-01,0.0,0.0,0
+2.5,conservative,2,35.0,fast path + decay prior,2025-09-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2024-08-01,0.05481761000000437,0.03525253041569553,1
+2.5,conservative,2,35.0,slow model always,2024-09-01,-0.04765200000000001,-0.04765200000000001,1
+2.5,conservative,2,35.0,slow model always,2024-10-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2024-11-01,12.133785099101306,10.62760237628766,2
+2.5,conservative,2,35.0,slow model always,2024-12-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-01-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-02-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-03-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-04-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-05-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-06-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-07-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-08-01,0.0,0.0,0
+2.5,conservative,2,35.0,slow model always,2025-09-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2024-08-01,0.05481761000000437,0.03525253041569553,1
+2.5,conservative,2,35.0,latency-aware cascade,2024-09-01,-0.04765200000000001,-0.04765200000000001,1
+2.5,conservative,2,35.0,latency-aware cascade,2024-10-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2024-11-01,12.133785099101306,10.62760237628766,2
+2.5,conservative,2,35.0,latency-aware cascade,2024-12-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-01-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-02-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-03-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-04-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-05-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-06-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-07-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-08-01,0.0,0.0,0
+2.5,conservative,2,35.0,latency-aware cascade,2025-09-01,0.0,0.0,0
+2.5,conservative,3,35.0,naive fast path,2025-10-01,-65.97823582767845,-66.75027412756576,25
+2.5,conservative,3,35.0,naive fast path,2025-11-01,-14.89649691487766,-15.634298992748057,11
+2.5,conservative,3,35.0,naive fast path,2025-12-01,-151.931735190547,-151.8786683224702,176
+2.5,conservative,3,35.0,naive fast path,2026-01-01,-0.6198407778134036,-2.426433104723426,17
+2.5,conservative,3,35.0,naive fast path,2026-02-01,-321.5135762930933,-297.69812326000584,309
+2.5,conservative,3,35.0,naive fast path,2026-03-01,-618.8564028892447,-629.9066673328014,540
+2.5,conservative,3,35.0,naive fast path,2026-04-01,-172.2597437360356,-175.65730284826392,146
+2.5,conservative,3,35.0,naive fast path,2026-05-01,-77.45301187403106,-80.90164084346716,95
+2.5,conservative,3,35.0,naive fast path,2026-06-01,-82.59123136694694,-81.2835891308577,64
+2.5,conservative,3,35.0,naive fast path,2026-07-01,-156.2751985608992,-152.98352471060954,90
+2.5,conservative,3,35.0,naive fast path,2026-08-01,4.305089265639871,4.979651552625061,3
+2.5,conservative,3,35.0,naive fast path,2026-09-01,-16.824108449912416,-17.501214175814642,34
+2.5,conservative,3,35.0,naive fast path,2026-10-01,-34.799076612555815,-36.0215076270993,26
+2.5,conservative,3,35.0,gap size only,2025-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2025-11-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2025-12-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-01-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-02-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-03-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-04-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-05-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-06-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-07-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-08-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-09-01,0.0,0.0,0
+2.5,conservative,3,35.0,gap size only,2026-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2025-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2025-11-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2025-12-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-01-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-02-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-03-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-04-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-05-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-06-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-07-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-08-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-09-01,0.0,0.0,0
+2.5,conservative,3,35.0,fast path + decay prior,2026-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2025-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2025-11-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2025-12-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2026-01-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2026-02-01,0.2437286000000291,0.2217372043451895,1
+2.5,conservative,3,35.0,slow model always,2026-03-01,-0.8174520899997905,-0.8174520899997905,2
+2.5,conservative,3,35.0,slow model always,2026-04-01,-0.0012457209999623825,0.002202436502925828,3
+2.5,conservative,3,35.0,slow model always,2026-05-01,4.470506002518899,4.289915018414171,1
+2.5,conservative,3,35.0,slow model always,2026-06-01,-3.9875488393549383,-3.971964663684211,2
+2.5,conservative,3,35.0,slow model always,2026-07-01,-10.206207497629908,-10.23538894105087,6
+2.5,conservative,3,35.0,slow model always,2026-08-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2026-09-01,0.0,0.0,0
+2.5,conservative,3,35.0,slow model always,2026-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,latency-aware cascade,2025-10-01,0.0,0.0,0
+2.5,conservative,3,35.0,latency-aware cascade,2025-11-01,-0.4301605200001979,-0.4301605200001979,1
+2.5,conservative,3,35.0,latency-aware cascade,2025-12-01,12.501276274716195,11.148461526449655,11
+2.5,conservative,3,35.0,latency-aware cascade,2026-01-01,0.0,0.0,0
+2.5,conservative,3,35.0,latency-aware cascade,2026-02-01,-2.777765920779907,-1.26262927045259,10
+2.5,conservative,3,35.0,latency-aware cascade,2026-03-01,-21.406899127959086,-22.62875205167235,30
+2.5,conservative,3,35.0,latency-aware cascade,2026-04-01,-8.01655614352692,-7.94797291332738,10
+2.5,conservative,3,35.0,latency-aware cascade,2026-05-01,4.470506002518899,4.289915018414171,1
+2.5,conservative,3,35.0,latency-aware cascade,2026-06-01,-20.29019567283729,-20.27461149716656,7
+2.5,conservative,3,35.0,latency-aware cascade,2026-07-01,-13.610047138674467,-13.536503543639238,9
+2.5,conservative,3,35.0,latency-aware cascade,2026-08-01,0.0,0.0,0
+2.5,conservative,3,35.0,latency-aware cascade,2026-09-01,11.556234995683843,10.877496954669034,3
+2.5,conservative,3,35.0,latency-aware cascade,2026-10-01,-4.0103196362187035,-4.0103196362187035,1

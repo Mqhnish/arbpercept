@@ -1,0 +1,37 @@
+{
+ "pair": "tick_btc_perp_binance_bybit",
+ "date": "2023-01-01",
+ "status": "ok",
+ "events": 10822,
+ "valid_share": 0.9999075956385142,
+ "episodes": 324,
+ "by_hurdle": {
+  "gross>2bps|sell_b_buy_a": {
+   "n": 1,
+   "died_share": 0.0,
+   "median_obs_ms": 60186724.41,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 60186724.41,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 40,
+   "died_share": 0.975,
+   "median_obs_ms": 96462.5945,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 96462.5945,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_b_buy_a": {
+   "n": 283,
+   "died_share": 1.0,
+   "median_obs_ms": 14938.024,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 14938.024,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  }
+ }
+}

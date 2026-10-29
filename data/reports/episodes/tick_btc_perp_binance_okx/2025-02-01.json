@@ -1,0 +1,82 @@
+{
+ "pair": "tick_btc_perp_binance_okx",
+ "date": "2025-02-01",
+ "status": "ok",
+ "events": 97274,
+ "valid_share": 0.999979439521352,
+ "episodes": 3791,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 20,
+   "died_share": 1.0,
+   "median_obs_ms": 15.7895,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 15.7895,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 31,
+   "died_share": 0.9354838709677419,
+   "median_obs_ms": 438179.34,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 438179.34,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 11,
+   "died_share": 1.0,
+   "median_obs_ms": 6.649,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 6.649,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 76,
+   "died_share": 0.9736842105263158,
+   "median_obs_ms": 79528.3455,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 79528.3455,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 2,
+   "died_share": 1.0,
+   "median_obs_ms": 11.08,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 11.08,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 294,
+   "died_share": 0.9931972789115646,
+   "median_obs_ms": 25501.6725,
+   "sub_resolution_share": 0.003401360544217687,
+   "resolved_median_obs_ms": 25649.242,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 3355,
+   "died_share": 1.0,
+   "median_obs_ms": 419.952,
+   "sub_resolution_share": 0.010432190760059613,
+   "resolved_median_obs_ms": 450.27250000000004,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_b_buy_a": {
+   "n": 2,
+   "died_share": 1.0,
+   "median_obs_ms": 22.107,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 22.107,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  }
+ }
+}

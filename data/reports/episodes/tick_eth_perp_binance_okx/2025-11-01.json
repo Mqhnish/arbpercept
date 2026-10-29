@@ -1,0 +1,91 @@
+{
+ "pair": "tick_eth_perp_binance_okx",
+ "date": "2025-11-01",
+ "status": "ok",
+ "events": 80187,
+ "valid_share": 0.9999875291506104,
+ "episodes": 16100,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 3305,
+   "died_share": 0.999697428139183,
+   "median_obs_ms": 2183.091,
+   "sub_resolution_share": 0.0045385779122541605,
+   "resolved_median_obs_ms": 2219.5164999999997,
+   "stale_share": 0.000302571860816944,
+   "stale_partner_share": 0.0
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 2888,
+   "died_share": 1.0,
+   "median_obs_ms": 184.8735,
+   "sub_resolution_share": 0.009002770083102494,
+   "resolved_median_obs_ms": 194.0625,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 5428,
+   "died_share": 1.0,
+   "median_obs_ms": 1033.58,
+   "sub_resolution_share": 0.006448047162859248,
+   "resolved_median_obs_ms": 1050.296,
+   "stale_share": 0.00018422991893883567,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 646,
+   "died_share": 1.0,
+   "median_obs_ms": 46.2185,
+   "sub_resolution_share": 0.010835913312693499,
+   "resolved_median_obs_ms": 47.168,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 3635,
+   "died_share": 1.0,
+   "median_obs_ms": 397.49,
+   "sub_resolution_share": 0.007152682255845942,
+   "resolved_median_obs_ms": 408.923,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 119,
+   "died_share": 1.0,
+   "median_obs_ms": 20.436,
+   "sub_resolution_share": 0.01680672268907563,
+   "resolved_median_obs_ms": 20.838,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_a_buy_b": {
+   "n": 58,
+   "died_share": 1.0,
+   "median_obs_ms": 15.4275,
+   "sub_resolution_share": 0.017241379310344827,
+   "resolved_median_obs_ms": 15.592,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 20,
+   "died_share": 1.0,
+   "median_obs_ms": 27.777,
+   "sub_resolution_share": 0.15,
+   "resolved_median_obs_ms": 42.366,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_a_buy_b": {
+   "n": 1,
+   "died_share": 1.0,
+   "median_obs_ms": 4.957,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 4.957,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  }
+ }
+}

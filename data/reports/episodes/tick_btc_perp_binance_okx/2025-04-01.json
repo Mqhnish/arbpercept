@@ -1,0 +1,82 @@
+{
+ "pair": "tick_btc_perp_binance_okx",
+ "date": "2025-04-01",
+ "status": "ok",
+ "events": 191323,
+ "valid_share": 0.9999947732368821,
+ "episodes": 10078,
+ "by_hurdle": {
+  "gross>0bps|sell_a_buy_b": {
+   "n": 6,
+   "died_share": 1.0,
+   "median_obs_ms": 16.86,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 16.86,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>0bps|sell_b_buy_a": {
+   "n": 9,
+   "died_share": 0.8888888888888888,
+   "median_obs_ms": 1029447.575,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 1029447.575,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_a_buy_b": {
+   "n": 6,
+   "died_share": 1.0,
+   "median_obs_ms": 5.618,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 5.618,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>1bps|sell_b_buy_a": {
+   "n": 26,
+   "died_share": 0.9615384615384616,
+   "median_obs_ms": 209279.35749999998,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 209279.35749999998,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_a_buy_b": {
+   "n": 2,
+   "died_share": 1.0,
+   "median_obs_ms": 5.3905,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 5.3905,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>2bps|sell_b_buy_a": {
+   "n": 46,
+   "died_share": 0.9782608695652174,
+   "median_obs_ms": 407978.865,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 407978.865,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "gross>5bps|sell_b_buy_a": {
+   "n": 9959,
+   "died_share": 1.0,
+   "median_obs_ms": 560.629,
+   "sub_resolution_share": 0.005522642835626067,
+   "resolved_median_obs_ms": 566.6949999999999,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  },
+  "retail_taker|sell_b_buy_a": {
+   "n": 24,
+   "died_share": 1.0,
+   "median_obs_ms": 24.928,
+   "sub_resolution_share": 0.0,
+   "resolved_median_obs_ms": 24.928,
+   "stale_share": 0.0,
+   "stale_partner_share": 0.0
+  }
+ }
+}
