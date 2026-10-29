@@ -1,0 +1,27 @@
+{
+ "stream": "tardis/bybit/ETH-USDT/perp",
+ "date": "2022-06-01",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 75076,
+ "raw_updates": 866406,
+ "coverage": 0.998148280613426,
+ "n_outages": 25,
+ "max_raw_silence_s": 12.301627,
+ "resyncs": 0,
+ "price_change_step_ms_median": 39.775,
+ "feed_lag_ms_median": 37.832,
+ "feed_lag_ms_p99": 42.798,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.2751145164172085,
+ "daily_rv_bps": 442.03417939053463,
+ "first_raw_ts": 1654041600189160,
+ "last_raw_ts": 1654127999982416,
+ "mid_first": 1940.875,
+ "mid_last": 1816.375,
+ "raw_out_of_order": 0,
+ "passes": true
+}

@@ -1,0 +1,27 @@
+{
+ "stream": "tardis/bybit/ETH-USDT/perp",
+ "date": "2023-05-01",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 50118,
+ "raw_updates": 862015,
+ "coverage": 0.9997611734143519,
+ "n_outages": 2,
+ "max_raw_silence_s": 12.835006,
+ "resyncs": 0,
+ "price_change_step_ms_median": 79.494,
+ "feed_lag_ms_median": 38.739,
+ "feed_lag_ms_p99": 63.75043000000004,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.054606763047553776,
+ "daily_rv_bps": 266.14246219984847,
+ "first_raw_ts": 1682899200635147,
+ "last_raw_ts": 1682985599980324,
+ "mid_first": 1867.3850000000002,
+ "mid_last": 1829.7649999999999,
+ "raw_out_of_order": 0,
+ "passes": true
+}

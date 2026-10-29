@@ -1,0 +1,27 @@
+{
+ "stream": "tardis/bybit/BTC-USDT/perp",
+ "date": "2021-08-01",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 39115,
+ "raw_updates": 851772,
+ "coverage": 0.9990928255324074,
+ "n_outages": 13,
+ "max_raw_silence_s": 7.899888,
+ "resyncs": 0,
+ "price_change_step_ms_median": 37.4905,
+ "feed_lag_ms_median": 39.679,
+ "feed_lag_ms_p99": 93.99402000000003,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.2404944566027753,
+ "daily_rv_bps": 373.3193840527779,
+ "first_raw_ts": 1627776000233924,
+ "last_raw_ts": 1627862399945726,
+ "mid_first": 41426.25,
+ "mid_last": 39836.75,
+ "raw_out_of_order": 0,
+ "passes": true
+}

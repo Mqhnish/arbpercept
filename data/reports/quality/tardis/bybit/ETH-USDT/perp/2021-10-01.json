@@ -1,0 +1,27 @@
+{
+ "stream": "tardis/bybit/ETH-USDT/perp",
+ "date": "2021-10-01",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 49596,
+ "raw_updates": 753647,
+ "coverage": 0.9926832806018518,
+ "n_outages": 99,
+ "max_raw_silence_s": 13.959885,
+ "resyncs": 0,
+ "price_change_step_ms_median": 40.075,
+ "feed_lag_ms_median": 39.99,
+ "feed_lag_ms_p99": 75.44910000000013,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.3338145827129898,
+ "daily_rv_bps": 474.27763954419123,
+ "first_raw_ts": 1633046400174461,
+ "last_raw_ts": 1633132799997313,
+ "mid_first": 2998.125,
+ "mid_last": 3307.225,
+ "raw_out_of_order": 0,
+ "passes": true
+}

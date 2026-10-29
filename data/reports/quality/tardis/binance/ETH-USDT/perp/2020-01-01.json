@@ -1,0 +1,27 @@
+{
+ "stream": "tardis/binance/ETH-USDT/perp",
+ "date": "2020-01-01",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 26270,
+ "raw_updates": 82924,
+ "coverage": 0.6568311357986112,
+ "n_outages": 3652,
+ "max_raw_silence_s": 20.12639,
+ "resyncs": 0,
+ "price_change_step_ms_median": 346.806,
+ "feed_lag_ms_median": 118.6425,
+ "feed_lag_ms_p99": 377.31548000000026,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 2.2612497205556306,
+ "daily_rv_bps": 235.3644662776383,
+ "first_raw_ts": 1577836803078374,
+ "last_raw_ts": 1577923199920804,
+ "mid_first": 129.115,
+ "mid_last": 130.625,
+ "raw_out_of_order": 0,
+ "passes": false
+}

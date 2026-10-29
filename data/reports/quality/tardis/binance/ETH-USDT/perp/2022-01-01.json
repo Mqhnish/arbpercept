@@ -1,0 +1,27 @@
+{
+ "stream": "tardis/binance/ETH-USDT/perp",
+ "date": "2022-01-01",
+ "dropped": {
+  "nonpositive": 0,
+  "crossed_or_locked": 0,
+  "spikes": 0
+ },
+ "rows": 179279,
+ "raw_updates": 1265363,
+ "coverage": 0.9996768911111111,
+ "n_outages": 3,
+ "max_raw_silence_s": 12.706167,
+ "resyncs": 0,
+ "price_change_step_ms_median": 36.288,
+ "feed_lag_ms_median": 11.783,
+ "feed_lag_ms_p99": 77.15500000000006,
+ "feed_lag_negative_share": 0.0,
+ "spread_bps_median": 0.02706099955273114,
+ "daily_rv_bps": 252.60478976218445,
+ "first_raw_ts": 1640995200561697,
+ "last_raw_ts": 1641081599827060,
+ "mid_first": 3676.0150000000003,
+ "mid_last": 3763.0550000000003,
+ "raw_out_of_order": 0,
+ "passes": true
+}
