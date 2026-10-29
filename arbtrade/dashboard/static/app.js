@@ -27,7 +27,9 @@
   const shortDate = d => { const [y, m, dd] = d.split("-"); return `${dd} ${MONTHS[+m - 1]} ’${y.slice(2)}`; };
   const monthYear = d => { const [y, m] = d.split("-"); return `${MONTHS[+m - 1]} ’${y.slice(2)}`; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const tagName = t => ({ "_v7_real": "v7 realistic: 8 months, per-venue fees and latency, feed delay",
+  const tagName = t => ({ "_v9_real": "v9 realistic: delayed-view births, closing split, run minimums",
+                          "_tardis_real": "Tardis.dev ticks: 1st of each month, 2020–2026",
+                          "_v7_real": "v7 realistic: 8 months, per-venue fees and latency, feed delay",
                           "_v6_real": "v6 realistic", "_v5_real": "v5 realistic", "_v5": "v5", "_v4_offset": "v4 offset-aware",
                           "_v3": "v3 raw gaps", "": "untagged" }[t] || t.replace(/^_/, ""));
 
@@ -376,7 +378,7 @@
     const files = await api("/api/notes");
     $("n-list").innerHTML = files.map(f => `<li data-p="${esc(f.path)}" title="${esc(f.path)}">${esc(f.path)}</li>`).join("");
     $("n-list").querySelectorAll("li").forEach(li => li.addEventListener("click", () => openNote(li.dataset.p)));
-    const first = files.find(f => /btc_perp_binance_bybit_v7_real\/inventory/.test(f.path)) || files.find(f => f.path.includes("inventory")) || files[0];
+    const first = files.find(f => /btc_perp_binance_bybit_v9_real\/inventory/.test(f.path)) || files.find(f => f.path.includes("inventory")) || files[0];
     if (first) openNote(first.path);
   }
   async function openNote(p) {
