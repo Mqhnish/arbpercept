@@ -1,0 +1,103 @@
+<!doctype html>
+<!-- Source of architecture.png (Figure 1). Render: Chrome headless, window 1320x860, device scale 2. -->
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;background:#fff}
+  svg{display:block;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+  .box{fill:#fff;stroke:#b5b2a7;stroke-width:2}
+  .dash{fill:#fff;stroke:#b5b2a7;stroke-width:2;stroke-dasharray:8 6}
+  .t{font-size:30px;font-weight:700;fill:#111;text-anchor:middle}
+  .s{font-size:24px;fill:#333;text-anchor:middle}
+  .lab{font-size:24px;fill:#222}
+  .ln{stroke:#9d9a8f;stroke-width:2.5;fill:none}
+  .dl{stroke:#b5b2a7;stroke-width:2.5;fill:none;stroke-dasharray:8 6}
+</style></head><body>
+<svg width="1320" height="860" viewBox="0 0 1320 860" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9d9a8f"/></marker>
+  </defs>
+  <text x="36" y="46" style="font-size:34px;font-weight:700;fill:#111">The slow model runs only when the prior is unsure</text>
+
+  <!-- row 1 -->
+  <rect class="box" x="36" y="96" width="290" height="134" rx="12"/>
+  <text class="t" x="181" y="138">Exchange feeds</text>
+  <text class="s" x="181" y="172">live, or replayed:</text>
+  <text class="s" x="181" y="202">archive, Tardis, ours</text>
+  <text class="lab" x="181" y="262" text-anchor="middle" style="fill:#555">Bybit seen 45 ms late</text>
+
+  <rect class="box" x="354" y="96" width="290" height="134" rx="12"/>
+  <text class="t" x="499" y="138">Fast path</text>
+  <text class="s" x="499" y="172">gap vs trailing</text>
+  <text class="s" x="499" y="202">5-minute offset</text>
+
+  <rect class="box" x="672" y="96" width="290" height="134" rx="12"/>
+  <text class="t" x="817" y="138">Decay prior</text>
+  <text class="s" x="817" y="172">fill probability q,</text>
+  <text class="s" x="817" y="202">1.5 µs</text>
+
+  <path class="ln" d="M326 163H352" marker-end="url(#a)"/>
+  <path class="ln" d="M644 163H670" marker-end="url(#a)"/>
+  <path class="ln" d="M962 163H998" marker-end="url(#a)"/>
+
+  <polygon points="1144,83 1284,163 1144,243 1004,163" fill="#e6effa" stroke="#2a6fd6" stroke-width="2.5"/>
+  <text class="t" x="1144" y="157" style="font-size:27px">Expected</text>
+  <text class="t" x="1144" y="188" style="font-size:27px">value?</text>
+  <path class="ln" d="M1284 163H1304V60H1240" marker-end="url(#a)"/>
+  <text class="lab" x="1232" y="68" text-anchor="end">low: skip</text>
+
+  <!-- branch -->
+  <path class="ln" d="M1144 243V300"/>
+  <path class="ln" d="M1144 300H817V372" marker-end="url(#a)"/>
+  <text class="lab" x="900" y="290">unsure</text>
+  <path class="ln" d="M1144 300V372" marker-end="url(#a)"/>
+  <text class="lab" x="1160" y="344">confident</text>
+
+  <!-- row 2 -->
+  <rect class="dash" x="36" y="374" width="608" height="134" rx="12"/>
+  <text class="t" x="340" y="416">Training, offline</text>
+  <text class="s" x="340" y="450">walk-forward folds on replayed fills;</text>
+  <text class="s" x="340" y="480">fits prior, slow model and margins</text>
+  <path class="dl" d="M499 374V262H780V232" marker-end="url(#a)"/>
+  <path class="dl" d="M644 441H670" marker-end="url(#a)"/>
+
+  <rect class="box" x="672" y="374" width="290" height="134" rx="12"/>
+  <text class="t" x="817" y="416">Slow model</text>
+  <text class="s" x="817" y="450">27–43 features,</text>
+  <text class="s" x="817" y="480">then re-reads book</text>
+
+  <rect class="box" x="994" y="374" width="290" height="134" rx="12"/>
+  <text class="t" x="1139" y="416">Send both legs</text>
+  <text class="s" x="1139" y="450">IOC, only if the</text>
+  <text class="s" x="1139" y="480">gap is still open</text>
+
+  <path class="ln" d="M962 441H992" marker-end="url(#a)"/>
+  <path class="ln" d="M817 508V560H760" marker-end="url(#a)"/>
+  <text class="lab" x="752" y="568" text-anchor="end">low: skip</text>
+
+  <!-- row 3 -->
+  <path class="ln" d="M1139 508V650" marker-end="url(#a)"/>
+  <rect class="box" x="994" y="652" width="290" height="134" rx="12"/>
+  <text class="t" x="1139" y="694">Orders travel</text>
+  <text class="s" x="1139" y="728">50 ms Binance, 8 ms</text>
+  <text class="s" x="1139" y="758">Bybit (estimated)</text>
+
+  <rect class="box" x="672" y="652" width="290" height="134" rx="12"/>
+  <text class="t" x="817" y="694">Fill simulator</text>
+  <text class="s" x="817" y="728">fills if book still</text>
+  <text class="s" x="817" y="758">crosses; P&amp;L</text>
+
+  <rect class="box" x="354" y="652" width="290" height="134" rx="12"/>
+  <text class="t" x="499" y="694">Dashboard</text>
+  <text class="s" x="499" y="728">replay results,</text>
+  <text class="s" x="499" y="758">paper decisions</text>
+
+  <path class="ln" d="M994 719H964" marker-end="url(#a)"/>
+  <path class="ln" d="M672 719H646" marker-end="url(#a)"/>
+
+  <text class="lab" x="36" y="684" style="fill:#555">Replay: all of it.</text>
+  <text class="lab" x="36" y="716" style="fill:#555">Live paper trader:</text>
+  <text class="lab" x="36" y="748" style="fill:#555">fast path and</text>
+  <text class="lab" x="36" y="780" style="fill:#555">raw-gap prior.</text>
+  <text class="lab" x="36" y="840" style="fill:#555;font-size:22px">Live slow path: 23 features, timed at about 30 µs. Lone fills are unwound across the spread.</text>
+</svg>
+</body></html>

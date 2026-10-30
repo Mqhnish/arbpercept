@@ -63,10 +63,10 @@
         <h2>How a gap becomes a trade</h2>
         <p>Each gap is scored at the latency it will face before the orders arrive:</p>
         <p class="formula"><i>S</i>(τ) = <i>q</i>(τ)·(<i>ê</i> − <i>c</i>) + (1 − <i>q</i>(τ))·<i>ℓ̄</i>(τ)</p>
-        <p><i>q</i> is the probability that both immediate-or-cancel legs fill at the prices we saw, after latency τ. <i>ê</i> is the gap measured against the venues' usual offset,
+        <p><i>q</i> is the probability, learned from replayed fills, that both immediate-or-cancel legs fill at the prices we saw, after latency τ. <i>ê</i> is the gap measured against the venues' usual offset,
           <i>c</i> is both legs' fees, and <i>ℓ̄</i> is the average outcome when a trade does not fully fill.</p>
-        <p class="how"><b>How to read it.</b> Left to right. The fast path measures the gap against the usual offset (1.8 µs). The decay prior estimates <i>q</i> (1.5 µs).
-          A confident score acts or skips at once; an unsure one waits for the slow model (23 features, 15 µs). Orders then take 50 ms to Binance and 8 ms to Bybit.</p>
+        <p class="how"><b>How to read it.</b> Left to right. The fast path measures the gap against the usual offset. The decay prior estimates <i>q</i> (1.5 µs).
+          A confident score acts or skips at once; an unsure one waits for the slow model (27–43 features depending on the pair; the 23-feature live path takes about 30 µs), then re-reads the book and sends only if the gap is still open. Orders then take 50 ms to Binance and 8 ms to Bybit; each IOC leg fills only if the recorded book still crosses when it arrives, and a lone fill is unwound. The replay runs the whole pipeline; the live paper trader runs the fast path and a raw-gap prior so far.</p>
         <a class="more" href="#paper">See the paper trader →</a>
       </div>
     </section>
@@ -107,11 +107,11 @@
     <section class="fig-row" id="f-tardis">
       <figure><img src="img/tardis_binance_bybit.png" alt="Cascade on Tardis tick data with optimistic and conservative fills" loading="lazy"></figure>
       <div class="fig-text">
-        <h2>Tick data, both fill bounds</h2>
+        <h2>Tick data, both fill assumptions</h2>
         <p>Tardis.dev's free days (the 1st of each month, 2020 to 2026) record every quote change on both venues.
           There the cascade keeps $10 a day on BTC, $12 on ETH and $10 on SOL with conservative fills, each interval above zero.</p>
-        <p class="how"><b>How to read it.</b> Blue squares are optimistic fills, orange diamonds conservative. On the 100 ms archive the conservative bound breaks even,
-          because it sees Bybit only in snapshots; with every quote change recorded the two bounds are much closer. Pairs with OKX show no edge at our assumed OKX fee and latency.</p>
+        <p class="how"><b>How to read it.</b> Blue squares are optimistic fills, orange diamonds conservative. On the 100 ms archive the conservative assumption breaks even,
+          because it sees Bybit only in snapshots; with every quote change recorded the two assumptions are much closer. Pairs with OKX show no edge at our assumed OKX fee and latency.</p>
         <a class="more" href="#coins?tag=_tardis_real&amp;mode=conservative">Open the tick-data table →</a>
       </div>
     </section>
@@ -174,7 +174,7 @@ python -m arbtrade.dashboard --open</pre>
   </div>
   <div class="explain">
     <p><b>What this shows.</b> One run at one setting: every policy replayed on the same validation days, after fees, funding and the day-end close.</p>
-    <p><b>How to read it.</b> Brackets are 95% intervals. Click a strategy in the table to see its daily P&amp;L and where it comes from. Switch the fill bound or the $50k cap above; the v9 runs have every fix.</p>
+    <p><b>How to read it.</b> Brackets are 95% intervals. Click a strategy in the table to see its daily P&amp;L and where it comes from. Switch the fill assumption or the $50k cap above; the v9 runs have every fix.</p>
     <p><a href="#figures?f=btc">The BTC figure, explained →</a> <a href="#figures?f=glossary">Terms →</a></p>
   </div>
   <div class="grid">

@@ -116,7 +116,7 @@
     [/novelty/i, [["img/coins_v9.png", "Nine coins", "The cascade against the gap-size rule", "#figures?f=coins"],
                   ["img/naive_v9.png", "Trading every gap", "Loses $94 to $925 a day", "#figures?f=naive"]]],
     [/evaluation|results/i, [["img/btc_cumulative_v9.png", "BTC, 205 days", "Cumulative realised P&L", "#figures?f=btc"],
-                             ["img/tardis_binance_bybit.png", "Tick data", "Both fill bounds, three coins", "#figures?f=tardis"],
+                             ["img/tardis_binance_bybit.png", "Tick data", "Both fill assumptions, three coins", "#figures?f=tardis"],
                              ["img/decay_auc.png", "Will the gap last?", "AUC with the 10 ms caveat", "#figures?f=auc"]]],
     [/feasibility|risk/i, [["{}", "Code and tests", "github.com/Mqhnish/arbpercept", "https://github.com/Mqhnish/arbpercept"],
                            ["§", "Every report", "The tables behind each number", "#reports"]]],

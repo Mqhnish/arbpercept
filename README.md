@@ -45,7 +45,7 @@ With the slow model at microseconds, model compute no longer costs edge; network
 - Every quote pays the update, traded or not. In the paper trader, the slow model raises the average cost per quote from 1.8 µs to 5.6 µs.
 - The features are plain Python. Compiling them would make them faster, but at these costs it is not needed yet.
 - The live engine computes 23 of the slow model's features, plus the gap itself. The rest need inputs it does not have yet: book depth, feed lag (needs exchange timestamps), trade flow (needs the trade feeds), and the gap's 1 s change and recent births (need more state in the engine). So a slow model trained on every feature cannot run live yet; the engine refuses it. One trained on these 24 inputs can (`PaperEngine(slow=...)`).
-- `arbtrade.evaluate` still waits only for inference (rounded up to 0.01 ms) before its slow path re-reads the book. Running it with `--slow-wait-ms 0.03` would include the feature cost. That run has not been done yet.
+- `arbtrade.evaluate --slow-wait-ms 0.03` makes the slow path wait for the whole cost, features included, before it re-reads the book. The v9 and Tardis runs used it (`slow_wait_used` in each run's `meta.json`).
 
 ## What is built and what is planned
 
@@ -262,7 +262,7 @@ All numbers below are simulation results on development days. The Binance–Bybi
 - **What the fixes changed.** Labelling births on the offset-relative gap finds about four times as many opportunities (173,702 at 1 bps, against 44,102 when raw births were filtered). Day by day, the cascade is statistically unchanged from the earlier run (+$9 a day [−37, +68] at 10 ms, optimistic), while naive trading looks much worse because it now takes every relative gap.
 - **Against a simple rule.** The decay models beat trading every gap above the fee threshold (the gap-size-only rule) in the realistic setup and at 50 ms, but not at 10 ms in the 1 bps sweep. Their edge over a simple rule is real but not uniform.
 - **With conservative fills** every gated policy is close to break-even, and naive trading loses $600–4,700 a day.
-- **Cascade vs slow-always:** statistically the same. The slow model's 6.4 µs is inference only; computing its features live has not been timed yet.
+- **Cascade vs slow-always:** statistically the same. A full slow decision, features included, costs about 30 µs (timed above), still small next to the order latency.
 - **Why earlier numbers were higher.** Versions before the inventory accounting credited each trade with the whole gap measured from zero. In January 2024 Binance's BTC perpetual traded 0.5–3 bps below Bybit's, so most trades went the same way and mainly harvested that offset, which closing the positions pays back (`..._v3/inventory.md`).
 - **Not yet modelled:** queue position and market impact. Size-only book updates are folded into each price run; conservative fills use the smallest size shown during the run, optimistic fills the first.
 
