@@ -25,7 +25,7 @@ q is the joint probability that both IOC legs fill at the observed prices after 
 
 _Figure 1. Decision pipeline. Latencies measured on our machine._
 
-- **Data.** Bybit 100 ms books and Binance ticks (May 2023–Jan 2024); Tardis.dev ticks on Binance, Bybit, OKX (first day of each month, 2020–2026); funding; our 10 ms recordings of ten coins.
+- **Data.** Bybit 100 ms books and Binance ticks (May 2023–Jan 2024), validated against trades; Tardis.dev ticks on Binance, Bybit, OKX (first day of each month, 2020–2026); funding; our 10 ms recordings of ten coins.
 - **Fast path.** Fee-adjusted top-of-book gap against a trailing 5-minute offset, about 2 µs per quote.
 - **[Decay prior](#decay).** Six-feature logistic model of q, isotonically calibrated (1.5 µs).
 - **Slow model.** Gradient boosting on 23 causal features (Kalman fair spread, Ornstein–Uhlenbeck half-life): about 15 µs per decision plus about 12 µs per price change, under 0.5% of the 8 ms order latency.
@@ -90,4 +90,4 @@ The MVP and both stretch goals already run ([165 tests, including a lookahead ch
 - **Fees exceed most gaps.** Taker fees are 1.7–3 bps a leg; 2026 gaps rarely pass 2 bps. We report the conservative bound and test maker-taker and mid-caps.
 - **Overfitting.** Calibration-day choices, paired comparisons, locked tests.
 - **Unsynchronised clocks.** Both venues share one receive clock.
-- **Data gaps.** Outages are detected from silences and skipped sequence numbers; affected episodes are kept censored.
+- **Data gaps.** Outages are detected from silences and skipped sequence numbers; affected episodes are kept censored (lifetime at least what was observed).
