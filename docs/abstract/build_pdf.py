@@ -37,10 +37,11 @@ def fmt(s):
 
 
 def links_line(s):
-    """The repo/site line: each address becomes a link, the separator stays."""
-    parts = re.split(r"((?:github\.com|mqhnish\.github\.io)/\S+)", s)
-    return "".join(f'<a href="https://{p}">{p}</a>' if re.fullmatch(r"(github\.com|mqhnish\.github\.io)/\S+", p)
-                   else html.escape(p) for p in parts)
+    """The repo/site line, as the PDF's header: the website first, then the code."""
+    site, repo = (re.search(rf"{p}/\S+", s).group(0) for p in (r"mqhnish\.github\.io", r"github\.com"))
+    return (f'<div class="site">Best viewed on our website, with interactive charts: '
+            f'<a href="https://{site}/">{site}</a></div>'
+            f'<div class="code">Code: <a href="https://{repo}">{repo}</a></div>')
 
 
 def body(lines):
@@ -90,8 +91,9 @@ CSS = """
 @page { size: A4; margin: 14mm 16mm 14mm 16mm; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { margin: 0; font: 9.6pt/1.4 "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; color: #1a1a1a; }
-.top { text-align: center; padding: 0 0 6pt; margin-bottom: 8pt; white-space: pre;
-       border-bottom: 1.5pt solid #1155cc; font-size: 11pt; font-weight: 600; color: #777; }
+.top { text-align: center; padding: 0 0 6pt; margin-bottom: 8pt; border-bottom: 1.5pt solid #1155cc; }
+.top .site { font-size: 11pt; font-weight: 600; }
+.top .code { font-size: 9.6pt; color: #555; margin-top: 1pt; }
 .top a { color: #1155cc; text-decoration: none; }
 h1 { font: 600 19pt/1.15 "Fraunces", Georgia, serif; margin: 0 0 4pt; }
 h2 { font: 600 12.2pt/1.2 "Fraunces", Georgia, serif; margin: 9pt 0 3pt; break-after: avoid; }
