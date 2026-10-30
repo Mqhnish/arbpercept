@@ -1,6 +1,8 @@
 # Latency-aware cross-venue arbitrage
 
-github.com/Mqhnish/arbpercept · mqhnish.github.io/arbpercept
+Best viewed on our website, with interactive charts: [mqhnish.github.io/arbpercept](https://mqhnish.github.io/arbpercept/).
+
+Code: [github.com/Mqhnish/arbpercept](https://github.com/Mqhnish/arbpercept).
 
 ## Problem & theme
 
