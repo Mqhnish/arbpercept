@@ -95,6 +95,11 @@ def test_run_end_to_end_offset_aware_with_venue_latency_and_fees(monkeypatch, tm
     # naive trades every trigger; the gated policies trade a subset
     naive = agg[(agg.strategy == "naive fast path")].trades.sum()
     assert (agg[agg.strategy.isin(["gap size only", "fast path + decay prior"])].trades <= naive).all()
+    # each model's fill probability is scored on its fold's validation triggers
+    quality = pd.read_csv(out / "model_quality.csv")
+    assert set(quality.model) == {"gap size only", "fast prior", "slow model"}
+    assert (quality.n > 0).all() and quality.brier.between(0, 1).all() and quality.fill_rate.between(0, 1).all()
+    assert len(quality) == 3 * len(folds[folds.strategy == "naive fast path"])
 
 
 def test_run_raw_mode_keeps_pnl_rel_equal_to_pnl(monkeypatch, tmp_path):

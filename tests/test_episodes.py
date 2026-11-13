@@ -1,6 +1,7 @@
 import numpy as np
+import pandas as pd
 
-from arbdata.episodes import label_runs, recent_births
+from arbdata.episodes import SELL_LEG, label_runs, recent_births, role_features
 
 
 def _t(n):
@@ -70,3 +71,21 @@ def test_ratio_pair_tracks_fair_value_and_flags_a_mispricing():
     assert np.abs((np.log(b_mid) - fair)[10_000:14_990]).max() * 1e4 < 1.0   # tracks within 1 bp
     e = edges(al, "ratio", None, (alpha, beta))["sell_b_buy_a"]
     assert e[15_000] > 4.5 and e[14_990] < 0.5                               # the 6 bps rich spell stands out
+
+
+def test_role_features_follow_the_direction():
+    cols = {f"f_{leg}_{side}{k}": v for leg, base in (("a", 10.0), ("b", 20.0))
+            for side, add in (("bid", 1.0), ("ask", 2.0)) for k, v in (("_notional", base + add), ("_depth5_notional", 5 * (base + add)))}
+    feats = pd.DataFrame({**cols, "f_a_age_ms": 0.0, "f_b_age_ms": 70.0, "f_a_flow_imbalance_1s": 0.3,
+                          "f_b_flow_imbalance_1s": -0.2}, index=[0])
+    r = role_features(feats, "sell_a_buy_b")             # sells at a's bid, buys at b's ask
+    assert (r["f_sell_is_a"], r["f_sell_notional"], r["f_buy_notional"]) == (1.0, 11.0, 22.0)
+    assert (r["f_sell_depth5_notional"], r["f_buy_depth5_notional"], r["f_touch_notional"]) == (55.0, 110.0, 11.0)
+    assert (r["f_sell_age_ms"], r["f_buy_age_ms"]) == (0.0, 70.0)
+    assert np.isclose(r["f_sell_imbalance"], 11 / (11 + 12)) and np.isclose(r["f_buy_imbalance"], 22 / (22 + 21))
+    assert (r["f_sell_flow_imbalance_1s"], r["f_buy_flow_imbalance_1s"]) == (0.3, -0.2)
+    r = role_features(feats, "sell_b_buy_a")             # the mirror image
+    assert (r["f_sell_is_a"], r["f_sell_notional"], r["f_buy_notional"], r["f_touch_notional"]) == (0.0, 21.0, 12.0, 12.0)
+    assert (r["f_sell_age_ms"], r["f_buy_flow_imbalance_1s"]) == (70.0, 0.3)
+    # the spot-perpetual and ratio directions name their legs differently
+    assert SELL_LEG["sell_perp_buy_spot"] == "b" and SELL_LEG["buy_perp_sell_spot"] == "a" and SELL_LEG["buy_b_sell_a"] == "a"

@@ -99,6 +99,19 @@ class Calibrator:
         return self.iso.X_thresholds_.tolist(), self.iso.y_thresholds_.tolist()
 
 
+def q_quality(y: np.ndarray, p: np.ndarray) -> dict:
+    """How well predicted fill probabilities p match outcomes y: AUC (ranking), Brier score, and
+    Brier skill against always predicting y's own fill rate (0 = no better, 1 = perfect)."""
+    from sklearn.metrics import roc_auc_score
+    y, p = np.asarray(y).astype(float), np.asarray(p, float)
+    if not len(y):
+        return {"n": 0, "fill_rate": np.nan, "auc": np.nan, "brier": np.nan, "brier_skill": np.nan}
+    base = float(y.mean())
+    brier, ref = float(np.mean((p - y) ** 2)), base * (1 - base)
+    return {"n": int(len(y)), "fill_rate": base, "auc": float(roc_auc_score(y, p)) if 0 < base < 1 else np.nan,
+            "brier": brier, "brier_skill": 1 - brier / ref if ref > 0 else np.nan}
+
+
 def single_decision_latency_ms(model, X: pd.DataFrame, repeats: int = 300) -> float:
     """Median wall time to score one trigger, as a live system would."""
     rows = [X.iloc[[i % len(X)]] for i in range(repeats)]

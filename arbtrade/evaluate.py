@@ -47,7 +47,7 @@ from arbdata.episodes import CROSS_SIGN, cross_offset_bps, label_pair_day
 from arbdata.splits import walk_forward_folds
 
 from .policies import (GAP_ONLY_FEATURES, Calibrator, FastPrior, SlowModel, choose_margins, expected_value_gain,
-                       fit_gain, miss_loss_bps)
+                       fit_gain, miss_loss_bps, q_quality)
 from .convergence import exit_signal_times, execute_convergence
 from .replay import MODES, Leg, execute, seen_after_us
 
@@ -328,7 +328,7 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
     taus = list(lat_of)
     dump_taus = set(taus) if leg_latency_ms else set(DUMP_TAUS_MS)
     fee_sets = [tuple(venue_fees)] if venue_fees else [(f, f) for f in fees]
-    rows, day_rows, trade_rows = [], [], []
+    rows, day_rows, trade_rows, quality_rows = [], [], [], []
     meta = {"pair": pair, "offset_aware": offset_aware, "offset_window_s": OFFSET_WINDOW_S if offset_aware else None,
             "latencies_ms": {str(t): list(lat_of[t]) for t in taus},
             "feed_delay_ms": list(feed), "births_from_delayed_view": gate_fast, "deplete_liquidity": deplete_liquidity,
@@ -400,11 +400,15 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                 Xfit, Xcal, Xval = cat(fit_d), cat(cal_d), cat(va)
                 for tau in taus:
                     fit_now, fit_slow = res(fit_d, tau), res_slow(fit_d, tau)
-                    yf, yfd = fit_now.full_fill.to_numpy(), fit_slow.full_fill.to_numpy()
-                    if yf.all() or not yf.any() or yfd.all() or not yfd.any():
-                        continue
-                    fast, slow = FastPrior().fit(Xfit, yf), SlowModel().fit(Xfit, yfd)
-                    gap = FastPrior(GAP_ONLY_FEATURES).fit(Xfit, yf)
+                    # Each model learns from the triggers it could trade: those whose gap the trader still
+                    # sees when it decides. The others are skipped whatever the model says.
+                    of = fit_now.still_open.to_numpy()
+                    os_ = of & fit_slow.still_open.to_numpy()
+                    yf, yfd = fit_now.full_fill.to_numpy()[of], fit_slow.full_fill.to_numpy()[os_]
+                    if yf.all() or not yf.any() or not len(yfd):
+                        continue  # nothing to learn (at 0 ms every optimistic trigger fills)
+                    fast, slow = FastPrior().fit(Xfit[of], yf), SlowModel().fit(Xfit[os_], yfd)
+                    gap = FastPrior(GAP_ONLY_FEATURES).fit(Xfit[of], yf)
                     L_now = miss_loss_bps(fit_now[fit_now.still_open], pcol + "_bps")
                     L_slow = miss_loss_bps(fit_slow[fit_slow.still_open], pcol + "_bps")
                     if convergence:  # payoff of a fill is learned: it depends on the later reversion
@@ -416,9 +420,11 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                         g_now = g_slow = (-trigger, 1.0)
 
                     cal_now, cal_slow = res(cal_d, tau), res_slow(cal_d, tau)
-                    cal_f = Calibrator().fit(fast.predict(Xcal), cal_now.full_fill.to_numpy())
-                    cal_g = Calibrator().fit(gap.predict(Xcal), cal_now.full_fill.to_numpy())
-                    cal_s = Calibrator().fit(slow.predict(Xcal), cal_slow.full_fill.to_numpy())
+                    oc = cal_now.still_open.to_numpy()
+                    ocs = oc & cal_slow.still_open.to_numpy()
+                    cal_f = Calibrator().fit(fast.predict(Xcal[oc]), cal_now.full_fill.to_numpy()[oc])
+                    cal_g = Calibrator().fit(gap.predict(Xcal[oc]), cal_now.full_fill.to_numpy()[oc])
+                    cal_s = Calibrator().fit(slow.predict(Xcal[ocs]), cal_slow.full_fill.to_numpy()[ocs])
                     q_fast = lambda X: cal_f.transform(fast.predict(X))
                     q_slow = lambda X: cal_s.transform(slow.predict(X))
                     ev_cal_f = expected_value_gain(q_fast(Xcal), Xcal[ecol].to_numpy(), g_now, L_now)
@@ -436,6 +442,13 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                     act = ev_f > hi
                     ask = (ev_f >= lo) & ~act
                     cols = ["pnl", "pnl_rel", "full_fill", "hedged"]
+                    # How good each model's fill probability is on the triggers it could have traded.
+                    seen_slow = later.still_open.to_numpy() & seen
+                    for model, q, y, m in (("gap size only", cal_g.transform(gap.predict(Xval)), now.full_fill, seen),
+                                           ("fast prior", q_fast(Xval), now.full_fill, seen),
+                                           ("slow model", q_slow(Xval), later.full_fill, seen_slow)):
+                        quality_rows.append({"fee_bps_per_leg": fee, "mode": mode, "fold": k, "tau_ms": tau, "model": model,
+                                             **q_quality(y.to_numpy()[m], np.asarray(q)[m])})
 
                     def outcome(take, slow_ch):
                         """Each trigger's outcome under a strategy that trades `take`, deciding the `slow_ch`
@@ -519,6 +532,7 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
     out_dir.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_dir / "pnl_vs_latency_folds.csv", index=False)
     pd.DataFrame(day_rows).to_csv(out_dir / "pnl_by_day.csv", index=False)
+    pd.DataFrame(quality_rows).to_csv(out_dir / "model_quality.csv", index=False)
     (out_dir / "meta.json").write_text(json.dumps(meta, indent=1))
     if trade_rows:
         pd.concat(trade_rows, ignore_index=True).to_parquet(out_dir / "trades.parquet", index=False)

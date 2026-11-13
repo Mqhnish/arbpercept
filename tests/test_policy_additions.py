@@ -1,9 +1,10 @@
-"""The gap-size-only baseline, the exported calibration map, and the leg-risk term net of the offset."""
+"""The gap-size-only baseline, the exported calibration map, the leg-risk term net of the offset,
+and the fill-probability quality scores."""
 
 import numpy as np
 import pandas as pd
 
-from arbtrade.policies import FAST_FEATURES, GAP_ONLY_FEATURES, Calibrator, FastPrior, miss_loss_bps
+from arbtrade.policies import FAST_FEATURES, GAP_ONLY_FEATURES, Calibrator, FastPrior, miss_loss_bps, q_quality
 
 
 def test_gap_size_baseline_uses_only_the_gap():
@@ -32,3 +33,16 @@ def test_miss_loss_can_use_pnl_net_of_the_offset():
     out = pd.DataFrame({"full_fill": [True, False], "pnl_bps": [9.0, 1.0], "pnl_rel_bps": [6.0, -2.0]})
     assert miss_loss_bps(out) == 1.0
     assert miss_loss_bps(out, "pnl_rel_bps") == -2.0
+
+
+def test_q_quality_scores_ranking_and_calibration():
+    y = np.array([0, 0, 1, 1])
+    perfect = q_quality(y, np.array([0.0, 0.0, 1.0, 1.0]))
+    assert perfect["auc"] == 1.0 and perfect["brier"] == 0.0 and perfect["brier_skill"] == 1.0
+    base = q_quality(y, np.full(4, 0.5))                 # always the fill rate: no skill, no ranking
+    assert base["auc"] == 0.5 and base["brier_skill"] == 0.0 and base["fill_rate"] == 0.5 and base["n"] == 4
+    overconfident = q_quality(y, np.array([0.4, 0.6, 0.9, 1.0]) ** 0.1)   # ranks perfectly, says too much
+    assert overconfident["auc"] == 1.0 and overconfident["brier_skill"] < 0
+    one_class = q_quality(np.ones(3), np.full(3, 0.9))   # no ranking to score with one outcome only
+    assert np.isnan(one_class["auc"]) and np.isnan(one_class["brier_skill"])
+    assert q_quality(np.array([]), np.array([]))["n"] == 0

@@ -90,6 +90,36 @@ def edges(al: pd.DataFrame, pair_type: str, basis_ref: np.ndarray | None,
     }
 
 
+# The leg each direction sells (it buys the other one).
+SELL_LEG = {"sell_a_buy_b": "a", "sell_b_buy_a": "b", "sell_perp_buy_spot": "b", "buy_perp_sell_spot": "a",
+            "buy_b_sell_a": "a"}
+
+
+def role_features(feats: pd.DataFrame, direction: str) -> dict[str, np.ndarray]:
+    """The quotes this direction's orders would hit, by role instead of by venue: the sell leg's bid
+    and the buy leg's ask. The per-venue features (f_a_*, f_b_*) describe both sides of both books
+    but not which of them the trade needs, and births of both directions share one model."""
+    s = SELL_LEG[direction]
+    b = "b" if s == "a" else "a"
+    f = {"f_sell_is_a": np.full(len(feats), float(s == "a")),  # which venue is sold: the venues differ in latency
+         "f_sell_notional": feats[f"f_{s}_bid_notional"].to_numpy(),
+         "f_buy_notional": feats[f"f_{b}_ask_notional"].to_numpy(),
+         "f_sell_depth5_notional": feats[f"f_{s}_bid_depth5_notional"].to_numpy(),
+         "f_buy_depth5_notional": feats[f"f_{b}_ask_depth5_notional"].to_numpy(),
+         "f_sell_age_ms": feats[f"f_{s}_age_ms"].to_numpy(), "f_buy_age_ms": feats[f"f_{b}_age_ms"].to_numpy()}
+    f["f_touch_notional"] = np.minimum(f["f_sell_notional"], f["f_buy_notional"])  # what both orders can fill
+    # Share of each touch that sits on the side the order needs. A thin side next to a heavy opposite
+    # side tends to be taken out next, so the quote is gone before the order lands.
+    f["f_sell_imbalance"] = f["f_sell_notional"] / (f["f_sell_notional"] + feats[f"f_{s}_ask_notional"].to_numpy())
+    f["f_buy_imbalance"] = f["f_buy_notional"] / (f["f_buy_notional"] + feats[f"f_{b}_bid_notional"].to_numpy())
+    for c in feats.columns:  # order flow at the leg being sold and the leg being bought
+        if c.startswith(f"f_{s}_flow_imbalance_"):
+            f[c.replace(f"f_{s}_", "f_sell_")] = feats[c].to_numpy()
+        elif c.startswith(f"f_{b}_flow_imbalance_"):
+            f[c.replace(f"f_{b}_", "f_buy_")] = feats[c].to_numpy()
+    return f
+
+
 def label_runs(t: np.ndarray, edge: np.ndarray, valid: np.ndarray, hurdle: float,
                warmup_end: int, resolution_ms: float) -> pd.DataFrame:
     n = len(t)
@@ -240,6 +270,8 @@ def label_pair_day(al: pd.DataFrame, pair: PairSpec, date: str, hurdles: dict[st
             for leg, tr in (("a", trades[0]), ("b", trades[1])):
                 for k, v in trade_flow_at(tr, births, trade_windows, margin_us, leg).items():
                     feats[k] = v
+            for k, v in role_features(feats, direction).items():
+                feats[k] = v
             frames.append(pd.concat([ep.reset_index(drop=True), feats], axis=1))
     if not frames:
         return pd.DataFrame()
