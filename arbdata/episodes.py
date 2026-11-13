@@ -108,10 +108,6 @@ def role_features(feats: pd.DataFrame, direction: str) -> dict[str, np.ndarray]:
          "f_buy_depth5_notional": feats[f"f_{b}_ask_depth5_notional"].to_numpy(),
          "f_sell_age_ms": feats[f"f_{s}_age_ms"].to_numpy(), "f_buy_age_ms": feats[f"f_{b}_age_ms"].to_numpy()}
     f["f_touch_notional"] = np.minimum(f["f_sell_notional"], f["f_buy_notional"])  # what both orders can fill
-    # Share of each touch that sits on the side the order needs. A thin side next to a heavy opposite
-    # side tends to be taken out next, so the quote is gone before the order lands.
-    f["f_sell_imbalance"] = f["f_sell_notional"] / (f["f_sell_notional"] + feats[f"f_{s}_ask_notional"].to_numpy())
-    f["f_buy_imbalance"] = f["f_buy_notional"] / (f["f_buy_notional"] + feats[f"f_{b}_bid_notional"].to_numpy())
     for c in feats.columns:  # order flow at the leg being sold and the leg being bought
         if c.startswith(f"f_{s}_flow_imbalance_"):
             f[c.replace(f"f_{s}_", "f_sell_")] = feats[c].to_numpy()

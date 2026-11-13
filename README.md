@@ -205,6 +205,14 @@ The last five read the live recordings. The resolution check also needs Bybit's 
 
 All numbers below are simulation results on development days. The Binance–Bybit tables are the v9 re-run with every later fix: births and features built from the delayed books when a feed delay is set, the closing split into executed and assumed parts, and conservative fills limited to the smallest size shown while each price held (`data/reports/pnl/<pair>_v9_real/inventory.md`).
 
+**Fill-model changes after v9 (not in the tables below).** Three changes went into the code after the v9 run, and the tables have not been re-run with them:
+
+- The slow model gets features by role as well as by venue: the sell leg's bid, the buy leg's ask, the size both orders can fill, each leg's quote age and order flow, and which venue is sold (`role_features` in `arbdata/episodes.py`).
+- Each model is fitted and calibrated only on triggers the trader can still trade when it decides. Before, triggers it would have skipped anyway counted as failed fills.
+- `arbtrade.evaluate` writes `model_quality.csv`: AUC and Brier skill of each model's fill probability, per fold.
+
+Measured on BTC, ETH and SOL (Binance–Bybit, the v9 setup, same validation days): the slow model's AUC rose on every coin and under both fill assumptions, by 0.001 to 0.009 (BTC optimistic 0.766 to 0.767, SOL conservative 0.830 to 0.839). P&L did not change measurably: every paired day-bootstrap interval of the difference includes zero (slow-always, optimistic: BTC +$0.22 a day [−1.07, +1.48], ETH +$0.23 [−0.66, +1.13], SOL −$0.34 [−2.40, +1.82]). These choices were made by looking at validation days, so they are not an out-of-sample result. Two further ideas were tried and left out: book imbalance at each touch (AUC up, SOL P&L down) and 100 ms volatility and update-rate windows (SOL P&L down, interval below zero).
+
 **Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals.
 
 *BTC and ETH, May 2023 to January 2024:*

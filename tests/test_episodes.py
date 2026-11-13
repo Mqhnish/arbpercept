@@ -82,7 +82,6 @@ def test_role_features_follow_the_direction():
     assert (r["f_sell_is_a"], r["f_sell_notional"], r["f_buy_notional"]) == (1.0, 11.0, 22.0)
     assert (r["f_sell_depth5_notional"], r["f_buy_depth5_notional"], r["f_touch_notional"]) == (55.0, 110.0, 11.0)
     assert (r["f_sell_age_ms"], r["f_buy_age_ms"]) == (0.0, 70.0)
-    assert np.isclose(r["f_sell_imbalance"], 11 / (11 + 12)) and np.isclose(r["f_buy_imbalance"], 22 / (22 + 21))
     assert (r["f_sell_flow_imbalance_1s"], r["f_buy_flow_imbalance_1s"]) == (0.3, -0.2)
     r = role_features(feats, "sell_b_buy_a")             # the mirror image
     assert (r["f_sell_is_a"], r["f_sell_notional"], r["f_buy_notional"], r["f_touch_notional"]) == (0.0, 21.0, 12.0, 12.0)
