@@ -1,4 +1,4 @@
-"""Compile a fitted HistGradientBoostingClassifier into a Numba tree walker.
+"""Compile a fitted HistGradientBoostingClassifier (or Regressor) into a Numba tree walker.
 
 sklearn's predict_proba spends milliseconds per call on input checks and Python overhead,
 which on a single trigger is the whole cost of the slow path. The model itself is just a
@@ -66,6 +66,10 @@ class CompiledTrees:
 
     def _args(self):
         return (self.feat, self.thr, self.mleft, self.left, self.right, self.leaf, self.val, self.starts, self.base)
+
+    def raw_one(self, x: np.ndarray) -> float:
+        """The summed tree output: a regressor's prediction, a classifier's log-odds."""
+        return float(_raw_one(np.asarray(x, dtype=np.float64), *self._args()))
 
     def predict_one(self, x: np.ndarray) -> float:
         return 1.0 / (1.0 + np.exp(-_raw_one(np.asarray(x, dtype=np.float64), *self._args())))

@@ -213,6 +213,18 @@ All numbers below are simulation results on development days. The Binance–Bybi
 
 Measured on BTC, ETH and SOL (Binance–Bybit, the v9 setup, same validation days): the slow model's AUC rose on every coin and under both fill assumptions, by 0.001 to 0.009 (BTC optimistic 0.766 to 0.767, SOL conservative 0.830 to 0.839). P&L did not change measurably: every paired day-bootstrap interval of the difference includes zero (slow-always, optimistic: BTC +$0.22 a day [−1.07, +1.48], ETH +$0.23 [−0.66, +1.13], SOL −$0.34 [−2.40, +1.82]). These choices were made by looking at validation days, so they are not an out-of-sample result. Two further ideas were tried and left out: book imbalance at each touch (AUC up, SOL P&L down) and 100 ms volatility and update-rate windows (SOL P&L down, interval below zero).
 
+**Miss cost per trigger (after v9, not in the tables below).** The expected value is `q·(edge − fees) + (1 − q)·L`. Until now L was one number: the average outcome of every training trade that did not fully fill. A miss is either no fill at all, which costs nothing, or one leg filled and unwound across the spread, and which of the two is likely depends on the trigger. The slow path now predicts L for each trigger with a second boosted model, fitted on training-day misses only (`MissCost` in `arbtrade/policies.py`). The fast path keeps the average. The two compiled models together take 20 µs per trigger, measured, against 7–8 µs for the fill model alone, so these runs make the slow path wait 40 µs instead of 30.
+
+Measured on the same validation days as above, optimistic fills, net of the offset, per day, with paired day-bootstrap 95% intervals of the difference:
+
+| Coin | Slow-always before | Slow-always after | Difference | Trades before → after |
+|---|---|---|---|---|
+| BTC | $27.35 | $34.32 | +$6.97 [+4.88, +9.33] | 2,392 → 3,274 |
+| ETH | $23.32 | $25.43 | +$2.12 [+0.87, +3.45] | 1,749 → 2,413 |
+| SOL | $29.57 | $38.94 | +$9.37 [+5.68, +13.24] | 3,551 → 6,326 |
+
+The cascade moves by the same amounts (BTC +$6.96, ETH +$2.62, SOL +$8.91, every interval above zero). Under conservative fills every strategy stays within a dollar of zero, as before, and the change is flat to slightly negative there (slow-always: BTC −$0.13 [−0.72, +0.51], ETH −$0.42 [−0.87, −0.04], SOL −$0.70 [−1.81, +0.40]). These figures are before the position is closed: the inventory accounting in the tables below has not been re-run with the new model, and the other six coins have not been tested. The design was chosen by looking at validation days, so it is not an out-of-sample result. Two alternatives were tried and left out: a single model that predicts a trigger's P&L directly (weaker and inconsistent across coins) and an isotonic calibration of the new expected value (no consistent gain).
+
 **Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals.
 
 *BTC and ETH, May 2023 to January 2024:*

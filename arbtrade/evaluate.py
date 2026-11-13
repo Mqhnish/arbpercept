@@ -46,14 +46,15 @@ from arbdata.config import load_config
 from arbdata.episodes import CROSS_SIGN, cross_offset_bps, label_pair_day
 from arbdata.splits import walk_forward_folds
 
-from .policies import (GAP_ONLY_FEATURES, Calibrator, FastPrior, SlowModel, choose_margins, expected_value_gain,
-                       fit_gain, miss_loss_bps, q_quality)
+from .policies import (GAP_ONLY_FEATURES, Calibrator, FastPrior, MissCost, SlowModel, choose_margins,
+                       expected_value_gain, fit_gain, miss_loss_bps, q_quality)
 from .convergence import exit_signal_times, execute_convergence
 from .replay import MODES, Leg, execute, seen_after_us
 
 TAUS_MS = [0, 1, 2, 5, 10, 20, 50, 100, 200]
 NOTIONAL = 10_000.0
 DIRECTIONS = {"sell_a_buy_b": ("a", "b"), "sell_b_buy_a": ("b", "a")}
+MIN_MISSES = 500  # fewer missed training trades than this: use their average cost for every trigger
 HOLD_S = 60  # convergence trades: maximum holding time before closing out
 OFFSET_WINDOW_S = 300.0  # --offset-aware: trailing window for the venues' usual offset
 # Convergence pairs: (sell leg, buy leg, +1 if the trade bets on b being rich) per direction.
@@ -250,13 +251,16 @@ def fold_days(fold: dict, have_train: set, have_val: set) -> tuple[list, list, l
     return tr[:cut], tr[cut:], va
 
 
-def measure_latencies(fast: FastPrior, slow: SlowModel, X: pd.DataFrame, repeats: int = 300) -> tuple[float, float]:
+def measure_latencies(fast: FastPrior, slow: SlowModel, X: pd.DataFrame, repeats: int = 300,
+                      miss_cost: MissCost | None = None) -> tuple[float, float]:
     """Median single-trigger inference time in ms, on plain arrays as a live system would use.
-    The slow model is timed in its compiled form (arbtrade/compiled.py). Feature computation is
+    The slow model is timed in its compiled form (arbtrade/compiled.py), together with the
+    miss-cost model when given, since a slow decision evaluates both. Feature computation is
     not included: here the slow features are computed offline. Live, arbtrade/slowpath.py computes
     them one update at a time, and `python -m arbtrade.slowpath` times that."""
     Xf = X[fast.features].to_numpy()
     Xs = X[slow.cols].to_numpy()
+    Xm = X[miss_cost.cols].to_numpy() if miss_cost is not None else None
     tf, ts = [], []
     warnings.filterwarnings("ignore", message="X does not have valid feature names")
     for i in range(repeats):
@@ -265,8 +269,11 @@ def measure_latencies(fast: FastPrior, slow: SlowModel, X: pd.DataFrame, repeats
         z = np.where(np.isnan(row_f), fast.median, row_f)
         _ = 1 / (1 + np.exp(-(((z - fast.mu) / fast.sd) @ fast.w + fast.b)))
         tf.append(time.perf_counter() - t0)
+        row_m = None if Xm is None else Xm[i % len(Xm)]
         t0 = time.perf_counter()
         slow.compiled.predict_one(row_s[0])
+        if row_m is not None:
+            miss_cost.compiled.raw_one(row_m)
         ts.append(time.perf_counter() - t0)
     return float(np.median(tf) * 1e3), float(np.median(ts) * 1e3)
 
@@ -359,12 +366,14 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
         first = folds[0]["train"]
         X0 = pd.concat([days[d][0] for d in first if d in days], ignore_index=True)
         # Labels at 10 ms: at 0 ms every optimistic trigger fills, which leaves nothing to learn.
-        y0 = pd.concat([replay_day(days[d][0], days[d][1], 10, fee_a, "optimistic", fee_b_bps=fee_b)
-                        for d in first if d in days]).full_fill.to_numpy()
-        fast_ms, slow_ms = measure_latencies(FastPrior().fit(X0, y0), SlowModel().fit(X0, y0), X0)
+        r0 = pd.concat([replay_day(days[d][0], days[d][1], 10, fee_a, "optimistic", fee_b_bps=fee_b)
+                        for d in first if d in days], ignore_index=True)
+        y0 = r0.full_fill.to_numpy()
+        mc0 = MissCost().fit(X0[~y0], r0.pnl_bps.to_numpy()[~y0]) if (~y0).sum() >= MIN_MISSES else None
+        fast_ms, slow_ms = measure_latencies(FastPrior().fit(X0, y0), SlowModel().fit(X0, y0), X0, miss_cost=mc0)
         delta = float(np.ceil(slow_ms * 100) / 100) if slow_wait_ms is None else float(slow_wait_ms)  # measured, rounded up to 10 µs
         meta.setdefault("latency_ms", {})[str(fee)] = {"fast_prior": fast_ms, "slow_model": slow_ms, "slow_wait_used": delta}
-        print(f"  measured inference: fast prior {fast_ms * 1000:.1f} µs, compiled slow model {slow_ms * 1000:.1f} µs -> slow path waits {delta} ms", flush=True)
+        print(f"  measured inference: fast prior {fast_ms * 1000:.1f} µs, compiled slow model and miss cost {slow_ms * 1000:.1f} µs -> slow path waits {delta} ms", flush=True)
 
         for mode in MODES:
             out = {d: {t: rp(e, legs, t, mode) for t in taus} for d, (e, legs) in days.items()}
@@ -411,6 +420,12 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                     gap = FastPrior(GAP_ONLY_FEATURES).fit(Xfit[of], yf)
                     L_now = miss_loss_bps(fit_now[fit_now.still_open], pcol + "_bps")
                     L_slow = miss_loss_bps(fit_slow[fit_slow.still_open], pcol + "_bps")
+                    # The slow path also predicts what a miss costs for this trigger (no fill costs nothing,
+                    # one filled leg costs an unwind), instead of one average over all misses.
+                    miss = os_ & ~fit_slow.full_fill.to_numpy()
+                    miss_cost = (MissCost().fit(Xfit[miss], fit_slow[pcol + "_bps"].to_numpy()[miss])
+                                 if miss.sum() >= MIN_MISSES else None)
+                    L_slow_of = lambda X: miss_cost.predict(X) if miss_cost is not None else np.full(len(X), L_slow)
                     if convergence:  # payoff of a fill is learned: it depends on the later reversion
                         e_fit = Xfit.edge_birth_bps.to_numpy()
                         g_now = fit_gain(e_fit, fit_now)
@@ -428,7 +443,7 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                     q_fast = lambda X: cal_f.transform(fast.predict(X))
                     q_slow = lambda X: cal_s.transform(slow.predict(X))
                     ev_cal_f = expected_value_gain(q_fast(Xcal), Xcal[ecol].to_numpy(), g_now, L_now)
-                    ev_cal_s = expected_value_gain(q_slow(Xcal), Xcal[ecol].to_numpy(), g_slow, L_slow)
+                    ev_cal_s = expected_value_gain(q_slow(Xcal), Xcal[ecol].to_numpy(), g_slow, L_slow_of(Xcal))
                     lo, hi = choose_margins(ev_cal_f, cal_now[pcol].to_numpy(), cal_slow[pcol].to_numpy(),
                                             (ev_cal_s > 0) & cal_slow.still_open.to_numpy() & cal_now.still_open.to_numpy())
 
@@ -438,7 +453,7 @@ def run(pair: str, fees: list[float], out_dir, slow_wait_ms: float | None = None
                     ev_f = np.where(seen, expected_value_gain(q_fast(Xval), edge, g_now, L_now), -np.inf)
                     ev_g = np.where(seen, expected_value_gain(cal_g.transform(gap.predict(Xval)), edge, g_now, L_now), -np.inf)
                     ev_s = np.where(later.still_open.to_numpy() & seen,
-                                    expected_value_gain(q_slow(Xval), edge, g_slow, L_slow), -np.inf)
+                                    expected_value_gain(q_slow(Xval), edge, g_slow, L_slow_of(Xval)), -np.inf)
                     act = ev_f > hi
                     ask = (ev_f >= lo) & ~act
                     cols = ["pnl", "pnl_rel", "full_fill", "hedged"]

@@ -46,3 +46,16 @@ def test_q_quality_scores_ranking_and_calibration():
     one_class = q_quality(np.ones(3), np.full(3, 0.9))   # no ranking to score with one outcome only
     assert np.isnan(one_class["auc"]) and np.isnan(one_class["brier_skill"])
     assert q_quality(np.array([]), np.array([]))["n"] == 0
+
+
+def test_miss_cost_predicts_per_trigger_and_compiles_to_the_same_numbers():
+    from arbtrade.policies import MissCost
+    rng = np.random.default_rng(0)
+    X = pd.DataFrame({"f_x": rng.normal(size=4000), "f_noise": rng.normal(size=4000),
+                      "edge_birth_bps": rng.uniform(5, 8, 4000)})
+    cost = np.where(X.f_x > 0, -3.0, 0.0) + rng.normal(0, 0.1, 4000)  # misses are costly only when f_x > 0
+    m = MissCost().fit(X, cost)
+    p = m.predict(X)
+    assert p[X.f_x > 0.2].mean() < -2.5 and abs(p[X.f_x < -0.2].mean()) < 0.3
+    rows = X[m.cols].to_numpy()
+    assert np.allclose([m.compiled.raw_one(r) for r in rows[:50]], p[:50])

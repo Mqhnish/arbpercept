@@ -4,7 +4,8 @@ q(tau | x) = P(both legs still fill in full after tau), learned from replayed ou
 training days. Expected value of acting with total delay tau, in bps of notional:
     EV(tau) = q * (edge - fees) + (1 - q) * L(tau)
 where L(tau) is the average outcome when the trade does not fully fill (zero for no fill,
-negative for leg-risk unwinds), estimated on training days. This is the abstract's
+negative for leg-risk unwinds), estimated on training days. The fast path uses one average;
+the slow path predicts L per trigger (MissCost). This is the abstract's
 S = e*q - (1-q)*pi*l - c with pi*l folded into one measured term.
 """
 
@@ -72,6 +73,30 @@ class SlowModel:
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         return self.model.predict_proba(X[self.cols])[:, 1]
+
+
+class MissCost:
+    """What a trade costs when it does not fully fill, predicted per trigger (bps of its notional).
+
+    A miss is either no fill at all, which costs nothing, or one leg (or part of one) filled and
+    unwound across the spread. Which of the two is likely, and how far the price runs before the
+    unwind, depends on the trigger, so one average over all misses overcharges the harmless ones.
+    Boosted trees of the same number and size as SlowModel, fitted on training-day misses only.
+    """
+
+    def fit(self, X: pd.DataFrame, pnl_bps: np.ndarray) -> "MissCost":
+        from sklearn.ensemble import HistGradientBoostingRegressor
+        self.cols = slow_features(X)
+        self.model = HistGradientBoostingRegressor(max_iter=200, learning_rate=0.05, max_leaf_nodes=31,
+                                                   min_samples_leaf=100, l2_regularization=1.0,
+                                                   early_stopping=False, random_state=0)
+        self.model.fit(X[self.cols], np.asarray(pnl_bps, float))
+        from .compiled import CompiledTrees
+        self.compiled = CompiledTrees(self.model)  # raw_one(x) gives the same number as predict
+        return self
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict(X[self.cols])
 
 
 class Calibrator:
