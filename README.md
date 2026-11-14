@@ -339,6 +339,31 @@ Fills are limited to displayed top-of-book size, with no queue position or marke
 
 The decision framework (decay prediction plus latency-aware gating) is what carries over, to maker-taker execution and to other pairs.
 
+## Slower strategies at retail fees (side study, outside the hackathon)
+
+The arbitrage above needs exchange-level fees and hosted servers. This side study asks what is left for an account paying standard taker fees from a home connection, using strategies that trade a few times a month, so speed does not matter. Scripts are in `analysis/carry/`; they download free public history (Binance's archive, Bybit's and Hyperliquid's public APIs) for 1 Apr 2024 to 30 Sep 2026, which is outside both holdouts.
+
+Rules were tuned on the days before 1 Jul 2025 and tested on the 15 months after. Returns are per year on total capital, after fees, with a weekly block bootstrap for the interval.
+
+| Strategy | Tuning period | Test period [95% interval] |
+|---|---|---|
+| Hold spot, short the perp, 20 large coins (Bybit) | 4.1% | 1.2% [0.4, 1.9] |
+| Same on Binance | 3.4% | 1.5% [1.1, 1.9] |
+| Same, rotating among all 288 Bybit coins with a spot pair, 5 slots | 5.2% | 3.3% [2.4, 4.2] |
+| Hold spot, short the Hyperliquid perp, 6 large coins | 7.0% | 3.1% [2.0, 4.4] |
+| Opposite perps on Binance and Bybit | 0.8% | 0.4% [0.1, 0.6] |
+| Opposite perps on Hyperliquid and Bybit, 6 large coins | 4.7% | 2.9% [2.0, 3.9] |
+| Long/short basket by funding, weekly | 13% | −7% [−53, 41] |
+| Long/short basket by 28-day momentum, weekly | 18% | −3% [−40, 36] |
+| Long/short basket by 7-day reversal, weekly | 13% | −21% [−62, 26] |
+| Long/short basket by low volatility, weekly | 27% | 11% [−41, 62] |
+| BTC perp long above its 50-day average, else flat | 20% | 9% [−42, 68] |
+
+- Collecting funding is the only strategy whose test interval is above zero, and it pays about 3% a year. Funding itself has fallen: the rotating version made 6.4% a year in 2024, 3.9% in 2025 and 2.6% in 2026.
+- The five directional or basket strategies have intervals tens of points wide on both sides of zero, and drawdowns of 26% to 50%. Fifteen months of daily data cannot tell them from luck.
+- The carry is not free of risk. Over the whole run the rotating version needed 13 margin top-ups, and one shorted perp rose 154% in a day; without a top-up that short is liquidated while the spot leg sits in another wallet.
+- Limits: the 288 coins are the ones listed today, so delisted coins are missing. The rows on 20 or 6 coins count funding only; the rotating row also counts the daily change in the spot-perp price gap. Hyperliquid history was downloaded for 6 coins only. Prices are daily closes, so intraday liquidation is not modelled. Tax and the cost of moving money between venues are left out.
+
 ## Ideas taken from other projects
 
 We compared our system with three public arbitrage projects and adopted what was missing. None of them uses a predictive model; their strength is execution bookkeeping. All code here is our own implementation of the ideas.
