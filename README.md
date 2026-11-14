@@ -223,7 +223,27 @@ Measured on the same validation days as above, optimistic fills, net of the offs
 | ETH | $23.32 | $25.43 | +$2.12 [+0.87, +3.45] | 1,749 → 2,413 |
 | SOL | $29.57 | $38.94 | +$9.37 [+5.68, +13.24] | 3,551 → 6,326 |
 
-The cascade moves by the same amounts (BTC +$6.96, ETH +$2.62, SOL +$8.91, every interval above zero). Under conservative fills every strategy stays within a dollar of zero, as before, and the change is flat to slightly negative there (slow-always: BTC −$0.13 [−0.72, +0.51], ETH −$0.42 [−0.87, −0.04], SOL −$0.70 [−1.81, +0.40]). These figures are before the position is closed: the inventory accounting in the tables below has not been re-run with the new model, and the other six coins have not been tested. The design was chosen by looking at validation days, so it is not an out-of-sample result. Two alternatives were tried and left out: a single model that predicts a trigger's P&L directly (weaker and inconsistent across coins) and an isotonic calibration of the new expected value (no consistent gain).
+The cascade moves by the same amounts (BTC +$6.96, ETH +$2.62, SOL +$8.91, every interval above zero). Under conservative fills every strategy stays within a dollar of zero, as before, and the change is flat to slightly negative there (slow-always: BTC −$0.13 [−0.72, +0.51], ETH −$0.42 [−0.87, −0.04], SOL −$0.70 [−1.81, +0.40]). These figures are before the position is closed. The design was chosen by looking at validation days, so it is not an out-of-sample result. Two alternatives were tried and left out: a single model that predicts a trigger's P&L directly (weaker and inconsistent across coins) and an isotonic calibration of the new expected value (no consistent gain).
+
+**All nine coins with the miss cost, inventory accounted (v10).** The same setup and accounting as the tables below ($50k cap, funding, closing within the displayed size), run with the current code and a 40 µs slow wait (`data/reports/pnl/<pair>_v10_real/inventory.md`). The tables below are the earlier v9 run and are kept as they were. Net P&L per validation day with day-bootstrap 95% intervals; the last column is paired, day by day.
+
+| Coin | Validation days | Cascade v9, optimistic | Cascade v10, optimistic | Cascade v10, conservative | v10 − v9, optimistic | v10 cascade − gap size only |
+|---|---|---|---|---|---|---|
+| BTC | 205 | $15 [7, 23] | **$20 [10, 30]** | −$1 [−1, 0] | +$5 [+2, +8] | +$12 [+4, +19] |
+| ETH | 180 | $15 [11, 21] | **$16 [11, 21]** | −$1 [−1, 0] | $0 [−2, +2] | +$9 [+6, +12] |
+| SOL | 68 | $25 [14, 37] | **$34 [21, 48]** | $0 [−1, 0] | +$9 [+6, +13] | +$18 [+12, +24] |
+| TIA | 42 | $10 [5, 16] | **$29 [21, 39]** | $0 | +$19 [+14, +25] | +$21 [+15, +29] |
+| WLD | 71 | $8 [3, 14] | **$25 [17, 35]** | $0 [0, 1] | +$17 [+12, +23] | +$23 [+15, +32] |
+| XRP | 73 | $5 [−2, 14] | $8 [0, 17] | $0 [−1, 0] | +$2 [−1, +5] | +$20 [+3, +44] |
+| ARB | 73 | $2 [−1, 6] | **$4 [1, 7]** | $0 | +$2 [0, +4] | +$3 [0, +5] |
+| AAVE | 64 | $2 [0, 5] | **$5 [2, 9]** | $0 | +$3 [+2, +5] | +$3 [+1, +5] |
+| DOGE | 73 | $0 [−6, 5] | $1 [−4, 7] | $0 [0, 1] | +$2 [−1, +5] | +$4 [−4, +13] |
+
+- **After closing the position, the gain holds on five coins:** BTC, SOL, TIA, WLD and AAVE improve with intervals above zero. ETH, XRP, ARB and DOGE are unchanged within noise. No coin got worse.
+- **ETH's gain before closing (+$2 a day) does not survive it:** after the accounting the difference is $0 [−2, +2]. We have not traced why.
+- **Seven of nine coins now have an optimistic interval above zero** (v9: five). XRP and DOGE still do not.
+- **Conservative fills are unchanged:** about break-even everywhere.
+- **v10 − v9 mixes two changes:** the miss cost and the role features described above. On BTC, ETH and SOL the role features alone moved P&L by under a dollar, so the difference is almost all the miss cost; on the other six coins the two were not separated.
 
 **Profit, with inventory accounted.** Binance vs Bybit perpetuals, $10k per trade, walk-forward validation days. Gaps are measured against the venues' trailing 5-minute offset. Positions are capped at $50k, funding is charged, no new trades are taken in each day's last 60 s, and the position is closed without taking more than the books show. Realistic setup throughout: top-tier taker fees per venue (Binance 1.7 bps, Bybit 3.0 bps), the order latencies measured from our machine (Binance 50 ms, Bybit 8 ms), a 45 ms feed delay on Bybit, and displayed size used up by earlier fills. Net P&L per validation day, with day-bootstrap 95% intervals.
 
