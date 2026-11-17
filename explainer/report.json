@@ -1,0 +1,690 @@
+{
+ "cards": [
+  {
+   "time": "2026-10-19 19:21:49",
+   "policy": "naive",
+   "action": "ENTER",
+   "text": "The system saw the coin priced 0.86 bps higher on Binance than on Bybit, and fees of 2.0 bps for the two legs together left the gap at minus 1.15 bps after fees. It still sent both orders, selling on Binance and buying on Bybit. It did this because it was running the naive policy, which trades every gap whether or not the gap covers the fees.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "gap 0.86 bps",
+   "gap": 0.86,
+   "numbers": [
+    {
+     "raw": "0.86",
+     "value": 0.86,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.15",
+     "value": 1.15,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 22:52:09",
+   "policy": "naive",
+   "action": "ENTER",
+   "text": "The system saw a price gap of 0.83 bps for the coin between Bybit and Binance, and it sent both orders, selling on Bybit and buying on Binance. The deciding reason was that it was running the naive policy, which trades every gap no matter its size. Fees of 1.0 bps on each leg came to 2.0 bps in total, which left the gap at -1.17 bps after fees.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "gap 0.83 bps",
+   "gap": 0.83,
+   "numbers": [
+    {
+     "raw": "0.83",
+     "value": 0.83,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "1.0",
+     "value": 1.0,
+     "source": {
+      "key": "fee_bps_per_leg",
+      "label": "the fee per leg, a setting of the run",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "-1.17",
+     "value": -1.17,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 23:20:14",
+   "policy": "naive",
+   "action": "ENTER",
+   "text": "The system saw the coin priced 0.92 bps higher on Bybit than on Binance, so it sold on Bybit and bought on Binance. It sent both orders. It traded because it runs the naive policy, which trades every gap, even though fees of 1.0 bps on each side add up to 2.0 bps and left the gap at negative 1.08 bps after fees.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "gap 0.92 bps",
+   "gap": 0.92,
+   "numbers": [
+    {
+     "raw": "0.92",
+     "value": 0.92,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "1.0",
+     "value": 1.0,
+     "source": {
+      "key": "fee_bps_per_leg",
+      "label": "the fee per leg, a setting of the run",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.08",
+     "value": 1.08,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 20:05:59",
+   "policy": "prior",
+   "action": "SKIP_EV",
+   "text": "The trader saw Binance priced 1.19 bps above Bybit, so the possible trade was to sell on Binance and buy on Bybit. It skipped the trade and sent nothing. The fees on both legs come to 2.0 bps, which is more than the 1.19 bps gap and leaves negative 0.81 bps, and its fast decay prior model put the expected value after fees and fill risk at negative 0.78 bps, so the trade did not have a positive expected value.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "prior expected value -0.78 bps",
+   "gap": 1.19,
+   "numbers": [
+    {
+     "raw": "1.19",
+     "value": 1.19,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.19",
+     "value": 1.19,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "0.81",
+     "value": 0.81,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "0.78",
+     "value": 0.78,
+     "source": {
+      "key": "model_ev_bps",
+      "label": "the model's expected value, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 22:08:22",
+   "policy": "prior",
+   "action": "SKIP_EV",
+   "text": "The trader saw the coin priced 0.8 bps higher on Binance than on Bybit, which meant it could sell on Binance and buy on Bybit. It skipped the trade and sent nothing. The deciding reason was cost: fees on both legs came to 2.0 bps, which left the gap at -1.2 bps after fees, and the fast decay prior expected a value of -0.88 bps once fees and fill risk were counted, so the expected value was not positive.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "prior expected value -0.88 bps",
+   "gap": 0.8,
+   "numbers": [
+    {
+     "raw": "0.8",
+     "value": 0.8,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "-1.2",
+     "value": -1.2,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "-0.88",
+     "value": -0.88,
+     "source": {
+      "key": "model_ev_bps",
+      "label": "the model's expected value, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 22:16:29",
+   "policy": "prior",
+   "action": "SKIP_EV",
+   "text": "The trader saw a price gap of 0.8 bps on this coin, which pointed toward selling on Bybit and buying on Binance. It skipped the trade because paying 1.0 bps in fees on each leg, or 2.0 bps in total, would have turned the gap into minus 1.2 bps. Its fast decay prior model, which looks at six features to judge whether a gap will last, put the expected value after fees and fill risk at minus 0.88 bps, and the trader only trades when that value is positive.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "prior expected value -0.88 bps",
+   "gap": 0.8,
+   "numbers": [
+    {
+     "raw": "0.8",
+     "value": 0.8,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "1.0",
+     "value": 1.0,
+     "source": {
+      "key": "fee_bps_per_leg",
+      "label": "the fee per leg, a setting of the run",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.2",
+     "value": 1.2,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "0.88",
+     "value": 0.88,
+     "source": {
+      "key": "model_ev_bps",
+      "label": "the model's expected value, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 20:15:57",
+   "policy": "prior",
+   "action": "SKIP_THIN",
+   "text": "The trader saw a gap of about 1.01 bps, with the coin priced higher on Binance than on Bybit. That gap was smaller than the 2.0 bps it would pay in fees across both legs, which leaves about minus 0.99 bps after fees. It skipped the trade of selling on Binance and buying on Bybit, and the reason it logged was that the order books showed only about 82 US dollars of size, which was too little to be worth trading.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "only $82 shown on both books",
+   "gap": 1.01,
+   "numbers": [
+    {
+     "raw": "1.01",
+     "value": 1.01,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "0.99",
+     "value": 0.99,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "82",
+     "value": 82.0,
+     "source": {
+      "key": "shown_usd",
+      "label": "the size shown, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 20:51:49",
+   "policy": "prior",
+   "action": "SKIP_THIN",
+   "text": "The trader saw a price gap of 0.96 bps between the two exchanges, which would have meant selling on Binance and buying on Bybit. It skipped the trade without sending any orders. The deciding reason was that the order books showed only about $82 of size, which the system judged too thin to be worth trading, and the gap was also below the 2.0 bps in fees for both legs, which would have left about negative 1.04 bps after fees.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "only $82 shown on both books",
+   "gap": 0.96,
+   "numbers": [
+    {
+     "raw": "0.96",
+     "value": 0.96,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "$82",
+     "value": 82.0,
+     "source": {
+      "key": "shown_usd",
+      "label": "the size shown, in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.04",
+     "value": 1.04,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 22:02:10",
+   "policy": "naive",
+   "action": "SKIP_THIN",
+   "text": "The trader saw a price gap of 0.86 bps for the same coin, which pointed to selling on Binance and buying on Bybit. It skipped the trade. It was running the naive policy, which normally trades every gap, but the order books showed only $82 of size available, which was too little to be worth trading.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "only $82 shown on both books",
+   "gap": 0.86,
+   "numbers": [
+    {
+     "raw": "0.86",
+     "value": 0.86,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "$82",
+     "value": 82.0,
+     "source": {
+      "key": "shown_usd",
+      "label": "the size shown, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 20:05:36",
+   "policy": "prior",
+   "action": "SKIP_STALE",
+   "text": "The trader saw a 1.2 bps price gap that pointed to selling on Binance and buying on Bybit. It skipped the trade without sending anything, because Binance's price feed had gone quiet for 8.7 seconds. With one feed that stale, the system could not trust that the quoted gap was real.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "binance book last updated 8.7 s ago",
+   "gap": 1.2,
+   "numbers": [
+    {
+     "raw": "1.2",
+     "value": 1.2,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "8.7",
+     "value": 8.7,
+     "source": {
+      "key": "quiet_s",
+      "label": "seconds the feed was quiet, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 20:49:22",
+   "policy": "prior",
+   "action": "SKIP_STALE",
+   "text": "The trader saw a gap of 0.96 bps that pointed to selling on Binance and buying on Bybit. It skipped the trade without sending anything, because Binance's price feed had gone quiet for 15.3 seconds and the quoted gap could no longer be trusted. Even apart from that, fees of 2.0 bps for both legs would have left the gap at negative 1.04 bps.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "binance book last updated 15.3 s ago",
+   "gap": 0.96,
+   "numbers": [
+    {
+     "raw": "0.96",
+     "value": 0.96,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "15.3",
+     "value": 15.3,
+     "source": {
+      "key": "quiet_s",
+      "label": "seconds the feed was quiet, in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.04",
+     "value": 1.04,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 22:07:42",
+   "policy": "prior",
+   "action": "SKIP_STALE",
+   "text": "The trader saw a gap of 0.99 bps on this coin, with the price higher on Binance than on Bybit, which would mean selling on Binance and buying on Bybit. It skipped the trade and sent no order. The deciding reason was that Binance's price feed had sent no updates for 5.1 seconds, so the system could not trust that the quoted gap was still real.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "binance book last updated 5.1 s ago",
+   "gap": 0.99,
+   "numbers": [
+    {
+     "raw": "0.99",
+     "value": 0.99,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "5.1",
+     "value": 5.1,
+     "source": {
+      "key": "quiet_s",
+      "label": "seconds the feed was quiet, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 19:33:55",
+   "policy": "naive",
+   "action": "SKIP_INVENTORY",
+   "text": "The trader saw a gap of 1.05 bps between the two exchanges, which pointed to selling on Binance and buying on Bybit. It was running the naive policy, which normally trades every gap, but this time it skipped the trade. The deciding reason was inventory: the net position was already $53,859, above the $50,000 cap, so this trade would have pushed it further past the limit.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "position would reach $53,859 (cap $50,000)",
+   "gap": 1.05,
+   "numbers": [
+    {
+     "raw": "1.05",
+     "value": 1.05,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "$53,859,",
+     "value": 53859.0,
+     "source": {
+      "key": "position_usd",
+      "label": "the position it would reach, in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "$50,000",
+     "value": 50000.0,
+     "source": {
+      "key": "cap_usd",
+      "label": "the position cap, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 19:55:57",
+   "policy": "naive",
+   "action": "SKIP_INVENTORY",
+   "text": "The trader saw a 0.83 bps price gap between the two exchanges, which would have meant selling on Binance and buying on Bybit, and after 2.0 bps of fees for both legs the gap was worth negative 1.17 bps. It was running the naive policy, which trades every gap, but it skipped this one and sent no trade. It skipped because the net position was already $50,994, above the $50,000 cap, so this trade would have pushed the position further past its limit.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "position would reach $50,994 (cap $50,000)",
+   "gap": 0.83,
+   "numbers": [
+    {
+     "raw": "0.83",
+     "value": 0.83,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "2.0",
+     "value": 2.0,
+     "source": {
+      "key": "both_legs_fees_bps",
+      "label": "two legs of fees (computed: 2 x fee per leg)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "1.17",
+     "value": 1.17,
+     "source": {
+      "key": "gap_after_fees_bps",
+      "label": "the gap against the offset minus both fees (computed)",
+      "origin": "computed"
+     }
+    },
+    {
+     "raw": "$50,994,",
+     "value": 50994.0,
+     "source": {
+      "key": "position_usd",
+      "label": "the position it would reach, in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "$50,000",
+     "value": 50000.0,
+     "source": {
+      "key": "cap_usd",
+      "label": "the position cap, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  },
+  {
+   "time": "2026-10-19 20:18:21",
+   "policy": "naive",
+   "action": "SKIP_INVENTORY",
+   "text": "The trader saw Bybit's price 1.02 bps below Binance's, so it lined up a trade to sell on Binance and buy on Bybit. It runs the naive policy, which normally trades every gap, but this time it skipped the trade. The deciding reason was the position limit: the trade would have pushed its net position past the 50,000 dollar cap, and the position figure in the log was 50,323 dollars.",
+   "writer": "claude (CLI)",
+   "verified": true,
+   "tries": 1,
+   "reason": "position would reach $50,323 (cap $50,000)",
+   "gap": 1.02,
+   "numbers": [
+    {
+     "raw": "1.02",
+     "value": 1.02,
+     "source": {
+      "key": "gap_bps",
+      "label": "the gap in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "50,000",
+     "value": 50000.0,
+     "source": {
+      "key": "cap_usd",
+      "label": "the position cap, in the log",
+      "origin": "log"
+     }
+    },
+    {
+     "raw": "50,323",
+     "value": 50323.0,
+     "source": {
+      "key": "position_usd",
+      "label": "the position it would reach, in the log",
+      "origin": "log"
+     }
+    }
+   ]
+  }
+ ],
+ "summary": {
+  "total": 877,
+  "sent": 258,
+  "prior_sent": 0
+ }
+}

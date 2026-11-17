@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import argparse
 import collections
-import html
 import json
 import os
 import random
@@ -23,6 +22,7 @@ from pathlib import Path
 
 from .explain import DEFAULT_MODEL, ClaudeAPIWriter, ClaudeCLIWriter, OllamaWriter, OpenAICompatWriter, explain
 from .facts import ACTIONS, build_facts
+from .page import card_data, render
 
 
 def load(path: Path) -> list[dict]:
@@ -56,41 +56,11 @@ def day_summary(recs: list[dict]) -> str:
     return "\n".join(lines)
 
 
-PAGE = """<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Why did it trade?</title>
-<style>
-:root{{--bg:#fafaf7;--ink:#1c1c1a;--mut:#6b6b64;--card:#fff;--line:#e4e3dc;--ok:#1f7a4d;--skip:#8a5a00;--bad:#a12626}}
-@media (prefers-color-scheme:dark){{:root{{--bg:#151513;--ink:#ecebe5;--mut:#9a9990;--card:#1e1e1b;--line:#33332e;--ok:#5bc48b;--skip:#e0a84a;--bad:#e06c6c}}}}
-body{{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,sans-serif}}
-main{{max-width:760px;margin:0 auto;padding:32px 16px 64px}}
-h1{{font-size:26px;margin:0 0 4px}} .sub{{color:var(--mut);margin:0 0 24px}}
-pre{{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:13px}}
-.card{{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0}}
-.top{{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--mut)}}
-.tag{{font-weight:600;padding:1px 8px;border-radius:99px;border:1px solid currentColor}}
-.ENTER{{color:var(--ok)}} .SKIP_EV,.SKIP_THIN,.SKIP_STALE,.SKIP_INVENTORY{{color:var(--skip)}}
-.card p{{margin:8px 0 6px}} details{{color:var(--mut);font-size:13px}}
-.v{{font-size:12px;color:var(--ok)}} .v.no{{color:var(--bad)}}
-</style>
-<main>
-<h1>Why did it trade?</h1>
-<p class="sub">Decisions from the paper trader's log, each explained in plain English. Every number in an explanation is
-checked against the log; the log line is under each one.</p>
-<pre>{summary}</pre>
-{cards}
-</main>
-"""
-
-
-def card(f: dict, e) -> str:
-    badge = ('<span class="v">numbers checked against the log</span>' if e.verified
-             else '<span class="v no">not verified</span>')
-    return (f'<div class="card"><div class="top"><span class="tag {f["action"]}">{f["action"]}</span>'
-            f'<span>{html.escape(f["time_utc"])} UTC</span><span>{html.escape(f["policy"])}</span>'
-            f'<span>{html.escape(e.source)}</span>{badge}</div>'
-            f'<p>{html.escape(e.text)}</p>'
-            f'<details><summary>The log line</summary><code>{html.escape(f["reason_text"])}</code> '
-            f'(gap {f["gap_bps"]} bps, vs usual offset {f["gap_vs_usual_offset_bps"]} bps)</details></div>')
+def summary_stats(recs: list[dict]) -> dict:
+    by = collections.Counter((r["policy"], r["action"]) for r in recs)
+    policies = {r["policy"] for r in recs}
+    return {"total": max(sum(n for (p, _), n in by.items() if p == pol) for pol in policies),
+            "sent": by[("naive", "ENTER")], "prior_sent": by[("prior", "ENTER")]}
 
 
 def main() -> None:
@@ -104,8 +74,15 @@ def main() -> None:
     ap.add_argument("--base-url", default=None, help="for openai-compat: the service's API base URL")
     ap.add_argument("--key-env", default="LLM_API_KEY", help="for openai-compat: the environment variable holding the key")
     ap.add_argument("--out", type=Path, default=Path("explainer/report.html"))
+    ap.add_argument("--render", type=Path, default=None,
+                    help="re-render the page from a report.json written by an earlier run (no writer is called)")
     args = ap.parse_args()
 
+    if args.render:
+        data = json.loads(args.render.read_text())
+        args.out.write_text(render(data["cards"], data["summary"]))
+        print(f"re-rendered {len(data['cards'])} cards to {args.out}")
+        return
     writer = None
     if args.backend == "claude-cli":
         writer = ClaudeCLIWriter(args.model)
@@ -125,9 +102,11 @@ def main() -> None:
         f = build_facts(r, args.fee)
         e = explain(f, writer)
         stats[e.source] += 1
-        cards.append(card(f, e))
+        cards.append(card_data(f, e))
         print(f"[{f['action']:<14}] {e.text}")
-    args.out.write_text(PAGE.format(summary=html.escape(day_summary(recs)), cards="\n".join(cards)))
+    summary = summary_stats(recs)
+    args.out.with_suffix(".json").write_text(json.dumps({"cards": cards, "summary": summary}, indent=1))
+    args.out.write_text(render(cards, summary))
     print(f"\n{len(chosen)} explained ({dict(stats)}); report written to {args.out}")
 
 

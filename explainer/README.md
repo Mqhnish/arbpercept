@@ -40,7 +40,7 @@ Pick a writer with `--backend`. The default needs nothing and uses the template.
 | `claude-api` | The Anthropic API (`ANTHROPIC_API_KEY`), `claude-opus-5-5` by default. |
 
 The checker is what makes a small free model usable here: whichever writer you pick, a bad answer is caught.
-The report is `explainer/report.html`, one card per decision with the original log line under each.
+The report is `explainer/report.html`, a single self-contained page (the same cards are saved as `report.json`, and `--render report.json` rebuilds the page without calling a writer). Each card shows the explanation with its numbers underlined, a tooltip saying where each came from (copied from the log or computed), and a "Show the check" panel with the log line.
 
 The sample is 1,754 real decisions from replaying our 10 ms recording of 19 Oct 2026 through the paper trader
 (BTC, Binance vs Bybit, 1 bps fee per leg, 0.8 bps trigger):
