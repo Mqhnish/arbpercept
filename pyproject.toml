@@ -19,6 +19,8 @@ dev = ["pytest", "pyflakes"]
 models = ["scikit-learn", "numba", "lifelines", "matplotlib"]
 # Live feeds: the recorder (python -m arbdata record) and the paper trader (python -m arbtrade.live)
 live = ["websockets", "certifi"]
+# The decision explainer's Claude path (python -m explainer.cli --claude); its template and tests need nothing extra
+explainer = ["anthropic"]
 # Exact versions the tests last passed with: requirements-lock.txt
 # (pip install -r requirements-lock.txt, then pip install -e . --no-deps)
 
@@ -30,7 +32,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["arbdata", "arbtrade", "arbtrade.dashboard"]
+packages = ["arbdata", "arbtrade", "arbtrade.dashboard", "explainer"]
 
 [tool.setuptools.package-data]
 "arbtrade.dashboard" = ["static/*"]
