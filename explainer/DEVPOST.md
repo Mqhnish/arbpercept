@@ -39,7 +39,7 @@ two legs of fees. The plain-English explanations make that obvious in a way the 
 
 ## Honest limits
 
-In the demo run, 9 of 9 Claude explanations passed the check on the first try; that is a small sample from one day. The Ollama, OpenAI-style and API writers have only been tested against stand-ins.
+In the demo run, 15 of 15 Claude explanations passed the check on the first try; that is a small sample from one day. The Ollama, OpenAI-style and API writers have only been tested against stand-ins.
 The paper trader and recordings come from our earlier Perceptron project; the explainer is new work for this
 hackathon.
 

@@ -62,7 +62,7 @@ is the whole story the explanations tell.
 `tests/test_explainer.py` covers the fact parsing, the verifier (rounding accepted, invented numbers and reversed
 decisions rejected), the retry loop and the template fallback, with a stand-in for the API client.
 
-- Measured: with `claude-cli`, 9 of 9 explanations (3 each of three kinds of skip, from the fast prior) passed the check on
+- Measured: with `claude-cli`, 15 of 15 explanations (3 of each of the five kinds of decision) passed the check on
   the first try, and `explainer/report.html` shows them. That is a small sample from one day. The `ollama`, `openai-compat`
   and `claude-api` writers have been tested only against stand-ins, so how often they pass is unmeasured.
 - `claude-cli` uses your Claude subscription, so a judge without a Claude login cannot reproduce that run; the other
