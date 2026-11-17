@@ -53,7 +53,26 @@ def wrong_action(text: str, facts: dict) -> str | None:
     return None
 
 
+MAX_SENTENCES = 4
+SENTENCE_END = re.compile(r"(?<!\d)[.!?](?=\s|$)")
+
+
+def style_problems(text: str) -> list[str]:
+    """Things a reader should never see in a finished explanation: markdown, dashes used as asides,
+    a visible change of mind ("..."), or a wall of text."""
+    out = []
+    if "*" in text or "`" in text or text.lstrip().startswith(("#", "-")):
+        out.append("no markdown")
+    if "\u2014" in text or "\u2013" in text or "..." in text:
+        out.append("no dashes or ellipses")
+    if len(SENTENCE_END.findall(text)) > MAX_SENTENCES:
+        out.append(f"at most {MAX_SENTENCES} sentences")
+    return out
+
+
 def check(text: str, facts: dict) -> dict:
     bad = unsupported_numbers(text, facts)
     wrong = wrong_action(text, facts)
-    return {"ok": not bad and wrong is None, "unsupported_numbers": bad, "wrong_action": wrong}
+    style = style_problems(text)
+    return {"ok": not bad and wrong is None and not style, "unsupported_numbers": bad, "wrong_action": wrong,
+            "style": style}

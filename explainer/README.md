@@ -25,13 +25,22 @@ but a model that writes "the gap was 3.4 bps" when the log says 0.52 is worse th
 
 ## Run it
 
+Pick a writer with `--backend`. The default needs nothing and uses the template.
+
 ```bash
 .venv/bin/python -m explainer.cli explainer/sample/decisions_btc_2026-10-19.jsonl --per-action 3
-ANTHROPIC_API_KEY=... .venv/bin/python -m explainer.cli explainer/sample/decisions_btc_2026-10-19.jsonl --claude
 ```
 
-Without `--claude` the explanations come from the template and need no key. The report is
-`explainer/report.html`, with one card per decision and the original log line under each.
+| Backend | Cost and setup |
+|---|---|
+| `template` (default) | Free, no setup, no model. |
+| `claude-cli` | Claude through the Claude Code CLI (`claude -p`), using your Claude login. No API key. Runs in an empty temporary directory with file and web tools off. |
+| `ollama` | A free local model. Install [Ollama](https://ollama.com), run `ollama pull llama3.2`, and nothing leaves your machine. |
+| `openai-compat` | Any service with an OpenAI-style endpoint, several with a free tier that needs an account but no card (Groq, Google Gemini, OpenRouter). `LLM_API_KEY=... --backend openai-compat --base-url <url> --model <name>`. |
+| `claude-api` | The Anthropic API (`ANTHROPIC_API_KEY`), `claude-opus-5-5` by default. |
+
+The checker is what makes a small free model usable here: whichever writer you pick, a bad answer is caught.
+The report is `explainer/report.html`, one card per decision with the original log line under each.
 
 The sample is 1,754 real decisions from replaying our 10 ms recording of 19 Oct 2026 through the paper trader
 (BTC, Binance vs Bybit, 1 bps fee per leg, 0.8 bps trigger):
@@ -53,10 +62,11 @@ is the whole story the explanations tell.
 `tests/test_explainer.py` covers the fact parsing, the verifier (rounding accepted, invented numbers and reversed
 decisions rejected), the retry loop and the template fallback, with a stand-in for the API client.
 
-- The Claude path has been exercised only against that stand-in. No API key was available when this was built, so
-  the live call, and how often Claude passes the check on the first try, have not been measured.
-- The default model is `claude-opus-5-5`, with low effort and the API's server-side refusal fallback switched on
-  (`fallbacks="default"`). Change `DEFAULT_MODEL` or pass `--model` to use another.
-- The verifier checks numbers and the direction of the decision. It cannot check that a sentence about the reason is
+- Measured: with `claude-cli`, 9 of 9 explanations (3 each of three kinds of skip, from the fast prior) passed the check on
+  the first try, and `explainer/report.html` shows them. That is a small sample from one day. The `ollama`, `openai-compat`
+  and `claude-api` writers have been tested only against stand-ins, so how often they pass is unmeasured.
+- `claude-cli` uses your Claude subscription, so a judge without a Claude login cannot reproduce that run; the other
+  backends can be run by anyone.
+- The verifier checks numbers, the direction of the decision, and plain style (no markdown, dashes or ellipses, at most four sentences). It cannot check that a sentence about the reason is
   well argued, so the facts it is given include a plain-language meaning of each action.
 - Decisions come from replay, not live trading. No orders were sent anywhere.

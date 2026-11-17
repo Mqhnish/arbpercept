@@ -19,11 +19,12 @@ card says which writer produced it and shows the original log line.
 
 ## How we built it
 
-Python. `facts.py` turns a log line into a dictionary of checked facts. `explain.py` calls Claude through the
-Anthropic SDK with only those facts. `verify.py` extracts every number and the direction of the decision from the
+Python. `facts.py` turns a log line into a dictionary of checked facts. `explain.py` gives only those facts to a
+language model: Claude through the Claude Code CLI for the demo, with writers for a free local model (Ollama), any
+OpenAI-style service and the Anthropic API. `verify.py` extracts every number and the direction of the decision from the
 answer and compares them with the facts. The demo runs on 1,754 real decisions from replaying a recorded day
-(19 Oct 2026, Bitcoin on Binance and Bybit) through our paper trader. 16 tests cover the checker and the retry
-loop.
+(19 Oct 2026, Bitcoin on Binance and Bybit) through our paper trader. 19 tests cover the checker, the retry
+loop and the writers.
 
 ## Challenges
 
@@ -38,13 +39,13 @@ two legs of fees. The plain-English explanations make that obvious in a way the 
 
 ## Honest limits
 
-No API key was available while building, so the live Claude path has only been tested against a stand-in client.
+In the demo run, 9 of 9 Claude explanations passed the check on the first try; that is a small sample from one day. The Ollama, OpenAI-style and API writers have only been tested against stand-ins.
 The paper trader and recordings come from our earlier Perceptron project; the explainer is new work for this
 hackathon.
 
 ## Built with
 
-Python, Anthropic Claude API, pytest
+Python, Claude (via Claude Code), Ollama, pytest
 
 ## Try it
 

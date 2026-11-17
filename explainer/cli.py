@@ -1,10 +1,14 @@
 """Explain a sample of logged decisions and write a report.
 
     python -m explainer.cli explainer/sample/decisions_btc_2026-10-19.jsonl --per-action 3
-    ANTHROPIC_API_KEY=... python -m explainer.cli <decisions.jsonl> --claude
+    python -m explainer.cli <decisions.jsonl> --backend claude-cli     # your Claude login, no API key
+    python -m explainer.cli <decisions.jsonl> --backend ollama         # a free local model
+    LLM_API_KEY=... python -m explainer.cli <decisions.jsonl> --backend openai-compat \\
+        --base-url https://api.groq.com/openai/v1 --model <model name>   # Groq, Gemini, OpenRouter, ...
+    ANTHROPIC_API_KEY=... python -m explainer.cli <decisions.jsonl> --backend claude-api
 
-Without --claude (or without a key) the explanations come from the deterministic template, which is also
-what Claude's answer is replaced by if it fails the number check.
+The default backend is the deterministic template, which is also what a model's answer is replaced by if it
+fails the number check.
 """
 
 from __future__ import annotations
@@ -17,7 +21,7 @@ import os
 import random
 from pathlib import Path
 
-from .explain import DEFAULT_MODEL, explain
+from .explain import DEFAULT_MODEL, ClaudeAPIWriter, ClaudeCLIWriter, OllamaWriter, OpenAICompatWriter, explain
 from .facts import ACTIONS, build_facts
 
 
@@ -95,21 +99,31 @@ def main() -> None:
     ap.add_argument("--per-action", type=int, default=3)
     ap.add_argument("--policy", default=None, help="only this policy (naive, prior, slow)")
     ap.add_argument("--fee", type=float, default=1.0, help="the --fee the paper trader ran with (bps per leg)")
-    ap.add_argument("--claude", action="store_true", help="ask Claude (needs ANTHROPIC_API_KEY or an ant login)")
-    ap.add_argument("--model", default=DEFAULT_MODEL)
+    ap.add_argument("--backend", choices=["template", "claude-cli", "claude-api", "ollama", "openai-compat"], default="template")
+    ap.add_argument("--model", default=None, help="model name for the chosen backend")
+    ap.add_argument("--base-url", default=None, help="for openai-compat: the service's API base URL")
+    ap.add_argument("--key-env", default="LLM_API_KEY", help="for openai-compat: the environment variable holding the key")
     ap.add_argument("--out", type=Path, default=Path("explainer/report.html"))
     args = ap.parse_args()
 
-    client = None
-    if args.claude:
+    writer = None
+    if args.backend == "claude-cli":
+        writer = ClaudeCLIWriter(args.model)
+    elif args.backend == "claude-api":
         import anthropic
-        client = anthropic.Anthropic()
+        writer = ClaudeAPIWriter(anthropic.Anthropic(), args.model or DEFAULT_MODEL)
+    elif args.backend == "openai-compat":
+        if not (args.base_url and args.model):
+            ap.error("--backend openai-compat needs --base-url and --model")
+        writer = OpenAICompatWriter(args.base_url, args.model, args.key_env)
+    elif args.backend == "ollama":
+        writer = OllamaWriter(args.model or "llama3.2")
     recs = load(args.decisions)
     chosen = sample(recs, args.per_action, args.policy)
     cards, stats = [], collections.Counter()
     for r in chosen:
         f = build_facts(r, args.fee)
-        e = explain(f, client, args.model)
+        e = explain(f, writer)
         stats[e.source] += 1
         cards.append(card(f, e))
         print(f"[{f['action']:<14}] {e.text}")

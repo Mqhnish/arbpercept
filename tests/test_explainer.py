@@ -6,9 +6,9 @@ from types import SimpleNamespace
 import pytest
 
 from explainer.cli import sample
-from explainer.explain import MAX_TRIES, explain, template_explanation
+from explainer.explain import MAX_TRIES, ClaudeAPIWriter, explain, template_explanation
 from explainer.facts import ACTIONS, build_facts, numbers_in
-from explainer.verify import check, unsupported_numbers
+from explainer.verify import check, style_problems, unsupported_numbers
 
 T = 1792444361261301
 
@@ -77,22 +77,22 @@ def _client(answers):
 def test_good_model_answer_is_used_first_try():
     f = build_facts(rec("SKIP_EV", CASES["SKIP_EV"]))
     client, calls = _client(["It skipped because the expected value was -0.52 bps, below zero."])
-    e = explain(f, client)
-    assert e.source == "claude" and e.verified and e.tries == 1 and len(calls) == 1
+    e = explain(f, ClaudeAPIWriter(client))
+    assert e.source == "claude (API)" and e.verified and e.tries == 1 and len(calls) == 1
 
 
 def test_invented_number_triggers_a_correction_then_passes():
     f = build_facts(rec("SKIP_EV", CASES["SKIP_EV"]))
     client, calls = _client(["It skipped; the expected value was -0.52 bps against a 7.5 bps target.",
                              "It skipped because the expected value was -0.52 bps."])
-    e = explain(f, client)
-    assert e.source == "claude" and e.tries == 2 and "7.5" in calls[1]["messages"][0]["content"]
+    e = explain(f, ClaudeAPIWriter(client))
+    assert e.source == "claude (API)" and e.tries == 2 and "7.5" in calls[1]["messages"][0]["content"]
 
 
 def test_model_that_keeps_inventing_numbers_is_replaced_by_the_template():
     f = build_facts(rec("SKIP_EV", CASES["SKIP_EV"]))
     client, calls = _client(["It skipped; a 9.9 bps cost was the reason."])
-    e = explain(f, client)
+    e = explain(f, ClaudeAPIWriter(client))
     assert e.source.startswith("template") and check(e.text, f)["ok"] and len(calls) == MAX_TRIES
 
 
@@ -100,7 +100,7 @@ def test_refusal_falls_back_to_the_template():
     f = build_facts(rec("ENTER", CASES["ENTER"]))
     refusing = SimpleNamespace(beta=SimpleNamespace(messages=SimpleNamespace(
         create=lambda **kw: SimpleNamespace(stop_reason="refusal", content=[]))))
-    assert explain(f, refusing).source.startswith("template")
+    assert explain(f, ClaudeAPIWriter(refusing)).source.startswith("template")
 
 
 def test_no_client_uses_the_template():
@@ -117,3 +117,47 @@ def test_sample_covers_each_action_and_is_reproducible():
 def test_numbers_in_includes_time_parts():
     f = build_facts(rec("ENTER", CASES["ENTER"]))
     assert 2026.0 in numbers_in(f)
+
+
+def test_a_writer_that_crashes_falls_back_to_the_template():
+    f = build_facts(rec("SKIP_EV", CASES["SKIP_EV"]))
+
+    class Broken:
+        name = "local model (Ollama)"
+
+        def __call__(self, facts, feedback=None):
+            raise ConnectionError("no server")
+
+    e = explain(f, Broken())
+    assert e.source.startswith("template") and check(e.text, f)["ok"] and "ConnectionError" in e.problems[0]
+
+
+def test_style_check_rejects_markdown_dashes_ellipses_and_long_answers():
+    assert style_problems("It **skipped** the trade.") == ["no markdown"]
+    assert style_problems("It saw Bitcoin... no, a gap.") == ["no dashes or ellipses"]
+    assert style_problems("It skipped \u2014 the books were thin.") == ["no dashes or ellipses"]
+    assert style_problems("One. Two. Three. Four. Five.") == ["at most 4 sentences"]
+    assert style_problems("It skipped because the gap was 0.52 bps. The books were thin.") == []
+
+
+def test_openai_compatible_writer_needs_a_key_and_reads_the_reply(monkeypatch):
+    import requests
+
+    from explainer.explain import OpenAICompatWriter
+    f = build_facts(rec("SKIP_EV", CASES["SKIP_EV"]))
+    w = OpenAICompatWriter("https://api.example.com/v1/", "small-model")
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+    assert explain(f, w).source.startswith("template")  # no key: falls back instead of crashing
+
+    seen = {}
+
+    def fake_post(url, **kw):
+        seen.update(url=url, auth=kw["headers"]["Authorization"], sys=kw["json"]["messages"][0]["role"])
+        return SimpleNamespace(raise_for_status=lambda: None, json=lambda: {
+            "choices": [{"message": {"content": "It skipped; the expected value was -0.52 bps."}}]})
+
+    monkeypatch.setenv("LLM_API_KEY", "k")
+    monkeypatch.setattr(requests, "post", fake_post)
+    e = explain(f, w)
+    assert e.source == w.name and e.verified and seen["url"] == "https://api.example.com/v1/chat/completions"
+    assert seen["auth"] == "Bearer k" and seen["sys"] == "system"
